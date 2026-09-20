@@ -1,0 +1,3 @@
+info: Invitation token service listening on 8090
+error: Error validating JWT token
+%s

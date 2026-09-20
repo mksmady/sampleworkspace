@@ -1,0 +1,9 @@
+{
+	"private": true,
+	"workspaces": {
+		"packages": [
+			"client-extensions\\invitation-form",
+			"client-extensions\\invitation-token-service"
+		]
+	}
+}

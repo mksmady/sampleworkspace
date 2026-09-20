@@ -1,0 +1,15 @@
+assemble:
+    -   from: batch
+        into: batch
+invitation-details-object:
+    name: Invitation Details Object
+    oAuthApplicationHeadlessServer: invitation-details-object-oahs
+    type: batch
+invitation-details-object-oahs:
+    .serviceAddress: localhost:8080
+    .serviceScheme: http
+    name: Invitation Details Object OAuth Application Headless Server
+    scopes:
+        -   Liferay.Headless.Batch.Engine.everything
+        -   Liferay.Object.Admin.REST.everything
+    type: oAuthApplicationHeadlessServer

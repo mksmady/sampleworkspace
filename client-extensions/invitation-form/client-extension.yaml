@@ -1,0 +1,13 @@
+assemble:
+    -   from: build/static
+        into: static
+invitation-form:
+    friendlyURLMapping: invitation-form
+    htmlElementName: invitation-form
+    instanceable: false
+    name: Invitation Form
+    portletCategoryName: category.client-extensions
+    type: customElement
+    urls:
+        -   index.*.js
+    useESM: true

@@ -1,0 +1,139 @@
+{
+	"configuration": {
+		"className": "com.liferay.object.admin.rest.dto.v1_0.ObjectDefinition",
+		"parameters": {
+			"containsHeaders": "true",
+			"createStrategy": "UPSERT",
+			"importStrategy": "ON_ERROR_FAIL",
+			"updateStrategy": "UPDATE"
+		},
+		"taskItemDelegateName": "DEFAULT"
+	},
+	"items": [
+		{
+			"active": true,
+			"externalReferenceCode": "invitation-details-object-definition",
+			"label": {
+				"en_US": "Invitation Details"
+			},
+			"name": "InvitationDetails",
+			"objectActions": [
+				{
+					"active": true,
+					"label": {
+						"en_US": "Generate Invitation Token"
+					},
+					"name": "GenerateInvitationToken",
+					"objectActionExecutorKey": "invitation-token-object-action",
+					"objectActionTriggerKey": "onAfterAdd",
+					"parameters": {
+					}
+				}
+			],
+			"objectFields": [
+				{
+					"DBType": "String",
+					"businessType": "Text",
+					"externalReferenceCode": "invitation-details-email-id",
+					"indexed": true,
+					"indexedAsKeyword": false,
+					"indexedLanguageId": "en_US",
+					"label": {
+						"en_US": "Email"
+					},
+					"name": "emailId",
+					"objectFieldSettings": [
+					],
+					"required": true,
+					"type": "String"
+				},
+				{
+					"DBType": "String",
+					"businessType": "Text",
+					"externalReferenceCode": "invitation-details-company-name",
+					"indexed": true,
+					"indexedAsKeyword": false,
+					"indexedLanguageId": "en_US",
+					"label": {
+						"en_US": "Company Name"
+					},
+					"name": "companyName",
+					"objectFieldSettings": [
+					],
+					"required": true,
+					"type": "String"
+				},
+				{
+					"DBType": "Date",
+					"businessType": "Date",
+					"externalReferenceCode": "invitation-details-expiry-date",
+					"indexed": false,
+					"indexedAsKeyword": false,
+					"label": {
+						"en_US": "Expiry Date"
+					},
+					"name": "expiryDate",
+					"objectFieldSettings": [
+					],
+					"required": true,
+					"type": "Date"
+				},
+				{
+					"DBType": "String",
+					"businessType": "Text",
+					"externalReferenceCode": "invitation-details-account-manager-name",
+					"indexed": false,
+					"indexedAsKeyword": false,
+					"indexedLanguageId": "en_US",
+					"label": {
+						"en_US": "Account Manager Name"
+					},
+					"name": "accountManagerName",
+					"objectFieldSettings": [
+					],
+					"required": true,
+					"type": "String"
+				},
+				{
+					"DBType": "String",
+					"businessType": "Text",
+					"externalReferenceCode": "invitation-details-token",
+					"indexed": false,
+					"indexedAsKeyword": false,
+					"label": {
+						"en_US": "Token"
+					},
+					"name": "token",
+					"objectFieldSettings": [
+					],
+					"required": false,
+					"type": "String"
+				},
+				{
+					"DBType": "String",
+					"businessType": "Text",
+					"externalReferenceCode": "invitation-details-invitation-link",
+					"indexed": false,
+					"indexedAsKeyword": false,
+					"label": {
+						"en_US": "Invitation Link"
+					},
+					"name": "invitationLink",
+					"objectFieldSettings": [
+					],
+					"required": false,
+					"type": "String"
+				}
+			],
+			"panelCategoryKey": "control_panel.object",
+			"pluralLabel": {
+				"en_US": "Invitation Details"
+			},
+			"scope": "company",
+			"status": {
+				"code": 0
+			},
+			"titleObjectFieldName": "emailId"
+		}
+	]
+}

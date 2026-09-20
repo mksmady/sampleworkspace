@@ -1,0 +1,7 @@
+Bundle-Name: Invitation Token Object Action
+Bundle-SymbolicName: com.sampleworkspace.invitation.token.object.action
+Bundle-Version: 1.0.0
+
+Import-Package: \
+	com.liferay.*;version="[0.0.0,100)",\
+	*

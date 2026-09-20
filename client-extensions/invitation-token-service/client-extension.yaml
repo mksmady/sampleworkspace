@@ -1,0 +1,18 @@
+assemble:
+    -   include:
+            -   "**/*.js"
+            -   package.json
+invitation-token-service-oaua:
+    .serviceAddress: localhost:8090
+    .serviceScheme: http
+    name: Invitation Token Service OAuth Application User Agent
+    scopes:
+        -   Liferay.Object.Admin.REST.everything
+    type: oAuthApplicationUserAgent
+invitation-token-object-action:
+    allowedObjectDefinitionNames:
+        -   C_InvitationDetails
+    name: Invitation Token Object Action
+    oAuth2ApplicationExternalReferenceCode: invitation-token-service-oaua
+    resourcePath: /invitation/token
+    type: objectAction
