@@ -25,7 +25,7 @@ Follow the specs exactly. If something in a spec is wrong, unsupported on this L
 
   * Picklists: `/o/headless-admin-list-type/v1.0/list-type-definitions`
   * Objects: `/o/object-admin/v1.0/object-definitions` (fields, relationships, actions, validations)
-  * Object data: `/o/c/<plurallabel>` (confirm the path in /o/api after publishing)
+  * Object data: `/o/c/<pluralized object name>`, e.g. `/o/c/appwaitlists` (confirm the path in /o/api after publishing)
 
 ## Repository layout
 

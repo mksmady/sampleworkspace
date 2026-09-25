@@ -6,15 +6,19 @@ Design reference: `docs/Maddybaba_App_Design.pdf`. Search design: `docs/search.m
 ## 0. Conventions
 
 - Every picklist, object definition, field and relationship has an **external reference code (ERC)** prefixed `MB_`.
-- Object names: PascalCase singular (`Listing`). Field names: camelCase (`basePrice`).
+- Object names: PascalCase singular (`Listing`). Field names: camelCase (`basePrice`). Field ERC = `MB_<Object>_<field>` (`MB_Host_handle`). Field labels are the name split into words (`hostRegion` → Host Region).
+- `status` is reserved by Liferay (it's the workflow status), so status picklists are named `<object>Status` (`bookingStatus`).
+- Objects appear in the Control Panel under Objects. Comments and categorization are off. No field is localized (this Liferay version keeps `enableLocalization` on for every object and ignores attempts to turn it off).
 - Picklist item keys: camelCase (`superHost`); names are the display labels.
 - Picklist names are the ERC without `MB_`, split into words (`MB_HostTier` → Host Tier). Picklist item ERC = `<picklist ERC>_<key>` (`MB_HostTier_superHost`).
 - Labels are `en-US` only for now.
 - Currency is INR. Money fields use **PrecisionDecimal**.
 - Scope: all objects are **company-scoped**.
 - Field types below use Liferay `businessType` names: `Text`, `LongText`, `RichText`, `Integer`, `LongInteger`, `PrecisionDecimal`, `Boolean`, `Date`, `DateTime`, `Picklist`, `MultiselectPicklist`, `Attachment`, `Aggregation`, `Formula`, `AutoIncrement`, `Relationship`.
-- `R` = required. `S` = searchable (indexed). `U` = unique values.
-- REST paths are generated from the plural label (`/o/c/<plurallabel>`). Verify the actual path in `/o/api` after publishing.
+- `R` = required. `U` = unique values. Every plain field is indexed (search.md filters, boosts and sorts on non-text fields). `S` = searchable: `Text`/`LongText`/`RichText` fields marked S are indexed as analyzed full text (`en-US`); other text fields are indexed as keywords.
+- Attachment fields accept `jpg, jpeg, png, webp` up to 5 MB, uploaded from the user's device, unless noted otherwise.
+- `DateTime` fields store in UTC (`timeStorage = convertToUTC`).
+- REST paths are generated from the object name, pluralized and lowercased (`/o/c/<name>s`), not from the plural label: AppWaitlist is `/o/c/appwaitlists`. Verify the actual path in `/o/api` after publishing.
 
 ## 1. Build order
 
@@ -96,7 +100,7 @@ Plural label: Partners. Title field: `name`.
 | isVerified | Boolean | | Default false |
 
 ### 3.3 Host — `MB_Host`
-Plural label: Hosts. Title field: `displayName`. Workflow: Single Approver (KYC review).
+Plural label: Hosts. Title field: `displayName`. Workflow: Single Approver (KYC review), set up in phase 5 with the Ops Admin role.
 
 | Field | Type | Flags | Notes |
 |---|---|---|---|
@@ -109,16 +113,16 @@ Plural label: Hosts. Title field: `displayName`. Workflow: Single Approver (KYC 
 | bio | LongText | S | |
 | avatar | Attachment | | |
 | tier | Picklist `MB_HostTier` | R | Default standard |
-| status | Picklist `MB_HostStatus` | R | Default pendingVerification |
+| hostStatus | Picklist `MB_HostStatus` | R | Default pendingVerification |
 | commissionRate | PrecisionDecimal | | Base percent |
 | termsAccepted | Boolean | R | Must be true |
 | termsAcceptedDate | DateTime | | Set by action |
 | payoutUpiId | Text | | Consider storing only a gateway token |
 | linkClicks | Aggregation | | Count of ReferralClick |
 | totalBookings | Aggregation | | Count of Booking via `MB_hostBookings` |
-| partnerCount | Aggregation | | Count of HostPartnership where status = active |
+| partnerCount | Aggregation | | Count of HostPartnership where partnershipStatus = active |
 | earningsThisMonth | Aggregation | | Sum of Commission.amount, filter createDate in current month (if the version can't filter by relative date, compute with a scheduled action into a PrecisionDecimal field) |
-| availableBalance | Aggregation | | Sum of Commission.amount where status = available |
+| availableBalance | Aggregation | | Sum of Commission.amount where commissionStatus = available |
 
 ### 3.4 HostPartnership — `MB_HostPartnership`
 Plural label: Host Partnerships. A junction object between Host and Partner, with its own terms.
@@ -128,7 +132,7 @@ Plural label: Host Partnerships. A junction object between Host and Partner, wit
 | commissionRate | PrecisionDecimal | R |
 | startDate | Date | R |
 | endDate | Date | |
-| status | Picklist `MB_PartnershipStatus` | R |
+| partnershipStatus | Picklist `MB_PartnershipStatus` | R |
 
 ### 3.5 HostSubscription — `MB_HostSubscription`
 Plural label: Host Subscriptions. For the Super Host plan.
@@ -139,7 +143,7 @@ Plural label: Host Subscriptions. For the Super Host plan.
 | amount | PrecisionDecimal | R |
 | startDate | Date | R |
 | endDate | Date | R |
-| status | Picklist `MB_SubscriptionStatus` | R |
+| subscriptionStatus | Picklist `MB_SubscriptionStatus` | R |
 
 ### 3.6 Traveler — `MB_Traveler`
 Plural label: Travelers. Title field: `fullName`. One per Liferay User.
@@ -156,10 +160,10 @@ Plural label: Travelers. Title field: `fullName`. One per Liferay User.
 | useFactorWeather | Boolean | | Default true |
 | useFactorSeason | Boolean | | Default true |
 | useFactorHolidays | Boolean | | Default true |
-| pastTripCount | Aggregation | | Count of Booking where status = completed |
+| pastTripCount | Aggregation | | Count of Booking where bookingStatus = completed |
 
 ### 3.7 Listing — `MB_Listing`
-Plural label: Listings. Title field: `title`. Workflow: Single Approver. Covers stays, camps, treks, paragliding, guides and activities. Flights are not listings (see 8.1).
+Plural label: Listings. Title field: `title`. Workflow: Single Approver, set up in phase 5. Covers stays, camps, treks, paragliding, guides and activities. Flights are not listings (see 8.1).
 
 | Field | Type | Flags | Notes |
 |---|---|---|---|
@@ -208,7 +212,7 @@ Plural label: Availability Slots. For "Pick a date".
 | capacity | Integer | R | |
 | bookedCount | Aggregation | | Sum of BookingItem.quantity |
 | priceOverride | PrecisionDecimal | | |
-| status | Picklist `MB_SlotStatus` | R | |
+| slotStatus | Picklist `MB_SlotStatus` | R | |
 
 ### 3.10 TripPackage — `MB_TripPackage`
 Plural label: Trip Packages. For the "Build your trip" cart.
@@ -220,12 +224,12 @@ Plural label: Trip Packages. For the "Build your trip" cart.
 | endDate | Date | R |
 | adults | Integer | R |
 | children | Integer | |
-| status | Picklist `MB_PackageStatus` | R |
+| packageStatus | Picklist `MB_PackageStatus` | R |
 | itemCount | Aggregation | Count of BookingItem |
 | packageTotal | Aggregation | Sum of BookingItem.lineTotal |
 
 ### 3.11 Booking — `MB_Booking`
-Plural label: Bookings. Title field: `bookingNumber`.
+Plural label: Bookings. Title field: `bookingNumber` (set in phase 4, when the AutoIncrement field is added).
 
 | Field | Type | Flags | Notes |
 |---|---|---|---|
@@ -239,10 +243,10 @@ Plural label: Bookings. Title field: `bookingNumber`.
 | serviceFee | PrecisionDecimal | | Set by action |
 | taxes | PrecisionDecimal | | GST, set by action |
 | total | Formula | | `subtotal + serviceFee + taxes` |
-| status | Picklist `MB_BookingStatus` | R | Default pendingPayment. Use as a State field if supported |
+| bookingStatus | Picklist `MB_BookingStatus` | R | Default pendingPayment. Use as a State field if supported |
 | source | Picklist `MB_BookingSource` | | |
 
-State transitions for `status`: pendingPayment → confirmed / cancelled; confirmed → completed / cancelled; cancelled → refunded.
+State transitions for `bookingStatus`: pendingPayment → confirmed / cancelled; confirmed → completed / cancelled; cancelled → refunded.
 
 ### 3.12 BookingItem — `MB_BookingItem`
 Plural label: Booking Items.
@@ -268,7 +272,7 @@ Plural label: Payments.
 | gateway | Text | R |
 | gatewayOrderId | Text | U |
 | gatewayTxnId | Text | U |
-| status | Picklist `MB_PaymentStatus` | R |
+| paymentStatus | Picklist `MB_PaymentStatus` | R |
 | paidAt | DateTime | |
 
 ### 3.14 Commission — `MB_Commission`
@@ -279,7 +283,7 @@ Plural label: Commissions.
 | rate | PrecisionDecimal | R | Percent, copied at booking time |
 | baseAmount | PrecisionDecimal | R | |
 | amount | Formula | | `baseAmount * rate / 100` |
-| status | Picklist `MB_CommissionStatus` | R | |
+| commissionStatus | Picklist `MB_CommissionStatus` | R | |
 | availableOn | Date | | |
 
 ### 3.15 Payout — `MB_Payout`
@@ -290,7 +294,7 @@ Plural label: Payouts.
 | amount | PrecisionDecimal | R |
 | payoutMethod | Text | R |
 | gatewayPayoutId | Text | U |
-| status | Picklist `MB_PayoutStatus` | R |
+| payoutStatus | Picklist `MB_PayoutStatus` | R |
 | requestedAt | DateTime | R |
 | processedAt | DateTime | |
 
@@ -313,9 +317,11 @@ Plural label: Reviews.
 | isPublished | Boolean | |
 
 ### 3.18 Favorite — `MB_Favorite`
-Plural label: Favorites. Has relationship fields only.
+Plural label: Favorites. Has relationship fields only. Liferay needs at least one field to publish, so Favorite stays a draft until its relationships are added (phase 3).
 
 ### 3.19 Conversation — `MB_Conversation` and Message — `MB_Message`
+Plural labels: Conversations, Messages.
+
 Conversation fields: `subject` (Text).
 
 Message fields: `body` (LongText, R), `senderType` (Picklist `MB_SenderType`, R), `readAt` (DateTime).
@@ -447,18 +453,18 @@ Each Host has a Liferay **Account** (created on host approval). Enable **account
 | Trigger | Object | Condition | Action |
 |---|---|---|---|
 | On add | Host | | Set termsAcceptedDate; start KYC workflow |
-| Workflow approved | Host | | Create Account, assign Host account role, set status = active |
+| Workflow approved | Host | | Create Account, assign Host account role, set hostStatus = active |
 | On add / update | Listing | | Copy destinationName, stateName, region, latitude, longitude from Destination and hostDisplayName from Host (see search.md) |
 | On update | Destination / Host | name or region changed | Update denormalized fields on related Listings |
-| On add / update | AvailabilitySlot | | Recalculate Listing.nextAvailableDate; set slot status = full when bookedCount ≥ capacity |
+| On add / update | AvailabilitySlot | | Recalculate Listing.nextAvailableDate; set slotStatus = full when bookedCount ≥ capacity |
 | On add / update | Review | | Recalculate Listing.ratingValue |
 | Before checkout | Booking | | Compute serviceFee and taxes (microservice) |
-| On update | Payment | status = success | Booking.status = confirmed |
-| On update | Booking | status = confirmed | Create Commission(s) for host and referral host (status pending); notify traveler and host (email/SMS) |
-| On update | Booking | status = cancelled or refunded | Commission.status = reversed; trigger gateway refund |
-| Scheduled daily | Commission | Booking completed and availableOn ≤ today | status = available |
+| On update | Payment | paymentStatus = success | Booking.bookingStatus = confirmed |
+| On update | Booking | bookingStatus = confirmed | Create Commission(s) for host and referral host (commissionStatus pending); notify traveler and host (email/SMS) |
+| On update | Booking | bookingStatus = cancelled or refunded | Commission.commissionStatus = reversed; trigger gateway refund |
+| Scheduled daily | Commission | Booking completed and availableOn ≤ today | commissionStatus = available |
 | On add | Payout | | Call payout gateway (webhook/microservice) |
-| Gateway callback | Payout | success | Payout.status = paid; linked Commissions → paidOut |
+| Gateway callback | Payout | success | Payout.payoutStatus = paid; linked Commissions → paidOut |
 | Scheduled nightly | WeatherSnapshot, PublicHoliday | | Refresh from weather and holiday APIs |
 | Scheduled nightly | Recommendation | | Regenerate per traveler, respecting the `useFactor*` toggles; delete expired |
 
