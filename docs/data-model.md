@@ -8,6 +8,8 @@ Design reference: `docs/Maddybaba_App_Design.pdf`. Search design: `docs/search.m
 - Every picklist, object definition, field and relationship has an **external reference code (ERC)** prefixed `MB_`.
 - Object names: PascalCase singular (`Listing`). Field names: camelCase (`basePrice`).
 - Picklist item keys: camelCase (`superHost`); names are the display labels.
+- Picklist names are the ERC without `MB_`, split into words (`MB_HostTier` → Host Tier). Picklist item ERC = `<picklist ERC>_<key>` (`MB_HostTier_superHost`).
+- Labels are `en-US` only for now.
 - Currency is INR. Money fields use **PrecisionDecimal**.
 - Scope: all objects are **company-scoped**.
 - Field types below use Liferay `businessType` names: `Text`, `LongText`, `RichText`, `Integer`, `LongInteger`, `PrecisionDecimal`, `Boolean`, `Date`, `DateTime`, `Picklist`, `MultiselectPicklist`, `Attachment`, `Aggregation`, `Formula`, `AutoIncrement`, `Relationship`.
@@ -54,7 +56,9 @@ Some field types and features (AutoIncrement, Formula, aggregation filters, acco
 | `MB_RecoFactor` | pastTravel → Past Travel, currentLocation → Current Location, weather → Weather, monthSeason → Month & Season, publicHolidays → Public Holidays |
 | `MB_RecoSection` | placesNow → Places at Their Best Now, hostsForYou → Hosts You'll Get Along With, nearYou → Near You This Weekend, longWeekend → Long Weekend |
 | `MB_Month` | january … december → January … December |
-| `MB_IndianState` | All 28 states and 8 union territories (keys camelCase, e.g. himachalPradesh → Himachal Pradesh) |
+| `MB_IndianState` | All 28 states and 8 union territories. "and" is spelled out in keys. States: andhraPradesh → Andhra Pradesh, arunachalPradesh → Arunachal Pradesh, assam → Assam, bihar → Bihar, chhattisgarh → Chhattisgarh, goa → Goa, gujarat → Gujarat, haryana → Haryana, himachalPradesh → Himachal Pradesh, jharkhand → Jharkhand, karnataka → Karnataka, kerala → Kerala, madhyaPradesh → Madhya Pradesh, maharashtra → Maharashtra, manipur → Manipur, meghalaya → Meghalaya, mizoram → Mizoram, nagaland → Nagaland, odisha → Odisha, punjab → Punjab, rajasthan → Rajasthan, sikkim → Sikkim, tamilNadu → Tamil Nadu, telangana → Telangana, tripura → Tripura, uttarPradesh → Uttar Pradesh, uttarakhand → Uttarakhand, westBengal → West Bengal. Union territories: andamanAndNicobarIslands → Andaman and Nicobar Islands, chandigarh → Chandigarh, dadraAndNagarHaveliAndDamanAndDiu → Dadra and Nagar Haveli and Daman and Diu, delhi → Delhi, jammuAndKashmir → Jammu and Kashmir, ladakh → Ladakh, lakshadweep → Lakshadweep, puducherry → Puducherry |
+
+The setup script reads these from `scripts/setup/data/picklists.json`. Keep the two in sync.
 
 ## 3. Object definitions
 
