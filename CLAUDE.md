@@ -18,7 +18,7 @@ Follow the specs exactly. If something in a spec is wrong, unsupported on this L
 
 * Liferay Workspace: repository root
 * Local Liferay: http://localhost:8080
-* Liferay version: **2026.Q1.9 LTS**
+* Liferay version: **2026.Q2.12** (`liferay.workspace.product=dxp-2026.q2.12`)
 * API explorer: http://localhost:8080/o/api. Check endpoint paths and schemas there before using them; don't rely on memory.
 * Auth: basic auth from env vars `$LIFERAY\_USER` and `$LIFERAY\_PASSWORD`. Never write credentials into files, commits or logs.
 * Key APIs:
