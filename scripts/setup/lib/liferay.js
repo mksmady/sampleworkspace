@@ -36,6 +36,7 @@ async function request(method, path, body) {
 
 module.exports = {
 	get: (path) => request('GET', path),
+	patch: (path, body) => request('PATCH', path, body),
 	post: (path, body) => request('POST', path, body),
 	put: (path, body) => request('PUT', path, body),
 };

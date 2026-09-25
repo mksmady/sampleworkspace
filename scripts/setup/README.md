@@ -10,5 +10,6 @@ Environment:
 | Script | Phase | What it does |
 |---|---|---|
 | `picklists.js` | 1 | Creates/updates the picklists in `data/picklists.json`, then verifies each one with a GET by ERC. `--verify-only` skips the writes. |
+| `objects.js` | 2 | Creates the object definitions and plain fields in `data/objects.json` as drafts, verifies them with a GET, and with `--publish` publishes those that match the spec. Fields are only changed while a definition is a draft. `--verify-only` skips the writes. |
 
 Scripts never delete anything on the instance. Entries found on the instance but missing from the spec are kept and reported.
