@@ -1,0 +1,259 @@
+[
+	{
+		"erc": "MB_ServiceCategory",
+		"name": "Service Category",
+		"entries": {
+			"flight": "Flight",
+			"stay": "Stay",
+			"camping": "Camping",
+			"trekking": "Trekking",
+			"paragliding": "Paragliding",
+			"localGuide": "Local Guide",
+			"activity": "Activity",
+			"tourPackage": "Tour Package"
+		}
+	},
+	{
+		"erc": "MB_HostType",
+		"name": "Host Type",
+		"entries": {
+			"partnerStays": "Partner Stays",
+			"localGuide": "Local Guide",
+			"activities": "Activities",
+			"tourPackages": "Tour Packages"
+		}
+	},
+	{
+		"erc": "MB_HostTier",
+		"name": "Host Tier",
+		"entries": {
+			"standard": "Standard",
+			"superHost": "Super Host"
+		}
+	},
+	{
+		"erc": "MB_HostStatus",
+		"name": "Host Status",
+		"entries": {
+			"pendingVerification": "Pending Verification",
+			"active": "Active",
+			"suspended": "Suspended"
+		}
+	},
+	{
+		"erc": "MB_PartnerType",
+		"name": "Partner Type",
+		"entries": {
+			"hotel": "Hotel",
+			"resort": "Resort",
+			"homestay": "Homestay",
+			"camp": "Camp",
+			"activityOperator": "Activity Operator",
+			"transport": "Transport"
+		}
+	},
+	{
+		"erc": "MB_PartnershipStatus",
+		"name": "Partnership Status",
+		"entries": {
+			"active": "Active",
+			"paused": "Paused",
+			"ended": "Ended"
+		}
+	},
+	{
+		"erc": "MB_PriceUnit",
+		"name": "Price Unit",
+		"entries": {
+			"perPerson": "Per Person",
+			"perNight": "Per Night",
+			"perRoom": "Per Room",
+			"perGroup": "Per Group",
+			"perTrip": "Per Trip"
+		}
+	},
+	{
+		"erc": "MB_InclusionType",
+		"name": "Inclusion Type",
+		"entries": {
+			"included": "Included",
+			"addOn": "Add-on"
+		}
+	},
+	{
+		"erc": "MB_SlotStatus",
+		"name": "Slot Status",
+		"entries": {
+			"open": "Open",
+			"full": "Full",
+			"closed": "Closed"
+		}
+	},
+	{
+		"erc": "MB_PackageStatus",
+		"name": "Package Status",
+		"entries": {
+			"draft": "Draft",
+			"quoted": "Quoted",
+			"booked": "Booked",
+			"abandoned": "Abandoned"
+		}
+	},
+	{
+		"erc": "MB_BookingStatus",
+		"name": "Booking Status",
+		"entries": {
+			"pendingPayment": "Pending Payment",
+			"confirmed": "Confirmed",
+			"completed": "Completed",
+			"cancelled": "Cancelled",
+			"refunded": "Refunded"
+		}
+	},
+	{
+		"erc": "MB_BookingSource",
+		"name": "Booking Source",
+		"entries": {
+			"web": "Web",
+			"app": "App",
+			"hostLink": "Host Link"
+		}
+	},
+	{
+		"erc": "MB_PaymentMethod",
+		"name": "Payment Method",
+		"entries": {
+			"upi": "UPI",
+			"card": "Credit / Debit Card",
+			"netBanking": "Net Banking"
+		}
+	},
+	{
+		"erc": "MB_PaymentStatus",
+		"name": "Payment Status",
+		"entries": {
+			"initiated": "Initiated",
+			"success": "Success",
+			"failed": "Failed",
+			"refunded": "Refunded"
+		}
+	},
+	{
+		"erc": "MB_CommissionStatus",
+		"name": "Commission Status",
+		"entries": {
+			"pending": "Pending",
+			"available": "Available",
+			"paidOut": "Paid Out",
+			"reversed": "Reversed"
+		}
+	},
+	{
+		"erc": "MB_PayoutStatus",
+		"name": "Payout Status",
+		"entries": {
+			"requested": "Requested",
+			"processing": "Processing",
+			"paid": "Paid",
+			"failed": "Failed"
+		}
+	},
+	{
+		"erc": "MB_SubscriptionStatus",
+		"name": "Subscription Status",
+		"entries": {
+			"active": "Active",
+			"expired": "Expired",
+			"cancelled": "Cancelled"
+		}
+	},
+	{
+		"erc": "MB_SenderType",
+		"name": "Sender Type",
+		"entries": {
+			"traveler": "Traveler",
+			"host": "Host"
+		}
+	},
+	{
+		"erc": "MB_RecoFactor",
+		"name": "Reco Factor",
+		"entries": {
+			"pastTravel": "Past Travel",
+			"currentLocation": "Current Location",
+			"weather": "Weather",
+			"monthSeason": "Month & Season",
+			"publicHolidays": "Public Holidays"
+		}
+	},
+	{
+		"erc": "MB_RecoSection",
+		"name": "Reco Section",
+		"entries": {
+			"placesNow": "Places at Their Best Now",
+			"hostsForYou": "Hosts You'll Get Along With",
+			"nearYou": "Near You This Weekend",
+			"longWeekend": "Long Weekend"
+		}
+	},
+	{
+		"erc": "MB_Month",
+		"name": "Month",
+		"entries": {
+			"january": "January",
+			"february": "February",
+			"march": "March",
+			"april": "April",
+			"may": "May",
+			"june": "June",
+			"july": "July",
+			"august": "August",
+			"september": "September",
+			"october": "October",
+			"november": "November",
+			"december": "December"
+		}
+	},
+	{
+		"erc": "MB_IndianState",
+		"name": "Indian State",
+		"entries": {
+			"andhraPradesh": "Andhra Pradesh",
+			"arunachalPradesh": "Arunachal Pradesh",
+			"assam": "Assam",
+			"bihar": "Bihar",
+			"chhattisgarh": "Chhattisgarh",
+			"goa": "Goa",
+			"gujarat": "Gujarat",
+			"haryana": "Haryana",
+			"himachalPradesh": "Himachal Pradesh",
+			"jharkhand": "Jharkhand",
+			"karnataka": "Karnataka",
+			"kerala": "Kerala",
+			"madhyaPradesh": "Madhya Pradesh",
+			"maharashtra": "Maharashtra",
+			"manipur": "Manipur",
+			"meghalaya": "Meghalaya",
+			"mizoram": "Mizoram",
+			"nagaland": "Nagaland",
+			"odisha": "Odisha",
+			"punjab": "Punjab",
+			"rajasthan": "Rajasthan",
+			"sikkim": "Sikkim",
+			"tamilNadu": "Tamil Nadu",
+			"telangana": "Telangana",
+			"tripura": "Tripura",
+			"uttarPradesh": "Uttar Pradesh",
+			"uttarakhand": "Uttarakhand",
+			"westBengal": "West Bengal",
+			"andamanAndNicobarIslands": "Andaman and Nicobar Islands",
+			"chandigarh": "Chandigarh",
+			"dadraAndNagarHaveliAndDamanAndDiu": "Dadra and Nagar Haveli and Daman and Diu",
+			"delhi": "Delhi",
+			"jammuAndKashmir": "Jammu and Kashmir",
+			"ladakh": "Ladakh",
+			"lakshadweep": "Lakshadweep",
+			"puducherry": "Puducherry"
+		}
+	}
+]
