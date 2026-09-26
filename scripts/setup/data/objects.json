@@ -52,7 +52,12 @@
 			{"name": "commissionRate", "type": "PrecisionDecimal"},
 			{"name": "termsAccepted", "type": "Boolean", "flags": "R"},
 			{"name": "termsAcceptedDate", "type": "DateTime"},
-			{"name": "payoutUpiId", "type": "Text"}
+			{"name": "payoutUpiId", "type": "Text"},
+			{"name": "linkClicks", "type": "Aggregation", "aggregation": {"function": "COUNT", "relationship": "hostClicks"}},
+			{"name": "totalBookings", "type": "Aggregation", "aggregation": {"function": "COUNT", "relationship": "hostBookings"}},
+			{"name": "partnerCount", "type": "Aggregation", "aggregation": {"function": "COUNT", "relationship": "hostPartnerships", "filter": {"field": "partnershipStatus", "includes": ["active"]}}},
+			{"name": "earningsThisMonth", "type": "PrecisionDecimal"},
+			{"name": "availableBalance", "type": "Aggregation", "aggregation": {"function": "SUM", "relationship": "hostCommissions", "field": "amount", "filter": {"field": "commissionStatus", "includes": ["available"]}}}
 		]
 	},
 	{
@@ -90,7 +95,8 @@
 			{"name": "useFactorLocation", "type": "Boolean", "default": "false"},
 			{"name": "useFactorWeather", "type": "Boolean", "default": "true"},
 			{"name": "useFactorSeason", "type": "Boolean", "default": "true"},
-			{"name": "useFactorHolidays", "type": "Boolean", "default": "true"}
+			{"name": "useFactorHolidays", "type": "Boolean", "default": "true"},
+			{"name": "pastTripCount", "type": "Aggregation", "aggregation": {"function": "COUNT", "relationship": "travelerBookings", "filter": {"field": "bookingStatus", "includes": ["completed"]}}}
 		]
 	},
 	{
@@ -111,6 +117,8 @@
 			{"name": "seasonMonths", "type": "MultiselectPicklist", "picklist": "MB_Month"},
 			{"name": "isTrending", "type": "Boolean"},
 			{"name": "isFeatured", "type": "Boolean"},
+			{"name": "averageRating", "type": "Aggregation", "aggregation": {"function": "AVERAGE", "relationship": "listingReviews", "field": "rating"}},
+			{"name": "reviewCount", "type": "Aggregation", "aggregation": {"function": "COUNT", "relationship": "listingReviews"}},
 			{"name": "destinationName", "type": "Text", "flags": "S"},
 			{"name": "stateName", "type": "Text", "flags": "S"},
 			{"name": "region", "type": "Text", "flags": "S"},
@@ -139,6 +147,7 @@
 			{"name": "slotDate", "type": "Date", "flags": "R"},
 			{"name": "startTime", "type": "Text"},
 			{"name": "capacity", "type": "Integer", "flags": "R"},
+			{"name": "bookedCount", "type": "Aggregation", "aggregation": {"function": "SUM", "relationship": "slotBookingItems", "field": "quantity"}},
 			{"name": "priceOverride", "type": "PrecisionDecimal"},
 			{"name": "slotStatus", "type": "Picklist", "picklist": "MB_SlotStatus", "flags": "R"}
 		]
@@ -152,20 +161,25 @@
 			{"name": "endDate", "type": "Date", "flags": "R"},
 			{"name": "adults", "type": "Integer", "flags": "R"},
 			{"name": "children", "type": "Integer"},
-			{"name": "packageStatus", "type": "Picklist", "picklist": "MB_PackageStatus", "flags": "R"}
+			{"name": "packageStatus", "type": "Picklist", "picklist": "MB_PackageStatus", "flags": "R"},
+			{"name": "itemCount", "type": "Aggregation", "aggregation": {"function": "COUNT", "relationship": "packageItems"}},
+			{"name": "packageTotal", "type": "Aggregation", "aggregation": {"function": "SUM", "relationship": "packageItems", "field": "lineTotal"}}
 		]
 	},
 	{
 		"name": "Booking",
 		"pluralLabel": "Bookings",
 		"fields": [
+			{"name": "bookingNumber", "type": "AutoIncrement", "autoIncrement": {"initialValue": "100001", "prefix": "MB-"}},
 			{"name": "leadName", "type": "Text", "flags": "R"},
 			{"name": "phone", "type": "Text", "flags": "R"},
 			{"name": "email", "type": "Text", "flags": "R"},
 			{"name": "travelDate", "type": "Date", "flags": "R"},
 			{"name": "travelerCount", "type": "Integer", "flags": "R"},
+			{"name": "subtotal", "type": "Aggregation", "aggregation": {"function": "SUM", "relationship": "bookingItems", "field": "lineTotal"}},
 			{"name": "serviceFee", "type": "PrecisionDecimal"},
 			{"name": "taxes", "type": "PrecisionDecimal"},
+			{"name": "total", "type": "PrecisionDecimal"},
 			{
 				"name": "bookingStatus",
 				"type": "Picklist",
@@ -181,7 +195,8 @@
 				}
 			},
 			{"name": "source", "type": "Picklist", "picklist": "MB_BookingSource"}
-		]
+		],
+		"titleField": "bookingNumber"
 	},
 	{
 		"name": "BookingItem",
@@ -192,6 +207,7 @@
 			{"name": "itemDetail", "type": "Text"},
 			{"name": "quantity", "type": "Integer", "flags": "R"},
 			{"name": "unitPrice", "type": "PrecisionDecimal", "flags": "R"},
+			{"name": "lineTotal", "type": "PrecisionDecimal"},
 			{"name": "supplierReference", "type": "Text"},
 			{"name": "isSelected", "type": "Boolean", "default": "true"}
 		]
@@ -215,6 +231,7 @@
 		"fields": [
 			{"name": "rate", "type": "PrecisionDecimal", "flags": "R"},
 			{"name": "baseAmount", "type": "PrecisionDecimal", "flags": "R"},
+			{"name": "amount", "type": "PrecisionDecimal"},
 			{"name": "commissionStatus", "type": "Picklist", "picklist": "MB_CommissionStatus", "flags": "R"},
 			{"name": "availableOn", "type": "Date"}
 		]
