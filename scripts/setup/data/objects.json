@@ -1,0 +1,317 @@
+[
+	{
+		"name": "Destination",
+		"pluralLabel": "Destinations",
+		"titleField": "name",
+		"fields": [
+			{"name": "name", "type": "Text", "flags": "RS"},
+			{"name": "slug", "type": "Text", "flags": "RU"},
+			{"name": "state", "type": "Picklist", "picklist": "MB_IndianState", "flags": "RS"},
+			{"name": "region", "type": "Text", "flags": "S"},
+			{"name": "latitude", "type": "PrecisionDecimal"},
+			{"name": "longitude", "type": "PrecisionDecimal"},
+			{"name": "description", "type": "RichText", "flags": "S"},
+			{"name": "heroImage", "type": "Attachment"},
+			{"name": "bestMonths", "type": "MultiselectPicklist", "picklist": "MB_Month"},
+			{"name": "activities", "type": "MultiselectPicklist", "picklist": "MB_ServiceCategory"},
+			{"name": "isTrending", "type": "Boolean", "default": "false"},
+			{"name": "searchKeywords", "type": "LongText", "flags": "S"}
+		]
+	},
+	{
+		"name": "Partner",
+		"pluralLabel": "Partners",
+		"titleField": "name",
+		"fields": [
+			{"name": "name", "type": "Text", "flags": "RS"},
+			{"name": "partnerType", "type": "Picklist", "picklist": "MB_PartnerType", "flags": "R"},
+			{"name": "contactName", "type": "Text"},
+			{"name": "phone", "type": "Text"},
+			{"name": "email", "type": "Text"},
+			{"name": "gstin", "type": "Text"},
+			{"name": "address", "type": "LongText"},
+			{"name": "defaultCommissionRate", "type": "PrecisionDecimal"},
+			{"name": "isVerified", "type": "Boolean", "default": "false"}
+		]
+	},
+	{
+		"name": "Host",
+		"pluralLabel": "Hosts",
+		"titleField": "displayName",
+		"fields": [
+			{"name": "displayName", "type": "Text", "flags": "RS"},
+			{"name": "handle", "type": "Text", "flags": "RU"},
+			{"name": "hostTypes", "type": "MultiselectPicklist", "picklist": "MB_HostType", "flags": "R"},
+			{"name": "phone", "type": "Text", "flags": "R"},
+			{"name": "hostRegion", "type": "Text", "flags": "RS"},
+			{"name": "specialties", "type": "MultiselectPicklist", "picklist": "MB_ServiceCategory"},
+			{"name": "bio", "type": "LongText", "flags": "S"},
+			{"name": "avatar", "type": "Attachment"},
+			{"name": "tier", "type": "Picklist", "picklist": "MB_HostTier", "flags": "R", "default": "standard"},
+			{"name": "hostStatus", "type": "Picklist", "picklist": "MB_HostStatus", "flags": "R", "default": "pendingVerification"},
+			{"name": "commissionRate", "type": "PrecisionDecimal"},
+			{"name": "termsAccepted", "type": "Boolean", "flags": "R"},
+			{"name": "termsAcceptedDate", "type": "DateTime"},
+			{"name": "payoutUpiId", "type": "Text"}
+		]
+	},
+	{
+		"name": "HostPartnership",
+		"pluralLabel": "Host Partnerships",
+		"fields": [
+			{"name": "commissionRate", "type": "PrecisionDecimal", "flags": "R"},
+			{"name": "startDate", "type": "Date", "flags": "R"},
+			{"name": "endDate", "type": "Date"},
+			{"name": "partnershipStatus", "type": "Picklist", "picklist": "MB_PartnershipStatus", "flags": "R"}
+		]
+	},
+	{
+		"name": "HostSubscription",
+		"pluralLabel": "Host Subscriptions",
+		"fields": [
+			{"name": "planName", "type": "Text", "flags": "R"},
+			{"name": "amount", "type": "PrecisionDecimal", "flags": "R"},
+			{"name": "startDate", "type": "Date", "flags": "R"},
+			{"name": "endDate", "type": "Date", "flags": "R"},
+			{"name": "subscriptionStatus", "type": "Picklist", "picklist": "MB_SubscriptionStatus", "flags": "R"}
+		]
+	},
+	{
+		"name": "Traveler",
+		"pluralLabel": "Travelers",
+		"titleField": "fullName",
+		"fields": [
+			{"name": "fullName", "type": "Text", "flags": "R"},
+			{"name": "phone", "type": "Text"},
+			{"name": "homeCity", "type": "Text"},
+			{"name": "latitude", "type": "PrecisionDecimal"},
+			{"name": "longitude", "type": "PrecisionDecimal"},
+			{"name": "useFactorPastTravel", "type": "Boolean", "default": "true"},
+			{"name": "useFactorLocation", "type": "Boolean", "default": "false"},
+			{"name": "useFactorWeather", "type": "Boolean", "default": "true"},
+			{"name": "useFactorSeason", "type": "Boolean", "default": "true"},
+			{"name": "useFactorHolidays", "type": "Boolean", "default": "true"}
+		]
+	},
+	{
+		"name": "Listing",
+		"pluralLabel": "Listings",
+		"titleField": "title",
+		"fields": [
+			{"name": "title", "type": "Text", "flags": "RS"},
+			{"name": "slug", "type": "Text", "flags": "RU"},
+			{"name": "category", "type": "Picklist", "picklist": "MB_ServiceCategory", "flags": "RS"},
+			{"name": "shortDescription", "type": "Text", "flags": "S"},
+			{"name": "description", "type": "RichText", "flags": "S"},
+			{"name": "basePrice", "type": "PrecisionDecimal", "flags": "R"},
+			{"name": "priceUnit", "type": "Picklist", "picklist": "MB_PriceUnit", "flags": "R"},
+			{"name": "durationText", "type": "Text"},
+			{"name": "maxGuests", "type": "Integer"},
+			{"name": "heroImage", "type": "Attachment"},
+			{"name": "seasonMonths", "type": "MultiselectPicklist", "picklist": "MB_Month"},
+			{"name": "isTrending", "type": "Boolean"},
+			{"name": "isFeatured", "type": "Boolean"},
+			{"name": "destinationName", "type": "Text", "flags": "S"},
+			{"name": "stateName", "type": "Text", "flags": "S"},
+			{"name": "region", "type": "Text", "flags": "S"},
+			{"name": "hostDisplayName", "type": "Text", "flags": "S"},
+			{"name": "searchKeywords", "type": "LongText", "flags": "S"},
+			{"name": "latitude", "type": "PrecisionDecimal"},
+			{"name": "longitude", "type": "PrecisionDecimal"},
+			{"name": "ratingValue", "type": "PrecisionDecimal"},
+			{"name": "nextAvailableDate", "type": "Date"}
+		]
+	},
+	{
+		"name": "ListingInclusion",
+		"pluralLabel": "Listing Inclusions",
+		"fields": [
+			{"name": "label", "type": "Text", "flags": "R"},
+			{"name": "inclusionType", "type": "Picklist", "picklist": "MB_InclusionType", "flags": "R"},
+			{"name": "addOnPrice", "type": "PrecisionDecimal"},
+			{"name": "sortOrder", "type": "Integer"}
+		]
+	},
+	{
+		"name": "AvailabilitySlot",
+		"pluralLabel": "Availability Slots",
+		"fields": [
+			{"name": "slotDate", "type": "Date", "flags": "R"},
+			{"name": "startTime", "type": "Text"},
+			{"name": "capacity", "type": "Integer", "flags": "R"},
+			{"name": "priceOverride", "type": "PrecisionDecimal"},
+			{"name": "slotStatus", "type": "Picklist", "picklist": "MB_SlotStatus", "flags": "R"}
+		]
+	},
+	{
+		"name": "TripPackage",
+		"pluralLabel": "Trip Packages",
+		"fields": [
+			{"name": "packageName", "type": "Text"},
+			{"name": "startDate", "type": "Date", "flags": "R"},
+			{"name": "endDate", "type": "Date", "flags": "R"},
+			{"name": "adults", "type": "Integer", "flags": "R"},
+			{"name": "children", "type": "Integer"},
+			{"name": "packageStatus", "type": "Picklist", "picklist": "MB_PackageStatus", "flags": "R"}
+		]
+	},
+	{
+		"name": "Booking",
+		"pluralLabel": "Bookings",
+		"fields": [
+			{"name": "leadName", "type": "Text", "flags": "R"},
+			{"name": "phone", "type": "Text", "flags": "R"},
+			{"name": "email", "type": "Text", "flags": "R"},
+			{"name": "travelDate", "type": "Date", "flags": "R"},
+			{"name": "travelerCount", "type": "Integer", "flags": "R"},
+			{"name": "serviceFee", "type": "PrecisionDecimal"},
+			{"name": "taxes", "type": "PrecisionDecimal"},
+			{
+				"name": "bookingStatus",
+				"type": "Picklist",
+				"picklist": "MB_BookingStatus",
+				"flags": "R",
+				"default": "pendingPayment",
+				"stateFlow": {
+					"pendingPayment": ["confirmed", "cancelled"],
+					"confirmed": ["completed", "cancelled"],
+					"completed": [],
+					"cancelled": ["refunded"],
+					"refunded": []
+				}
+			},
+			{"name": "source", "type": "Picklist", "picklist": "MB_BookingSource"}
+		]
+	},
+	{
+		"name": "BookingItem",
+		"pluralLabel": "Booking Items",
+		"fields": [
+			{"name": "category", "type": "Picklist", "picklist": "MB_ServiceCategory", "flags": "R"},
+			{"name": "itemTitle", "type": "Text", "flags": "R"},
+			{"name": "itemDetail", "type": "Text"},
+			{"name": "quantity", "type": "Integer", "flags": "R"},
+			{"name": "unitPrice", "type": "PrecisionDecimal", "flags": "R"},
+			{"name": "supplierReference", "type": "Text"},
+			{"name": "isSelected", "type": "Boolean", "default": "true"}
+		]
+	},
+	{
+		"name": "Payment",
+		"pluralLabel": "Payments",
+		"fields": [
+			{"name": "method", "type": "Picklist", "picklist": "MB_PaymentMethod", "flags": "R"},
+			{"name": "amount", "type": "PrecisionDecimal", "flags": "R"},
+			{"name": "gateway", "type": "Text", "flags": "R"},
+			{"name": "gatewayOrderId", "type": "Text", "flags": "U"},
+			{"name": "gatewayTxnId", "type": "Text", "flags": "U"},
+			{"name": "paymentStatus", "type": "Picklist", "picklist": "MB_PaymentStatus", "flags": "R"},
+			{"name": "paidAt", "type": "DateTime"}
+		]
+	},
+	{
+		"name": "Commission",
+		"pluralLabel": "Commissions",
+		"fields": [
+			{"name": "rate", "type": "PrecisionDecimal", "flags": "R"},
+			{"name": "baseAmount", "type": "PrecisionDecimal", "flags": "R"},
+			{"name": "commissionStatus", "type": "Picklist", "picklist": "MB_CommissionStatus", "flags": "R"},
+			{"name": "availableOn", "type": "Date"}
+		]
+	},
+	{
+		"name": "Payout",
+		"pluralLabel": "Payouts",
+		"fields": [
+			{"name": "amount", "type": "PrecisionDecimal", "flags": "R"},
+			{"name": "payoutMethod", "type": "Text", "flags": "R"},
+			{"name": "gatewayPayoutId", "type": "Text", "flags": "U"},
+			{"name": "payoutStatus", "type": "Picklist", "picklist": "MB_PayoutStatus", "flags": "R"},
+			{"name": "requestedAt", "type": "DateTime", "flags": "R"},
+			{"name": "processedAt", "type": "DateTime"}
+		]
+	},
+	{
+		"name": "ReferralClick",
+		"pluralLabel": "Referral Clicks",
+		"fields": [
+			{"name": "clickedAt", "type": "DateTime", "flags": "R"},
+			{"name": "channel", "type": "Text"},
+			{"name": "converted", "type": "Boolean"}
+		]
+	},
+	{
+		"name": "Review",
+		"pluralLabel": "Reviews",
+		"fields": [
+			{"name": "rating", "type": "Integer", "flags": "R"},
+			{"name": "comment", "type": "LongText", "flags": "S"},
+			{"name": "isPublished", "type": "Boolean"}
+		]
+	},
+	{
+		"name": "Favorite",
+		"pluralLabel": "Favorites",
+		"publish": false,
+		"fields": []
+	},
+	{
+		"name": "Conversation",
+		"pluralLabel": "Conversations",
+		"fields": [
+			{"name": "subject", "type": "Text"}
+		]
+	},
+	{
+		"name": "Message",
+		"pluralLabel": "Messages",
+		"fields": [
+			{"name": "body", "type": "LongText", "flags": "R"},
+			{"name": "senderType", "type": "Picklist", "picklist": "MB_SenderType", "flags": "R"},
+			{"name": "readAt", "type": "DateTime"}
+		]
+	},
+	{
+		"name": "PublicHoliday",
+		"pluralLabel": "Public Holidays",
+		"fields": [
+			{"name": "name", "type": "Text", "flags": "R"},
+			{"name": "holidayDate", "type": "Date", "flags": "R"},
+			{"name": "longWeekendStart", "type": "Date"},
+			{"name": "longWeekendEnd", "type": "Date"},
+			{"name": "leaveDaysNeeded", "type": "Integer"},
+			{"name": "applicableStates", "type": "MultiselectPicklist", "picklist": "MB_IndianState"}
+		]
+	},
+	{
+		"name": "WeatherSnapshot",
+		"pluralLabel": "Weather Snapshots",
+		"fields": [
+			{"name": "forecastDate", "type": "Date", "flags": "R"},
+			{"name": "condition", "type": "Text"},
+			{"name": "tempC", "type": "PrecisionDecimal"},
+			{"name": "isGoodForActivity", "type": "Boolean"}
+		]
+	},
+	{
+		"name": "Recommendation",
+		"pluralLabel": "Recommendations",
+		"fields": [
+			{"name": "reasonText", "type": "Text", "flags": "R"},
+			{"name": "factorsUsed", "type": "MultiselectPicklist", "picklist": "MB_RecoFactor", "flags": "R"},
+			{"name": "section", "type": "Picklist", "picklist": "MB_RecoSection", "flags": "R"},
+			{"name": "score", "type": "PrecisionDecimal"},
+			{"name": "generatedAt", "type": "DateTime", "flags": "R"},
+			{"name": "expiresAt", "type": "DateTime"}
+		]
+	},
+	{
+		"name": "AppWaitlist",
+		"pluralLabel": "App Waitlist Entries",
+		"fields": [
+			{"name": "email", "type": "Text", "flags": "RU"},
+			{"name": "source", "type": "Text"},
+			{"name": "signedUpAt", "type": "DateTime", "flags": "R"}
+		]
+	}
+]

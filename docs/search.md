@@ -24,7 +24,7 @@ Simple lists (category pages, "See all", a host's own listings) can call the hea
 
 Only these may appear in public results:
 - Listings with workflow status approved.
-- Hosts with `status = active`.
+- Hosts with `hostStatus = active`.
 
 Text fields that are only filtered on (category, state, slug) should be indexed as keywords, not analyzed text.
 
@@ -64,7 +64,7 @@ Enable fuzziness `AUTO` on title, destinationName and searchKeywords.
 **Filters (always applied).**
 - Object definition in (Listing, Destination, Host)
 - Workflow status = approved
-- Host status = active
+- `hostStatus` = active
 
 **Boosts.**
 - `isFeatured = true` ×2
@@ -110,7 +110,7 @@ Object fields are not indexed as geo-points, so true geo-distance queries are ou
 ## 7. Availability step
 
 1. Run the text search with all filters except dates, and get the candidate listing IDs (up to 200).
-2. Query AvailabilitySlot for those IDs with `slotDate` between `from` and `to` and `status = open`.
+2. Query AvailabilitySlot for those IDs with `slotDate` between `from` and `to` and `slotStatus = open`.
 3. Keep a listing if at least one slot has `capacity − bookedCount ≥ travelers`. Stay listings need a slot on every night in the range.
 4. Attach the matching dates and the effective price (`priceOverride` or `basePrice`) to each result.
 
