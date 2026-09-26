@@ -552,3 +552,15 @@ The "Other apps" comparison table, marketing copy and footer are Web Content and
 - Public holidays for the next 12 months
 
 Use realistic INR prices in the seed data.
+
+### 9.1 How it's loaded
+
+`scripts/setup/seed.js` (local instance only; refuses any other `LIFERAY_URL`) loads `scripts/setup/data/seed/`. Entries have ERCs `MB_SEED_…`, are upserted by ERC and only patched where they differ. Seeded Hosts and Listings go through the MB Ops Approval workflow and are approved by the ops test user.
+
+- **People:** the test users from `test-users.js`. Bir host (Karan Thakur, pilot and guide) = `mb.test.host1`, account "Bir Sky Adventures". Rishikesh partner host (Meera Rawat) = `mb.test.host2`, account "Ganga Trails". Traveler (Ananya Iyer) = `mb.test.traveler`, who creates their own profile, package, booking and items so they own them.
+- **Listings:** paragliding ₹2,500/person, partner mountain camp ₹3,500/night, Rajgundha hike ₹2,000/person, monastery walk ₹900/person and Triund trek ₹1,500/person (Bir host); river rafting ₹800/person and Kasol riverside camp ₹1,800/night (Rishikesh host). Partner: Bir Mountain Camp (12%), linked to the Bir host through an active HostPartnership.
+- **Availability slots:** every listing, one per day for the next 14 days (stays and camps need a slot per night), plus any date the seed booking uses.
+- **Booking:** 8–10 Oct 2026, 2 adults: flight 2 × ₹6,500, 2 nights camp 2 × ₹3,500, paragliding 2 × ₹2,500 = ₹25,000. Seed-only pricing (phase 7 sets the real rules): 5% platform fee ₹1,250 + 18% GST on the fee ₹225 = **₹26,475**. Confirmed, paid by UPI; commission 10% of the Bir host's ₹12,000 = ₹1,200 (pending).
+- **Values phase 7 will compute** (lineTotal, commission amount, fees, total, denormalized listing fields, nextAvailableDate, termsAcceptedDate, hostStatus active, Host linked to its account) are set by hand in the seed.
+- **Public holidays:** gazetted holidays for Central Government offices (DoP&T lists for 2026 and 2027), 26 Sep 2026 – 25 Sep 2027, nationwide (`applicableStates` empty = all states). Long weekend = the days off around the holiday, bridging at most two working days: Tue → Sat–Tue (1 leave day), Wed → Wed–Sun (2), Thu → Thu–Sun (1); Fri, Sat, Sun and Mon need none.
+- No images are seeded.
