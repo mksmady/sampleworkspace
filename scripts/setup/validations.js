@@ -1,4 +1,5 @@
-// Creates the expression validation rules in data/validations.json (docs/data-model.md section 5),
+// Creates the validation rules in data/validations.json (docs/data-model.md section 5): expressions,
+// and rules run by an mb-actions-service client extension ("function"; deploy it first),
 // then verifies each one with a GET.
 // Idempotent: rules are looked up by ERC (MB_<Object>_<name>) and updated in place when they differ.
 // Rules with a "field" show their error on it; the others on the form. Nothing is ever deleted.
@@ -20,7 +21,10 @@ function payload(rule) {
 		// A rule the engine can't enforce is kept inactive until its replacement exists (see its "note").
 
 		active: rule.active !== false,
-		engine: 'ddm',
+
+		// Expression rules run in Liferay (ddm); "function" rules call an mb-actions-service client extension.
+
+		engine: rule.function ? `function#${rule.function}` : 'ddm',
 		errorLabel: {[LANGUAGE_ID]: rule.error},
 		externalReferenceCode: ruleERC(rule),
 		name: {[LANGUAGE_ID]: words(rule.name)},
@@ -30,7 +34,7 @@ function payload(rule) {
 			? [{name: 'outputObjectFieldExternalReferenceCode', value: `MB_${rule.object}_${rule.field}`}]
 			: [],
 		outputType: rule.field ? 'partialValidation' : 'fullValidation',
-		script: rule.script,
+		script: rule.script || '',
 	};
 }
 
@@ -103,7 +107,7 @@ async function verify() {
 		const issues = problems(rule, await findRule(rule));
 
 		console.log(
-			`  ${issues.length ? 'FAIL' : 'OK  '} ${ruleERC(rule).padEnd(34)} ${rule.script}` +
+			`  ${issues.length ? 'FAIL' : 'OK  '} ${ruleERC(rule).padEnd(34)} ${rule.script || `function#${rule.function}`}` +
 				(issues.length ? `\n         ${issues.join('; ')}` : '')
 		);
 

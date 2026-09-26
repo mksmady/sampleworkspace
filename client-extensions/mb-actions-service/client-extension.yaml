@@ -1,0 +1,124 @@
+assemble:
+    -   fromTask: bootJar
+
+# Liferay -> service: object actions and validation rules call the service with a JWT from this app.
+
+mb-actions-service-oaua:
+    .serviceAddress: localhost:58081
+    .serviceScheme: http
+    name: MB Actions Service OAuth Application User Agent
+    scopes:
+        -   Liferay.Headless.Admin.User.everything.read
+    type: oAuthApplicationUserAgent
+
+# Service -> Liferay: every read and write the service makes, as the instance administrator.
+# Custom object scopes are c_<object name in lower case>.everything[.read].
+
+mb-actions-service-oahs:
+    .serviceAddress: localhost:58081
+    .serviceScheme: http
+    name: MB Actions Service OAuth Application Headless Server
+    scopes:
+        -   Liferay.Headless.Admin.Workflow.everything
+        -   Liferay.Object.Admin.REST.everything.read
+        -   c_availabilityslot.everything
+        -   c_booking.everything
+        -   c_bookingitem.everything
+        -   c_commission.everything
+        -   c_destination.everything.read
+        -   c_host.everything.read
+        -   c_listing.everything
+        -   c_review.everything.read
+    type: oAuthApplicationHeadlessServer
+
+# Object actions (registered on the objects by scripts/setup/actions.js)
+
+mb-actions-service-availability-slot:
+    allowedObjectDefinitionNames:
+        -   C_AvailabilitySlot
+    name: MB AvailabilitySlot actions
+    oAuth2ApplicationExternalReferenceCode: mb-actions-service-oaua
+    resourcePath: /object/action/availability-slot
+    type: objectAction
+
+mb-actions-service-booking:
+    allowedObjectDefinitionNames:
+        -   C_Booking
+    name: MB Booking actions
+    oAuth2ApplicationExternalReferenceCode: mb-actions-service-oaua
+    resourcePath: /object/action/booking
+    type: objectAction
+
+mb-actions-service-booking-item:
+    allowedObjectDefinitionNames:
+        -   C_BookingItem
+    name: MB BookingItem actions
+    oAuth2ApplicationExternalReferenceCode: mb-actions-service-oaua
+    resourcePath: /object/action/booking-item
+    type: objectAction
+
+mb-actions-service-commission:
+    allowedObjectDefinitionNames:
+        -   C_Commission
+    name: MB Commission actions
+    oAuth2ApplicationExternalReferenceCode: mb-actions-service-oaua
+    resourcePath: /object/action/commission
+    type: objectAction
+
+mb-actions-service-destination:
+    allowedObjectDefinitionNames:
+        -   C_Destination
+    name: MB Destination actions
+    oAuth2ApplicationExternalReferenceCode: mb-actions-service-oaua
+    resourcePath: /object/action/destination
+    type: objectAction
+
+mb-actions-service-host:
+    allowedObjectDefinitionNames:
+        -   C_Host
+    name: MB Host actions
+    oAuth2ApplicationExternalReferenceCode: mb-actions-service-oaua
+    resourcePath: /object/action/host
+    type: objectAction
+
+mb-actions-service-listing:
+    allowedObjectDefinitionNames:
+        -   C_Listing
+    name: MB Listing actions
+    oAuth2ApplicationExternalReferenceCode: mb-actions-service-oaua
+    resourcePath: /object/action/listing
+    type: objectAction
+
+mb-actions-service-review:
+    allowedObjectDefinitionNames:
+        -   C_Review
+    name: MB Review actions
+    oAuth2ApplicationExternalReferenceCode: mb-actions-service-oaua
+    resourcePath: /object/action/review
+    type: objectAction
+
+# Validation rules (registered on the objects by scripts/setup/validations.js)
+
+mb-actions-service-add-on-price:
+    allowedObjectDefinitionNames:
+        -   C_ListingInclusion
+    name: MB add-on needs a price
+    oAuth2ApplicationExternalReferenceCode: mb-actions-service-oaua
+    resourcePath: /object/validation/add-on-price
+    type: objectValidationRule
+
+mb-actions-service-payout-balance:
+    allowedObjectDefinitionNames:
+        -   C_Payout
+    name: MB payout within available balance
+    oAuth2ApplicationExternalReferenceCode: mb-actions-service-oaua
+    resourcePath: /object/validation/payout-balance
+    type: objectValidationRule
+
+mb-actions-service-slot-capacity:
+    allowedObjectDefinitionNames:
+        -   C_BookingItem
+    name: MB booking item within slot capacity
+    oAuth2ApplicationExternalReferenceCode: mb-actions-service-oaua
+    resourcePath: /object/validation/slot-capacity
+    type: objectValidationRule

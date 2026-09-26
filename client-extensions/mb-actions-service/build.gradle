@@ -1,0 +1,47 @@
+buildscript {
+	dependencies {
+		classpath group: "org.springframework.boot", name: "spring-boot-gradle-plugin", version: "3.5.14"
+	}
+
+	repositories {
+		maven {
+			url "https://repository-cdn.liferay.com/nexus/content/groups/public"
+		}
+	}
+}
+
+apply plugin: "java-library"
+apply plugin: "org.springframework.boot"
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+// Keep the local service small; it runs next to Liferay on the same machine.
+
+bootRun {
+	jvmArgs "-Xmx256m"
+}
+
+dependencies {
+	implementation group: "com.liferay", name: "com.liferay.client.extension.util.spring.boot3", version: "1.0.8"
+	implementation group: "org.json", name: "json", version: "20240303"
+	implementation group: "org.springframework.boot", name: "spring-boot-starter-oauth2-client", version: "3.5.14"
+	implementation group: "org.springframework.boot", name: "spring-boot-starter-oauth2-resource-server", version: "3.5.14"
+	implementation group: "org.springframework.boot", name: "spring-boot-starter-web", version: "3.5.14"
+	implementation group: "org.springframework.boot", name: "spring-boot-starter-webflux", version: "3.5.14"
+
+	testImplementation group: "org.springframework.boot", name: "spring-boot-starter-test", version: "3.5.14"
+}
+
+repositories {
+	maven {
+		url "https://repository-cdn.liferay.com/nexus/content/groups/public"
+	}
+}
+
+test {
+	useJUnitPlatform()
+}

@@ -1,0 +1,10 @@
+[
+	{"object": "AvailabilitySlot", "executor": "mb-actions-service-availability-slot", "triggers": ["onAfterAdd", "onAfterUpdate", "onAfterDelete"]},
+	{"object": "Booking", "executor": "mb-actions-service-booking", "triggers": ["onAfterAdd", "onAfterUpdate"]},
+	{"object": "BookingItem", "executor": "mb-actions-service-booking-item", "triggers": ["onAfterAdd", "onAfterUpdate", "onAfterDelete"]},
+	{"object": "Commission", "executor": "mb-actions-service-commission", "triggers": ["onAfterAdd", "onAfterUpdate"]},
+	{"object": "Destination", "executor": "mb-actions-service-destination", "triggers": ["onAfterUpdate"]},
+	{"object": "Host", "executor": "mb-actions-service-host", "triggers": ["onAfterUpdate"]},
+	{"object": "Listing", "executor": "mb-actions-service-listing", "triggers": ["onAfterAdd", "onAfterUpdate"]},
+	{"object": "Review", "executor": "mb-actions-service-review", "triggers": ["onAfterAdd", "onAfterUpdate", "onAfterDelete"]}
+]
