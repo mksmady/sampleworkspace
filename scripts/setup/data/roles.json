@@ -1,0 +1,61 @@
+{
+	"roles": [
+		{"erc": "MB_Traveler", "name": "Traveler", "type": "regular", "description": "Maddybaba traveler. Creates bookings and carts; sees only entries they own."},
+		{"erc": "MB_OpsAdmin", "name": "Ops Admin", "type": "regular", "description": "Maddybaba operations. Full access to all MB objects; approves hosts and listings."},
+		{"erc": "MB_Host", "name": "Host", "type": "account", "description": "Maddybaba host. Manages their own account's listings and sees their own bookings and earnings."},
+		{"erc": "MB_SuperHost", "name": "Super Host", "type": "account", "description": "Maddybaba Super Host. Host permissions (early-access features to follow)."}
+	],
+	"permissions": {
+		"L_GUEST": {
+			"Destination": ["VIEW"],
+			"ListingInclusion": ["VIEW"],
+			"AvailabilitySlot": ["VIEW"],
+			"Review": ["VIEW"],
+			"AppWaitlist": ["ADD"]
+		},
+		"MB_Traveler": {
+			"AccountEntry": ["VIEW"],
+			"Destination": ["VIEW"],
+			"ListingInclusion": ["VIEW"],
+			"AvailabilitySlot": ["VIEW"],
+			"Review": ["ADD", "VIEW"],
+			"Traveler": ["ADD"],
+			"TripPackage": ["ADD"],
+			"BookingItem": ["ADD"],
+			"Booking": ["ADD"],
+			"Favorite": ["ADD"],
+			"Conversation": ["ADD"],
+			"Message": ["ADD"]
+		},
+		"MB_OpsAdmin": {
+			"AccountEntry": ["VIEW"],
+			"*": ["ADD", "VIEW", "UPDATE", "DELETE", "PERMISSIONS"]
+		},
+		"MB_Host": {
+			"Host": ["VIEW"],
+			"Listing": ["ADD", "VIEW", "UPDATE", "DELETE"],
+			"ListingInclusion": ["ADD", "VIEW", "UPDATE", "DELETE"],
+			"AvailabilitySlot": ["ADD", "VIEW", "UPDATE", "DELETE"],
+			"HostPartnership": ["ADD", "VIEW", "UPDATE", "DELETE"],
+			"Booking": ["VIEW"],
+			"Commission": ["VIEW"],
+			"ReferralClick": ["VIEW"],
+			"Payout": ["ADD", "VIEW"],
+			"Conversation": ["VIEW"],
+			"Message": ["ADD", "VIEW"]
+		},
+		"MB_SuperHost": {
+			"Host": ["VIEW"],
+			"Listing": ["ADD", "VIEW", "UPDATE", "DELETE"],
+			"ListingInclusion": ["ADD", "VIEW", "UPDATE", "DELETE"],
+			"AvailabilitySlot": ["ADD", "VIEW", "UPDATE", "DELETE"],
+			"HostPartnership": ["ADD", "VIEW", "UPDATE", "DELETE"],
+			"Booking": ["VIEW"],
+			"Commission": ["VIEW"],
+			"ReferralClick": ["VIEW"],
+			"Payout": ["ADD", "VIEW"],
+			"Conversation": ["VIEW"],
+			"Message": ["ADD", "VIEW"]
+		}
+	}
+}
