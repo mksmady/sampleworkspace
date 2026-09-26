@@ -341,5 +341,16 @@
 			{"name": "source", "type": "Text"},
 			{"name": "signedUpAt", "type": "DateTime", "flags": "R"}
 		]
+	},
+	{
+		"name": "SearchQueryLog",
+		"pluralLabel": "Search Query Logs",
+		"fields": [
+			{"name": "queryText", "type": "Text"},
+			{"name": "filtersUsed", "type": "LongText"},
+			{"name": "resultCount", "type": "Integer"},
+			{"name": "source", "type": "Picklist", "picklist": "MB_BookingSource"},
+			{"name": "searchedAt", "type": "DateTime", "flags": "R"}
+		]
 	}
 ]
