@@ -131,6 +131,25 @@ public class LiferayClient {
 		return ((response == null) || response.isBlank() || !response.trim().startsWith("{")) ? new JSONObject() : new JSONObject(response);
 	}
 
+	public void delete(String path) {
+		_log.info("DELETE {}", path);
+
+		_restClient.delete(
+		).uri(
+			path
+		).header(
+			HttpHeaders.AUTHORIZATION, _authorization()
+		).retrieve(
+		).toBodilessEntity();
+	}
+
+	/**
+	 * Creates or replaces an entry by external reference code (PUT .../by-external-reference-code/{erc}).
+	 */
+	public void upsert(String plural, String erc, JSONObject body) {
+		put("/o/c/" + plural + "/by-external-reference-code/" + erc, body.put("externalReferenceCode", erc).toString());
+	}
+
 	public void put(String path, String body) {
 		_log.info("PUT {} {}", path, body);
 

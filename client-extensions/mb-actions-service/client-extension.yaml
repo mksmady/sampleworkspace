@@ -31,8 +31,12 @@ mb-actions-service-oahs:
         -   c_listing.everything
         -   c_payment.everything.read
         -   c_payout.everything
+        -   c_publicholiday.everything.read
+        -   c_recommendation.everything
         -   c_review.everything.read
+        -   c_traveler.everything.read
         -   c_trippackage.everything.read
+        -   c_weathersnapshot.everything
     type: oAuthApplicationHeadlessServer
 
 # Object actions (registered on the objects by scripts/setup/actions.js)

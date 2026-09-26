@@ -549,7 +549,23 @@ Spring Boot 3.5 / Java 21 microservice client extension. Object actions (ERC `MB
 - **Payout** becomes paid: linked commissions → `paidOut`, `processedAt` set. Becomes failed: linked commissions are released (still available).
 - **Deferred to phase 10:** the host sign-up and profile-edit service. It needs the signed-in user's token from the website or app.
 
-Still to do in 7c: scheduled jobs (commissions become available, `earningsThisMonth`, daily `nextAvailableDate`), weather/holiday/recommendation refresh, payment and payout gateways, refunds, notifications.
+### 7.3 Implemented in phase 7c (scheduled jobs)
+
+Jobs run inside `mb-actions-service` (Spring scheduling, IST; run a single instance). `mb.jobs.run-on-startup=true` also runs them once at startup (local testing).
+
+- **Daily 01:30** (`mb.jobs.daily-cron`):
+  - pending commissions become `available` when their booking is completed and `availableOn` ≤ today;
+  - Host `earningsThisMonth` = sum of the host's commissions created this month (IST), reversed ones excluded; the service approves its own update of approved hosts (6.4);
+  - every Listing's derived fields are refreshed, so `nextAvailableDate` moves on as dates pass.
+- **Nightly 02:00** (`mb.jobs.nightly-cron`):
+  - **Weather**: Open-Meteo (no API key), 7-day forecast per Destination, one WeatherSnapshot per destination and day (ERC `MB_weather_<destination id>_<date>`, replaced each run): condition (from the WMO weather code), tempC (daily maximum), isGoodForActivity = rain probability ≤ 40%, wind ≤ 30 km/h and no thunderstorm (`mb.weather.*`).
+  - **Recommendations** (the spec left the logic open; this is the phase 7c default), per traveler and only for enabled factors, at most 3 per section, ERC `MB_reco_<traveler>_<section>_<target>`, `expiresAt` = generated + 36 h; expired recommendations are deleted each run:
+    - placesNow (`useFactorSeason`, `useFactorWeather`): destinations whose bestMonths include this month; score 50, +20 trending, +20 with ≥ 4 good-weather days this week.
+    - longWeekend (`useFactorHolidays`): the first long weekend starting within 60 days; destinations at their best that month; score 60, +10 trending.
+    - hostsForYou (`useFactorPastTravel`): approved, active hosts whose specialties match the categories of the traveler's completed bookings (flights excluded); score 50 + 10 per match.
+    - nearYou (`useFactorLocation`, needs latitude/longitude): destinations within 300 km with a listing available in the next 7 days; score 100 − km/5.
+- **Public holidays**: no job. There's no public API for the Central Government gazetted list, so `scripts/setup/data/seed/holidays.json` (DoP&T) is updated once a year and loaded by `seed.js`.
+- **Payment and payout gateways (Razorpay), refunds and notifications** stay stubbed: logged only (`PAYOUT GATEWAY`, `REFUND`, `NOTIFY`). Integrate when gateway keys and email/SMS are available.
 
 ## 8. Integrations outside Liferay Objects
 
