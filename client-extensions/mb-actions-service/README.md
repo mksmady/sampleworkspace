@@ -25,3 +25,7 @@ The service reads its OAuth2 client credentials from the route files Liferay wri
 `src/main/resources/application-default.properties`:
 
 - `mb.pricing.platform-fee-percent` (5) and `mb.pricing.gst-on-fee-percent` (18): booking fee and GST on the fee.
+- `mb.commission.referral-percent` (5): the referral host's share of the booking subtotal.
+- `mb.commission.available-after-days` (7): days after the trip ends before a commission becomes available.
+
+Notifications, refunds and gateway calls are only logged (lines starting `NOTIFY`, `REFUND`, `PAYOUT GATEWAY`) until phase 7c.

@@ -45,8 +45,9 @@ public class ValidationRestController extends BaseRestController {
 	}
 
 	/**
-	 * Payout: a new request (payoutStatus requested) can't exceed the host's available balance. Later
-	 * status changes aren't checked: by then the commissions are being paid out.
+	 * Payout: a request (payoutStatus requested) can't exceed the host's free balance: available
+	 * commissions not yet linked to another payout (a requested payout links its commissions, so they
+	 * can't be requested twice). Later status changes aren't checked: by then the money is being paid.
 	 */
 	@PostMapping("/payout-balance")
 	public ResponseEntity<String> payoutBalance(@AuthenticationPrincipal Jwt jwt, @RequestBody String json) {
@@ -62,9 +63,24 @@ public class ValidationRestController extends BaseRestController {
 			return _answer(json, false);
 		}
 
-		BigDecimal availableBalance = Money.of(_liferayClient.get("/o/c/hosts/" + hostId).opt("availableBalance"));
+		// When an existing payout is edited, its own linked commissions count as free. The payload has
+		// no entry ID, so the stored payout is found by its external reference code.
 
-		return _answer(json, Money.of(values.opt("amount")).compareTo(availableBalance) <= 0);
+		String erc = values.optString("externalReferenceCode");
+		JSONObject stored = erc.isEmpty() ? null : _liferayClient.getOrNull("/o/c/payouts/by-external-reference-code/" + erc);
+		long payoutId = (stored == null) ? -1 : stored.getLong("id");
+
+		BigDecimal free = BigDecimal.ZERO;
+
+		for (JSONObject commission : _liferayClient.getAll("/o/c/commissions?filter=r_hostCommissions_c_hostId eq '" + hostId + "'")) {
+			long linkedPayout = commission.optLong("r_payoutCommissions_c_payoutId", 0);
+
+			if ("available".equals(_key(commission.opt("commissionStatus"))) && ((linkedPayout == 0) || (linkedPayout == payoutId))) {
+				free = free.add(Money.of(commission.opt("amount")));
+			}
+		}
+
+		return _answer(json, Money.of(values.opt("amount")).compareTo(free) <= 0);
 	}
 
 	/**

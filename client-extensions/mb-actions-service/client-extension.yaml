@@ -19,6 +19,7 @@ mb-actions-service-oahs:
     .serviceScheme: http
     name: MB Actions Service OAuth Application Headless Server
     scopes:
+        -   Liferay.Headless.Admin.User.everything
         -   Liferay.Headless.Admin.Workflow.everything
         -   Liferay.Object.Admin.REST.everything.read
         -   c_availabilityslot.everything
@@ -26,9 +27,12 @@ mb-actions-service-oahs:
         -   c_bookingitem.everything
         -   c_commission.everything
         -   c_destination.everything.read
-        -   c_host.everything.read
+        -   c_host.everything
         -   c_listing.everything
+        -   c_payment.everything.read
+        -   c_payout.everything
         -   c_review.everything.read
+        -   c_trippackage.everything.read
     type: oAuthApplicationHeadlessServer
 
 # Object actions (registered on the objects by scripts/setup/actions.js)
@@ -87,6 +91,22 @@ mb-actions-service-listing:
     name: MB Listing actions
     oAuth2ApplicationExternalReferenceCode: mb-actions-service-oaua
     resourcePath: /object/action/listing
+    type: objectAction
+
+mb-actions-service-payment:
+    allowedObjectDefinitionNames:
+        -   C_Payment
+    name: MB Payment actions
+    oAuth2ApplicationExternalReferenceCode: mb-actions-service-oaua
+    resourcePath: /object/action/payment
+    type: objectAction
+
+mb-actions-service-payout:
+    allowedObjectDefinitionNames:
+        -   C_Payout
+    name: MB Payout actions
+    oAuth2ApplicationExternalReferenceCode: mb-actions-service-oaua
+    resourcePath: /object/action/payout
     type: objectAction
 
 mb-actions-service-review:
