@@ -1,0 +1,19 @@
+assemble:
+    -   fromTask: bootJar
+
+# Service -> Liferay: reads the catalog and writes the search log, as the instance administrator.
+# The service itself enforces what the public may see (approved listings, active hosts, public fields).
+# Its /search endpoints are public and read-only (docs/search.md section 8).
+
+mb-search-service-oahs:
+    .serviceAddress: localhost:58082
+    .serviceScheme: http
+    name: MB Search Service OAuth Application Headless Server
+    scopes:
+        -   c_availabilityslot.everything.read
+        -   c_destination.everything.read
+        -   c_host.everything.read
+        -   c_listing.everything.read
+        -   c_listinginclusion.everything.read
+        -   c_searchquerylog.everything
+    type: oAuthApplicationHeadlessServer
