@@ -1,0 +1,409 @@
+{
+	"note": "LOCAL SEED DATA ONLY (docs/data-model.md section 9). Prices in INR. Accounts and users are the test users from test-users.js. Relationship fields reference ERCs. Values phase 7 will compute (lineTotal, commission amount, fees, total, denormalized listing fields) are set by hand here. Entries marked \"as\": \"traveler\" are created by the test traveler so they own them.",
+	"destinations": [
+		{
+			"externalReferenceCode": "MB_SEED_destination_bir",
+			"name": "Bir Billing",
+			"slug": "bir-billing",
+			"state": "himachalPradesh",
+			"region": "Kangra Valley, Himalayas",
+			"latitude": 32.0442,
+			"longitude": 76.7211,
+			"description": "<p>Tibetan settlement and one of the world's best paragliding sites. Take off from Billing (2,400 m) and land in Bir, with monasteries, tea gardens and treks into the Dhauladhar.</p>",
+			"bestMonths": ["march", "april", "may", "october", "november"],
+			"activities": ["paragliding", "trekking", "localGuide", "stay", "camping"],
+			"isTrending": true,
+			"searchKeywords": "bir, billing, bir billing, kangra, paragliding capital, dharamshala, chowgan"
+		},
+		{
+			"externalReferenceCode": "MB_SEED_destination_rishikesh",
+			"name": "Rishikesh",
+			"slug": "rishikesh",
+			"state": "uttarakhand",
+			"region": "Garhwal Himalayas",
+			"latitude": 30.0869,
+			"longitude": 78.2676,
+			"description": "<p>Yoga town on the Ganga with white-water rafting, riverside camps and short hikes to waterfalls and temples.</p>",
+			"bestMonths": ["february", "march", "april", "september", "october", "november"],
+			"activities": ["activity", "camping", "stay", "localGuide", "trekking"],
+			"isTrending": true,
+			"searchKeywords": "rishikesh, hrishikesh, rishikesh uttarakhand, rafting, river rafting, white water, ganga, laxman jhula"
+		},
+		{
+			"externalReferenceCode": "MB_SEED_destination_kasol",
+			"name": "Kasol",
+			"slug": "kasol",
+			"state": "himachalPradesh",
+			"region": "Parvati Valley, Himalayas",
+			"latitude": 32.0100,
+			"longitude": 77.3150,
+			"description": "<p>Riverside village in the Parvati Valley, base for Kheerganga, Tosh and Malana, with camps along the Parvati river.</p>",
+			"bestMonths": ["march", "april", "may", "june", "september", "october"],
+			"activities": ["camping", "trekking", "stay"],
+			"isTrending": false,
+			"searchKeywords": "kasol, parvati valley, tosh, malana, kheerganga, manikaran, camping"
+		},
+		{
+			"externalReferenceCode": "MB_SEED_destination_mcleodganj",
+			"name": "McLeod Ganj",
+			"slug": "mcleod-ganj",
+			"state": "himachalPradesh",
+			"region": "Dhauladhar, Himalayas",
+			"latitude": 32.2426,
+			"longitude": 76.3213,
+			"description": "<p>Hill town above Dharamshala, home of the Dalai Lama, with cafés, monasteries and the Triund ridge trek.</p>",
+			"bestMonths": ["march", "april", "may", "june", "september", "october", "november"],
+			"activities": ["trekking", "localGuide", "stay"],
+			"isTrending": false,
+			"searchKeywords": "mcleod ganj, mcleodganj, mcleod, dharamkot, dharamshala, dharamsala, triund, bhagsu"
+		}
+	],
+	"partners": [
+		{
+			"externalReferenceCode": "MB_SEED_partner_birMountainCamp",
+			"name": "Bir Mountain Camp",
+			"partnerType": "camp",
+			"contactName": "Tashi Negi",
+			"phone": "+919816000101",
+			"email": "stay@birmountaincamp.example",
+			"gstin": "02AABCB1234C1Z5",
+			"address": "Chowgan, Bir, Kangra, Himachal Pradesh 176077",
+			"defaultCommissionRate": 12,
+			"isVerified": true,
+			"r_destinationPartners_c_destinationERC": "MB_SEED_destination_bir"
+		}
+	],
+	"hosts": [
+		{
+			"externalReferenceCode": "MB_SEED_host_bir",
+			"displayName": "Karan Thakur",
+			"handle": "karan-bir",
+			"hostTypes": ["localGuide", "activities", "partnerStays"],
+			"phone": "+919816000201",
+			"hostRegion": "Bir, Himachal Pradesh",
+			"specialties": ["paragliding", "trekking", "localGuide", "stay"],
+			"bio": "Certified tandem pilot for 9 years and a local guide in Bir. I fly Billing every season and walk guests through the monasteries and villages I grew up in.",
+			"tier": "standard",
+			"hostStatus": "active",
+			"commissionRate": 10,
+			"termsAccepted": true,
+			"termsAcceptedDate": "2026-09-01T09:00:00Z",
+			"payoutUpiId": "mbseed.karan@upi",
+			"r_userHost_userERC": "MB_TEST_user_host1",
+			"r_accountHosts_accountEntryERC": "MB_TEST_account_host1"
+		},
+		{
+			"externalReferenceCode": "MB_SEED_host_rishikesh",
+			"displayName": "Meera Rawat",
+			"handle": "meera-rishikesh",
+			"hostTypes": ["partnerStays", "activities", "tourPackages"],
+			"phone": "+919897000301",
+			"hostRegion": "Rishikesh, Uttarakhand",
+			"specialties": ["activity", "camping", "stay"],
+			"bio": "I partner with rafting outfits on the Ganga and riverside camps in Rishikesh and the Parvati Valley, and plan trips around them.",
+			"tier": "standard",
+			"hostStatus": "active",
+			"commissionRate": 10,
+			"termsAccepted": true,
+			"termsAcceptedDate": "2026-09-01T09:00:00Z",
+			"payoutUpiId": "mbseed.meera@upi",
+			"r_userHost_userERC": "MB_TEST_user_host2",
+			"r_accountHosts_accountEntryERC": "MB_TEST_account_host2"
+		}
+	],
+	"hostPartnerships": [
+		{
+			"externalReferenceCode": "MB_SEED_partnership_bir_camp",
+			"commissionRate": 12,
+			"startDate": "2026-09-01",
+			"partnershipStatus": "active",
+			"r_hostPartnerships_c_hostERC": "MB_SEED_host_bir",
+			"r_partnerHosts_c_partnerERC": "MB_SEED_partner_birMountainCamp",
+			"r_accountHostPartnerships_accountEntryERC": "MB_TEST_account_host1"
+		}
+	],
+	"listings": [
+		{
+			"key": "paragliding",
+			"slots": {"capacity": 6, "startTime": "09:00"},
+			"entry": {
+				"externalReferenceCode": "MB_SEED_listing_paragliding",
+				"title": "Tandem paragliding, Bir Billing",
+				"slug": "tandem-paragliding-bir-billing",
+				"category": "paragliding",
+				"shortDescription": "15–25 minute tandem flight from Billing with a certified pilot",
+				"description": "<p>Take off from Billing at 2,400 m and glide over the Kangra valley with a certified tandem pilot. No experience needed; the pilot handles the flight and landing in Bir.</p>",
+				"basePrice": 2500,
+				"priceUnit": "perPerson",
+				"durationText": "15–25 minutes in the air",
+				"maxGuests": 6,
+				"seasonMonths": ["march", "april", "may", "october", "november"],
+				"isTrending": true,
+				"isFeatured": true,
+				"searchKeywords": "tandem flight, tandem paragliding, billing take-off, bir landing site",
+				"destination": "MB_SEED_destination_bir",
+				"host": "MB_SEED_host_bir",
+				"account": "MB_TEST_account_host1"
+			}
+		},
+		{
+			"key": "birCamp",
+			"slots": {"capacity": 4},
+			"entry": {
+				"externalReferenceCode": "MB_SEED_listing_birCamp",
+				"title": "Partner mountain camp, Bir",
+				"slug": "partner-mountain-camp-bir",
+				"category": "stay",
+				"shortDescription": "Swiss tents near the Bir landing site, breakfast included",
+				"description": "<p>Comfortable Swiss tents with attached bathrooms at Bir Mountain Camp, a short walk from the paragliding landing site and the monasteries. Breakfast and bonfire included.</p>",
+				"basePrice": 3500,
+				"priceUnit": "perNight",
+				"durationText": "Per night, breakfast included",
+				"maxGuests": 4,
+				"seasonMonths": ["march", "april", "may", "september", "october", "november"],
+				"isTrending": false,
+				"isFeatured": true,
+				"searchKeywords": "camp, camping, tent, glamping, stay, bir camp, swiss tent",
+				"destination": "MB_SEED_destination_bir",
+				"host": "MB_SEED_host_bir",
+				"partner": "MB_SEED_partner_birMountainCamp",
+				"account": "MB_TEST_account_host1"
+			}
+		},
+		{
+			"key": "rajgundha",
+			"slots": {"capacity": 12, "startTime": "07:30"},
+			"entry": {
+				"externalReferenceCode": "MB_SEED_listing_rajgundha",
+				"title": "Rajgundha valley day hike",
+				"slug": "rajgundha-valley-day-hike",
+				"category": "trekking",
+				"shortDescription": "Forest trail from Billing to the Rajgundha meadows and back",
+				"description": "<p>A full-day guided hike from Billing through oak and rhododendron forest to the quiet meadows of Rajgundha. Packed lunch and transport to the trailhead included.</p>",
+				"basePrice": 2000,
+				"priceUnit": "perPerson",
+				"durationText": "Full day, 6–7 hours",
+				"maxGuests": 12,
+				"seasonMonths": ["april", "may", "june", "september", "october"],
+				"isTrending": false,
+				"isFeatured": false,
+				"searchKeywords": "rajgundha, barot, hike, hiking, trek, trekking, meadow",
+				"destination": "MB_SEED_destination_bir",
+				"host": "MB_SEED_host_bir",
+				"account": "MB_TEST_account_host1"
+			}
+		},
+		{
+			"key": "monasteryWalk",
+			"slots": {"capacity": 8, "startTime": "16:00"},
+			"entry": {
+				"externalReferenceCode": "MB_SEED_listing_monasteryWalk",
+				"title": "Monastery & village walk",
+				"slug": "monastery-and-village-walk-bir",
+				"category": "localGuide",
+				"shortDescription": "Evening walk through Bir's monasteries, tea gardens and Tibetan colony",
+				"description": "<p>A relaxed walk with a local guide through Chokling and Sherab Ling monasteries, the tea gardens and the Tibetan colony, ending with butter tea at a village home.</p>",
+				"basePrice": 900,
+				"priceUnit": "perPerson",
+				"durationText": "3 hours",
+				"maxGuests": 8,
+				"seasonMonths": ["march", "april", "may", "june", "september", "october", "november"],
+				"isTrending": false,
+				"isFeatured": false,
+				"searchKeywords": "monastery, guide, local guide, walk, city tour, tibetan colony, tea garden",
+				"destination": "MB_SEED_destination_bir",
+				"host": "MB_SEED_host_bir",
+				"account": "MB_TEST_account_host1"
+			}
+		},
+		{
+			"key": "triund",
+			"slots": {"capacity": 12, "startTime": "08:00"},
+			"entry": {
+				"externalReferenceCode": "MB_SEED_listing_triund",
+				"title": "Triund trek, McLeod Ganj",
+				"slug": "triund-trek-mcleod-ganj",
+				"category": "trekking",
+				"shortDescription": "Guided day trek to the Triund ridge with Dhauladhar views",
+				"description": "<p>Climb from Dharamkot to the Triund ridge (2,850 m) for close-up views of the Dhauladhar range and the Kangra valley. Guide, snacks and permits included.</p>",
+				"basePrice": 1500,
+				"priceUnit": "perPerson",
+				"durationText": "Day trek, 6–7 hours",
+				"maxGuests": 12,
+				"seasonMonths": ["march", "april", "may", "june", "september", "october", "november"],
+				"isTrending": true,
+				"isFeatured": false,
+				"searchKeywords": "triund, trek, hike, hiking, trekking, dharamkot, dhauladhar",
+				"destination": "MB_SEED_destination_mcleodganj",
+				"host": "MB_SEED_host_bir",
+				"account": "MB_TEST_account_host1"
+			}
+		},
+		{
+			"key": "rafting",
+			"slots": {"capacity": 16, "startTime": "10:00"},
+			"entry": {
+				"externalReferenceCode": "MB_SEED_listing_rafting",
+				"title": "River rafting, Rishikesh",
+				"slug": "river-rafting-rishikesh",
+				"category": "activity",
+				"shortDescription": "16 km Shivpuri to Rishikesh run with grade II–III rapids",
+				"description": "<p>Raft 16 km of the Ganga from Shivpuri to Rishikesh with a certified river guide, through rapids like Roller Coaster and Golf Course. Safety gear and transport to the put-in included.</p>",
+				"basePrice": 800,
+				"priceUnit": "perPerson",
+				"durationText": "16 km, about 2.5 hours",
+				"maxGuests": 16,
+				"seasonMonths": ["february", "march", "april", "may", "september", "october", "november"],
+				"isTrending": true,
+				"isFeatured": true,
+				"searchKeywords": "rafting, river rafting, white water, shivpuri, ganga",
+				"destination": "MB_SEED_destination_rishikesh",
+				"host": "MB_SEED_host_rishikesh",
+				"account": "MB_TEST_account_host2"
+			}
+		},
+		{
+			"key": "kasolCamp",
+			"slots": {"capacity": 4},
+			"entry": {
+				"externalReferenceCode": "MB_SEED_listing_kasolCamp",
+				"title": "Riverside camp, Kasol",
+				"slug": "riverside-camp-kasol",
+				"category": "camping",
+				"shortDescription": "Tents on the Parvati river, dinner and breakfast included",
+				"description": "<p>Camp right on the banks of the Parvati with a bonfire, dinner and breakfast. A good base for Kheerganga, Tosh and Malana.</p>",
+				"basePrice": 1800,
+				"priceUnit": "perNight",
+				"durationText": "Per night, dinner and breakfast included",
+				"maxGuests": 4,
+				"seasonMonths": ["march", "april", "may", "june", "september", "october"],
+				"isTrending": false,
+				"isFeatured": false,
+				"searchKeywords": "camp, camping, tent, glamping, kasol, parvati river, riverside",
+				"destination": "MB_SEED_destination_kasol",
+				"host": "MB_SEED_host_rishikesh",
+				"account": "MB_TEST_account_host2"
+			}
+		}
+	],
+	"listingInclusions": [
+		{"externalReferenceCode": "MB_SEED_inclusion_paragliding_transport", "label": "Transport to the take-off point", "inclusionType": "included", "sortOrder": 1, "listing": "MB_SEED_listing_paragliding", "account": "MB_TEST_account_host1"},
+		{"externalReferenceCode": "MB_SEED_inclusion_paragliding_flight", "label": "Tandem flight with a certified pilot", "inclusionType": "included", "sortOrder": 2, "listing": "MB_SEED_listing_paragliding", "account": "MB_TEST_account_host1"},
+		{"externalReferenceCode": "MB_SEED_inclusion_paragliding_safety", "label": "Safety gear and briefing", "inclusionType": "included", "sortOrder": 3, "listing": "MB_SEED_listing_paragliding", "account": "MB_TEST_account_host1"},
+		{"externalReferenceCode": "MB_SEED_inclusion_paragliding_media", "label": "Photos & video", "inclusionType": "addOn", "addOnPrice": 1000, "sortOrder": 4, "listing": "MB_SEED_listing_paragliding", "account": "MB_TEST_account_host1"}
+	],
+	"slotDays": 14,
+	"traveler": {
+		"as": "traveler",
+		"externalReferenceCode": "MB_SEED_traveler_ananya",
+		"fullName": "Ananya Iyer",
+		"phone": "+919820000401",
+		"homeCity": "New Delhi",
+		"r_userTraveler_userERC": "MB_TEST_user_traveler"
+	},
+	"tripPackage": {
+		"as": "traveler",
+		"externalReferenceCode": "MB_SEED_package_bir",
+		"packageName": "Bir weekend: fly, stay, paraglide",
+		"startDate": "2026-10-08",
+		"endDate": "2026-10-10",
+		"adults": 2,
+		"children": 0,
+		"packageStatus": "booked",
+		"r_destinationPackages_c_destinationERC": "MB_SEED_destination_bir",
+		"r_travelerPackages_c_travelerERC": "MB_SEED_traveler_ananya",
+		"r_hostPackages_c_hostERC": "MB_SEED_host_bir"
+	},
+	"booking": {
+		"as": "traveler",
+		"bookingStatusFlow": ["pendingPayment", "confirmed"],
+		"entry": {
+			"externalReferenceCode": "MB_SEED_booking_bir",
+			"leadName": "Ananya Iyer",
+			"phone": "+919820000401",
+			"email": "ananya.iyer@example.com",
+			"travelDate": "2026-10-08",
+			"travelerCount": 2,
+			"serviceFee": 1250,
+			"taxes": 225,
+			"total": 26475,
+			"source": "web",
+			"r_accountBookings_accountEntryERC": "MB_TEST_account_host1",
+			"r_hostBookings_c_hostERC": "MB_SEED_host_bir",
+			"r_travelerBookings_c_travelerERC": "MB_SEED_traveler_ananya",
+			"r_packageBookings_c_tripPackageERC": "MB_SEED_package_bir"
+		},
+		"pricing": "subtotal 25000 (sum of items) + 5% platform fee 1250 + 18% GST on the fee 225 = 26475. Seed-only rates; phase 7 sets the real rules."
+	},
+	"bookingItems": [
+		{
+			"as": "traveler",
+			"externalReferenceCode": "MB_SEED_item_flight",
+			"category": "flight",
+			"itemTitle": "Delhi → Dharamshala (Gaggal) flight",
+			"itemDetail": "DEL → DHM, 8 Oct 2026, 2 adults",
+			"quantity": 2,
+			"unitPrice": 6500,
+			"lineTotal": 13000,
+			"supplierReference": "PNR MBSEED",
+			"isSelected": true,
+			"r_packageItems_c_tripPackageERC": "MB_SEED_package_bir",
+			"r_bookingItems_c_bookingERC": "MB_SEED_booking_bir"
+		},
+		{
+			"as": "traveler",
+			"externalReferenceCode": "MB_SEED_item_stay",
+			"category": "stay",
+			"itemTitle": "Partner mountain camp, Bir",
+			"itemDetail": "8–10 Oct 2026, 2 nights, 1 tent for 2",
+			"quantity": 2,
+			"unitPrice": 3500,
+			"lineTotal": 7000,
+			"isSelected": true,
+			"r_packageItems_c_tripPackageERC": "MB_SEED_package_bir",
+			"r_bookingItems_c_bookingERC": "MB_SEED_booking_bir",
+			"r_listingBookingItems_c_listingERC": "MB_SEED_listing_birCamp"
+		},
+		{
+			"as": "traveler",
+			"externalReferenceCode": "MB_SEED_item_paragliding",
+			"category": "paragliding",
+			"itemTitle": "Tandem paragliding, Bir Billing",
+			"itemDetail": "9 Oct 2026, 09:00 slot",
+			"quantity": 2,
+			"unitPrice": 2500,
+			"lineTotal": 5000,
+			"isSelected": true,
+			"r_packageItems_c_tripPackageERC": "MB_SEED_package_bir",
+			"r_bookingItems_c_bookingERC": "MB_SEED_booking_bir",
+			"r_listingBookingItems_c_listingERC": "MB_SEED_listing_paragliding",
+			"slot": {"listing": "paragliding", "date": "2026-10-09"}
+		}
+	],
+	"payments": [
+		{
+			"externalReferenceCode": "MB_SEED_payment_bir",
+			"method": "upi",
+			"amount": 26475,
+			"gateway": "razorpay",
+			"gatewayOrderId": "order_MBSEED0001",
+			"gatewayTxnId": "pay_MBSEED0001",
+			"paymentStatus": "success",
+			"paidAt": "2026-09-26T10:15:00Z",
+			"r_bookingPayments_c_bookingERC": "MB_SEED_booking_bir"
+		}
+	],
+	"commissions": [
+		{
+			"externalReferenceCode": "MB_SEED_commission_bir",
+			"rate": 10,
+			"baseAmount": 12000,
+			"amount": 1200,
+			"commissionStatus": "pending",
+			"availableOn": "2026-10-17",
+			"r_bookingCommissions_c_bookingERC": "MB_SEED_booking_bir",
+			"r_hostCommissions_c_hostERC": "MB_SEED_host_bir",
+			"r_accountCommissions_accountEntryERC": "MB_TEST_account_host1"
+		}
+	]
+}
