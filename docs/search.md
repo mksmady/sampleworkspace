@@ -11,7 +11,7 @@ The hero search has four inputs (Where to, Dates, Travelers, Looking for), and t
 2. **Availability filtering** over AvailabilitySlot, for dates and traveler count.
 3. **A search orchestrator** microservice client extension (`GET /search/trips`) that combines both, adds flight results, and returns one response shape to web and app.
 
-Simple lists (category pages, "See all", a host's own listings) can call the headless APIs directly and don't need the orchestrator.
+Guests and travelers have no direct View on Listing or Host (data-model.md section 6.2): Liferay would also show listings awaiting approval, and Host holds private fields. So every public list of listings or hosts (category pages, "See all", listing detail, host profile) goes through `mb-search-service`, which reads with its own OAuth2 identity and returns only approved listings, active hosts and public fields. A host's own listings (host dashboard) can call the headless APIs directly.
 
 ## 2. What is searchable
 
@@ -24,7 +24,9 @@ Simple lists (category pages, "See all", a host's own listings) can call the hea
 
 Only these may appear in public results:
 - Listings with workflow status approved.
-- Hosts with `hostStatus = active`.
+- Hosts with `hostStatus = active`, with public fields only (displayName, handle, hostRegion, specialties, bio, avatar, tier).
+
+`mb-search-service` must enforce this itself: it searches with its own identity, so Liferay permissions don't filter its results.
 
 Text fields that are only filtered on (category, state, slug) should be indexed as keywords, not analyzed text.
 
