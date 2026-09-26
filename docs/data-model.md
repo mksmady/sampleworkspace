@@ -317,7 +317,7 @@ Plural label: Reviews.
 | isPublished | Boolean | |
 
 ### 3.18 Favorite — `MB_Favorite`
-Plural label: Favorites. Has relationship fields only. Liferay needs at least one field to publish, so Favorite stays a draft until its relationships are added (phase 3).
+Plural label: Favorites. Has relationship fields only. Liferay needs at least one field to publish, so Favorite is published in phase 3, after its relationships are added.
 
 ### 3.19 Conversation — `MB_Conversation` and Message — `MB_Message`
 Plural labels: Conversations, Messages.
