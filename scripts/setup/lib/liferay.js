@@ -34,8 +34,27 @@ async function request(method, path, body) {
 	return text ? JSON.parse(text) : null;
 }
 
+// For the few operations with no headless endpoint. JSONWS takes form parameters.
+
+async function jsonws(method, params) {
+	const response = await fetch(`${BASE_URL}/api/jsonws/${method}`, {
+		body: new URLSearchParams(Object.entries(params).map(([name, value]) => [name, String(value)])),
+		headers: {Authorization: AUTH},
+		method: 'POST',
+	});
+	const text = await response.text();
+
+	if (!response.ok) {
+		throw new Error(`jsonws ${method} -> ${response.status}: ${text}`);
+	}
+
+	return text ? JSON.parse(text) : null;
+}
+
 module.exports = {
+	baseURL: BASE_URL,
 	get: (path) => request('GET', path),
+	jsonws,
 	patch: (path, body) => request('PATCH', path, body),
 	post: (path, body) => request('POST', path, body),
 	put: (path, body) => request('PUT', path, body),

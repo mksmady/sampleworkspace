@@ -37,6 +37,7 @@
 	{
 		"name": "Host",
 		"pluralLabel": "Hosts",
+		"accountRestriction": "accountHosts",
 		"titleField": "displayName",
 		"fields": [
 			{"name": "displayName", "type": "Text", "flags": "RS"},
@@ -63,6 +64,7 @@
 	{
 		"name": "HostPartnership",
 		"pluralLabel": "Host Partnerships",
+		"accountRestriction": "accountHostPartnerships",
 		"fields": [
 			{"name": "commissionRate", "type": "PrecisionDecimal", "flags": "R"},
 			{"name": "startDate", "type": "Date", "flags": "R"},
@@ -73,6 +75,7 @@
 	{
 		"name": "HostSubscription",
 		"pluralLabel": "Host Subscriptions",
+		"accountRestriction": "accountHostSubscriptions",
 		"fields": [
 			{"name": "planName", "type": "Text", "flags": "R"},
 			{"name": "amount", "type": "PrecisionDecimal", "flags": "R"},
@@ -102,6 +105,7 @@
 	{
 		"name": "Listing",
 		"pluralLabel": "Listings",
+		"accountRestriction": "accountListings",
 		"titleField": "title",
 		"fields": [
 			{"name": "title", "type": "Text", "flags": "RS"},
@@ -133,6 +137,7 @@
 	{
 		"name": "ListingInclusion",
 		"pluralLabel": "Listing Inclusions",
+		"accountRestriction": "accountListingInclusions",
 		"fields": [
 			{"name": "label", "type": "Text", "flags": "R"},
 			{"name": "inclusionType", "type": "Picklist", "picklist": "MB_InclusionType", "flags": "R"},
@@ -143,6 +148,7 @@
 	{
 		"name": "AvailabilitySlot",
 		"pluralLabel": "Availability Slots",
+		"accountRestriction": "accountAvailabilitySlots",
 		"fields": [
 			{"name": "slotDate", "type": "Date", "flags": "R"},
 			{"name": "startTime", "type": "Text"},
@@ -169,6 +175,7 @@
 	{
 		"name": "Booking",
 		"pluralLabel": "Bookings",
+		"accountRestriction": "accountBookings",
 		"fields": [
 			{"name": "bookingNumber", "type": "AutoIncrement", "autoIncrement": {"initialValue": "100001", "prefix": "MB-"}},
 			{"name": "leadName", "type": "Text", "flags": "R"},
@@ -228,6 +235,7 @@
 	{
 		"name": "Commission",
 		"pluralLabel": "Commissions",
+		"accountRestriction": "accountCommissions",
 		"fields": [
 			{"name": "rate", "type": "PrecisionDecimal", "flags": "R"},
 			{"name": "baseAmount", "type": "PrecisionDecimal", "flags": "R"},
@@ -239,6 +247,7 @@
 	{
 		"name": "Payout",
 		"pluralLabel": "Payouts",
+		"accountRestriction": "accountPayouts",
 		"fields": [
 			{"name": "amount", "type": "PrecisionDecimal", "flags": "R"},
 			{"name": "payoutMethod", "type": "Text", "flags": "R"},
@@ -251,6 +260,7 @@
 	{
 		"name": "ReferralClick",
 		"pluralLabel": "Referral Clicks",
+		"accountRestriction": "accountReferralClicks",
 		"fields": [
 			{"name": "clickedAt", "type": "DateTime", "flags": "R"},
 			{"name": "channel", "type": "Text"},
@@ -274,6 +284,7 @@
 	{
 		"name": "Conversation",
 		"pluralLabel": "Conversations",
+		"accountRestriction": "accountConversations",
 		"fields": [
 			{"name": "subject", "type": "Text"}
 		]
@@ -281,6 +292,7 @@
 	{
 		"name": "Message",
 		"pluralLabel": "Messages",
+		"accountRestriction": "accountMessages",
 		"fields": [
 			{"name": "body", "type": "LongText", "flags": "R"},
 			{"name": "senderType", "type": "Picklist", "picklist": "MB_SenderType", "flags": "R"},

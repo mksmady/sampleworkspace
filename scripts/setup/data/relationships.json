@@ -41,5 +41,17 @@
 	{"name": "travelerRecommendations", "parent": "Traveler", "child": "Recommendation", "deletionType": "cascade"},
 	{"name": "listingRecommendations", "parent": "Listing", "child": "Recommendation", "deletionType": "disassociate"},
 	{"name": "destinationRecommendations", "parent": "Destination", "child": "Recommendation", "deletionType": "disassociate"},
-	{"name": "hostRecommendations", "parent": "Host", "child": "Recommendation", "deletionType": "disassociate"}
+	{"name": "hostRecommendations", "parent": "Host", "child": "Recommendation", "deletionType": "disassociate"},
+	{"name": "accountListings", "parent": "Account", "child": "Listing", "deletionType": "prevent"},
+	{"name": "accountBookings", "parent": "Account", "child": "Booking", "deletionType": "prevent"},
+	{"name": "accountCommissions", "parent": "Account", "child": "Commission", "deletionType": "prevent"},
+	{"name": "accountPayouts", "parent": "Account", "child": "Payout", "deletionType": "prevent"},
+	{"name": "accountHostPartnerships", "parent": "Account", "child": "HostPartnership", "deletionType": "prevent"},
+	{"name": "accountHostSubscriptions", "parent": "Account", "child": "HostSubscription", "deletionType": "prevent"},
+	{"name": "accountReferralClicks", "parent": "Account", "child": "ReferralClick", "deletionType": "prevent"},
+	{"name": "accountListingInclusions", "parent": "Account", "child": "ListingInclusion", "deletionType": "prevent"},
+	{"name": "accountAvailabilitySlots", "parent": "Account", "child": "AvailabilitySlot", "deletionType": "prevent"},
+	{"name": "accountConversations", "parent": "Account", "child": "Conversation", "deletionType": "prevent"},
+	{"name": "accountMessages", "parent": "Account", "child": "Message", "deletionType": "prevent"},
+	{"name": "accountHosts", "parent": "Account", "child": "Host", "deletionType": "prevent"}
 ]
