@@ -11,10 +11,12 @@
 	{"object": "Booking", "name": "travelerCountMin", "field": "travelerCount", "script": "travelerCount >= 1", "error": "Traveler count must be at least 1"},
 	{"object": "AppWaitlist", "name": "emailFormat", "field": "email", "script": "isEmailAddress(email)", "error": "Enter a valid email address"},
 	{"object": "Review", "name": "ratingRange", "field": "rating", "script": "rating >= 1 AND rating <= 5", "error": "Rating must be 1–5"},
-	{"object": "ListingInclusion", "name": "addOnPrice", "field": "addOnPrice", "active": false, "script": "inclusionType != \"addOn\" OR NOT(isEmpty(addOnPrice))", "error": "Add-ons need a price", "note": "Inactive: expressions can't read picklists and Groovy is disabled. Replaced by an objectValidationRule microservice in phase 7."},
+	{"object": "ListingInclusion", "name": "addOnPrice", "field": "addOnPrice", "function": "mb-actions-service-add-on-price", "error": "Add-ons need a price"},
 	{"object": "BookingItem", "name": "quantityMin", "field": "quantity", "script": "quantity >= 1", "error": "Quantity must be at least 1"},
 	{"object": "AvailabilitySlot", "name": "capacityMin", "field": "capacity", "script": "capacity >= 1", "error": "Capacity must be at least 1"},
 	{"object": "Booking", "name": "hostAccount", "script": "r_accountBookings_accountEntryId > 0", "error": "Choose the host account for this booking"},
 	{"object": "Conversation", "name": "hostAccount", "script": "r_accountConversations_accountEntryId > 0", "error": "Choose the host account for this conversation"},
-	{"object": "Message", "name": "hostAccount", "script": "r_accountMessages_accountEntryId > 0", "error": "Choose the host account for this message"}
+	{"object": "Message", "name": "hostAccount", "script": "r_accountMessages_accountEntryId > 0", "error": "Choose the host account for this message"},
+	{"object": "Payout", "name": "withinBalance", "field": "amount", "function": "mb-actions-service-payout-balance", "error": "Amount exceeds available balance"},
+	{"object": "BookingItem", "name": "slotCapacity", "field": "quantity", "function": "mb-actions-service-slot-capacity", "error": "Not enough spots on this date"}
 ]
