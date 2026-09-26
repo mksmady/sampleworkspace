@@ -1,14 +1,19 @@
 // Minimal Liferay headless client. Credentials come from the environment only.
 
 const BASE_URL = (process.env.LIFERAY_URL || 'http://localhost:8080').replace(/\/$/, '');
-const {LIFERAY_USER, LIFERAY_PASSWORD} = process.env;
+const {LIFERAY_BEARER_TOKEN, LIFERAY_USER, LIFERAY_PASSWORD} = process.env;
 
-if (!LIFERAY_USER || !LIFERAY_PASSWORD) {
-	console.error('Set LIFERAY_USER and LIFERAY_PASSWORD in the environment.');
+// Basic auth normally; an OAuth2 access token instead (LIFERAY_BEARER_TOKEN, e.g. to verify another
+// instance as a client extension's app). Either way, only from the environment.
+
+if (!LIFERAY_BEARER_TOKEN && (!LIFERAY_USER || !LIFERAY_PASSWORD)) {
+	console.error('Set LIFERAY_USER and LIFERAY_PASSWORD (or LIFERAY_BEARER_TOKEN) in the environment.');
 	process.exit(1);
 }
 
-const AUTH = 'Basic ' + Buffer.from(`${LIFERAY_USER}:${LIFERAY_PASSWORD}`).toString('base64');
+const AUTH = LIFERAY_BEARER_TOKEN
+	? `Bearer ${LIFERAY_BEARER_TOKEN}`
+	: 'Basic ' + Buffer.from(`${LIFERAY_USER}:${LIFERAY_PASSWORD}`).toString('base64');
 
 async function request(method, path, body) {
 	const response = await fetch(BASE_URL + path, {
@@ -52,6 +57,7 @@ async function jsonws(method, params) {
 }
 
 module.exports = {
+	authorization: AUTH,
 	baseURL: BASE_URL,
 	get: (path) => request('GET', path),
 	jsonws,
