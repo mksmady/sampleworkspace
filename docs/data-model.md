@@ -436,13 +436,13 @@ Expression rules on a single field show their error on that field (partial valid
 | Host | handle matches `^[a-z0-9-]{3,30}$` | Expression | Use 3–30 lowercase letters, numbers or hyphens |
 | Partner | gstin empty or matches `^\d{2}[A-Z]{5}\d{4}[A-Z][A-Z\d]Z[A-Z\d]$` | Expression | Invalid GSTIN |
 | Review | rating between 1 and 5 | Expression | Rating must be 1–5 |
-| ListingInclusion | addOnPrice required when inclusionType = addOn | Microservice (phase 7, `objectValidationRule` client extension). Expressions can't read picklists and Groovy is disabled on this instance; the expression rule stays inactive until then | Add-ons need a price |
+| ListingInclusion | addOnPrice required (above 0) when inclusionType = addOn | Microservice (`mb-actions-service-add-on-price`). Expressions can't read picklists and Groovy is disabled on this instance | Add-ons need a price |
 | BookingItem | quantity ≥ 1 | Expression | Quantity must be at least 1 |
 | Booking | travelerCount ≥ 1 | Expression | Traveler count must be at least 1 |
 | AvailabilitySlot | capacity ≥ 1 | Expression | Capacity must be at least 1 |
 | Booking, Conversation, Message | has a host account (`r_account<Object>s_accountEntryId > 0`, section 6.1) | Expression (form-level) | Choose the host account for this booking / conversation / message |
-| Payout | amount ≤ host availableBalance | Microservice (phase 7) | Amount exceeds available balance |
-| Booking | travelerCount ≤ remaining slot capacity | Microservice (phase 7) | Not enough spots on this date |
+| Payout | a new request (payoutStatus requested) has amount ≤ host availableBalance | Microservice (`mb-actions-service-payout-balance`) | Amount exceeds available balance |
+| BookingItem | quantity ≤ places left on its slot (capacity − bookedCount, not counting the item's own stored quantity). Checked per item, not per Booking: a booking has no items (so no slots) when it's created | Microservice (`mb-actions-service-slot-capacity`) | Not enough spots on this date |
 
 ## 6. Accounts, roles and permissions
 
@@ -483,7 +483,7 @@ Liferay grants the Owner role Delete, Permissions, Update and View on each entry
 
 ### 6.4 Approval workflow
 
-"MB Ops Approval" (`scripts/setup/data/mb-ops-approval.xml`) is Liferay's Single Approver with the review task assigned only to Ops Admin and Administrator. Single Approver also assigns review to the account roles Account Administrator and Account Member, which would let a host approve their own listing. It's linked to Host and Listing (company scope). Editing an approved entry sends it back for review.
+"MB Ops Approval" (`scripts/setup/data/mb-ops-approval.xml`) is Liferay's Single Approver with the review task assigned only to Ops Admin and Administrator. Single Approver also assigns review to the account roles Account Administrator and Account Member, which would let a host approve their own listing. It's linked to Host and Listing (company scope). Editing an approved entry sends it back for review. Exception: when `mb-actions-service` changes only derived Listing fields (section 7) of an approved listing, it approves the resulting task itself (comment "Automatic update by mb-actions-service"), so the listing stays live. Host edits always go to Ops.
 
 ### 6.5 Instance settings (local instance; required on any instance)
 
@@ -521,6 +521,20 @@ These must be set the same way on the clean instance in phase 9 (and decided for
 | Scheduled nightly | Recommendation | | Regenerate per traveler, respecting the `useFactor*` toggles; delete expired |
 
 Implement logic heavier than a notification as **microservice client extensions** triggered by object action webhooks. Use Groovy only where the instance allows it (not on Liferay SaaS).
+
+### 7.1 Implemented in phase 7a (`client-extensions/mb-actions-service`)
+
+Spring Boot 3.5 / Java 21 microservice client extension. Object actions (ERC `MB_<Object>_<trigger>`, executor `function#mb-actions-service-<object>`) are registered by `scripts/setup/actions.js`; the service calls Liferay back as its headless-server OAuth2 app (instance administrator). Custom object OAuth2 scopes are named `c_<object name in lower case>.everything[.read]`.
+
+- **BookingItem** add/update/delete: `lineTotal = quantity × unitPrice`; refresh the pricing of its booking(s) and the status of its slot(s).
+- **Booking** add/update: `serviceFee = 5% of subtotal`, `taxes = 18% GST on the fee`, `total = subtotal + serviceFee + taxes`, rounded half up to the paisa (rates in `application-default.properties`: `mb.pricing.*`). This replaces the "Before checkout" row. On add, the Owner keeps View only (6.3).
+- **Commission** add/update: `amount = baseAmount × rate / 100`.
+- **AvailabilitySlot** add/update/delete: slotStatus full when bookedCount ≥ capacity, open again below it (closed slots are left alone); refresh the listing.
+- **Listing** add/update, **Destination** update (name, state, region, latitude, longitude), **Host** update (displayName), **Review** add/update/delete: refresh the listing's derived fields: destinationName, stateName, region, latitude, longitude, hostDisplayName, nextAvailableDate (earliest open slot from today, IST) and ratingValue (= averageRating). If the listing was approved, the service approves its own update (6.4).
+- Every handler reads fresh, writes only fields that differ, and so ends any chain it starts.
+- Validation rules (section 5): add-on price, payout balance, slot capacity.
+
+Still to do: 7b (host approval → account, payments, commissions from bookings, payouts, host sign-up) and 7c (scheduled jobs, weather/holiday/recommendation refresh, gateways). The daily `nextAvailableDate` refresh (dates pass without any slot change) belongs to 7c.
 
 ## 8. Integrations outside Liferay Objects
 
