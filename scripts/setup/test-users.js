@@ -13,8 +13,10 @@ const liferay = require('./lib/liferay');
 const API = '/o/headless-admin-user/v1.0';
 
 const ACCOUNTS = [
-	{erc: 'MB_TEST_account_host1', name: 'MB Test Host Account 1'},
-	{erc: 'MB_TEST_account_host2', name: 'MB Test Host Account 2'},
+	// Named after the seed hosts (seed.js): host1 is the Bir pilot/guide, host2 the Rishikesh partner host.
+
+	{erc: 'MB_TEST_account_host1', name: 'Bir Sky Adventures'},
+	{erc: 'MB_TEST_account_host2', name: 'Ganga Trails'},
 ];
 
 const USERS = [
@@ -27,8 +29,17 @@ const USERS = [
 const password = () => `Mb-${crypto.randomBytes(9).toString('base64url')}7!`;
 
 async function syncAccount(account) {
-	if (await liferay.get(`${API}/accounts/by-external-reference-code/${account.erc}`)) {
-		return 'unchanged';
+	const path = `${API}/accounts/by-external-reference-code/${account.erc}`;
+	const existing = await liferay.get(path);
+
+	if (existing) {
+		if (existing.name === account.name) {
+			return 'unchanged';
+		}
+
+		await liferay.patch(path, {name: account.name});
+
+		return 'renamed';
 	}
 
 	await liferay.post(`${API}/accounts`, {externalReferenceCode: account.erc, name: account.name, type: 'business'});
