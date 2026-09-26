@@ -1,0 +1,23 @@
+{
+	"source": "Gazetted holidays for Central Government offices at Delhi/New Delhi. 2026: DoP&T O.M. F.No.12/2/2023-JCA dated 03.07.2025. 2027: DoP&T O.M. F.No.12/2/2023-JCA dated 16.07.2026. Id-ul-Fitr, Id-ul-Zuha, Muharram and Milad-un-Nabi can move with moon sighting.",
+	"window": "Seeded on 2026-09-26 for the next 12 months (2026-09-26 to 2027-09-25). Nationwide holidays, so applicableStates is left empty (= all states).",
+	"holidays": [
+		{"name": "Mahatma Gandhi's Birthday", "date": "2026-10-02"},
+		{"name": "Dussehra (Vijaya Dashmi)", "date": "2026-10-20"},
+		{"name": "Diwali (Deepavali)", "date": "2026-11-08"},
+		{"name": "Guru Nanak's Birthday", "date": "2026-11-24"},
+		{"name": "Christmas Day", "date": "2026-12-25"},
+		{"name": "Republic Day", "date": "2027-01-26"},
+		{"name": "Id-ul-Fitr", "date": "2027-03-10"},
+		{"name": "Holi", "date": "2027-03-23"},
+		{"name": "Good Friday", "date": "2027-03-26"},
+		{"name": "Ram Navami", "date": "2027-04-15"},
+		{"name": "Mahavir Jayanti", "date": "2027-04-19"},
+		{"name": "Id-ul-Zuha (Bakrid)", "date": "2027-05-17"},
+		{"name": "Budha Purnima", "date": "2027-05-20"},
+		{"name": "Muharram", "date": "2027-06-16"},
+		{"name": "Independence Day", "date": "2027-08-15"},
+		{"name": "Milad-un-Nabi (Prophet Mohammad's Birthday)", "date": "2027-08-15"},
+		{"name": "Janmashtami (Vaishnav)", "date": "2027-08-25"}
+	]
+}

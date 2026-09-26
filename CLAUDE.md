@@ -31,10 +31,9 @@ Follow the specs exactly. If something in a spec is wrong, unsupported on this L
 
 ```
 docs/                     specs (above)
-scripts/setup/            idempotent setup scripts for the local instance (Node.js)
+scripts/setup/            idempotent setup scripts for the local instance (Node.js), incl. seed data (seed.js, data/seed/) and local test users
 client-extensions/
   mb-objects-batch/       batch client extension: picklists + object definitions (deployable)
-  mb-seed-batch/          batch client extension: local seed data only
   mb-actions-service/     microservice: object action handlers (denormalization, commissions, payouts)
   mb-search-service/      microservice: /search/trips, /search/suggest
   mb-web-\*/               custom elements / fragments for the website
