@@ -13,5 +13,8 @@
 	{"object": "Review", "name": "ratingRange", "field": "rating", "script": "rating >= 1 AND rating <= 5", "error": "Rating must be 1–5"},
 	{"object": "ListingInclusion", "name": "addOnPrice", "field": "addOnPrice", "active": false, "script": "inclusionType != \"addOn\" OR NOT(isEmpty(addOnPrice))", "error": "Add-ons need a price", "note": "Inactive: expressions can't read picklists and Groovy is disabled. Replaced by an objectValidationRule microservice in phase 7."},
 	{"object": "BookingItem", "name": "quantityMin", "field": "quantity", "script": "quantity >= 1", "error": "Quantity must be at least 1"},
-	{"object": "AvailabilitySlot", "name": "capacityMin", "field": "capacity", "script": "capacity >= 1", "error": "Capacity must be at least 1"}
+	{"object": "AvailabilitySlot", "name": "capacityMin", "field": "capacity", "script": "capacity >= 1", "error": "Capacity must be at least 1"},
+	{"object": "Booking", "name": "hostAccount", "script": "r_accountBookings_accountEntryId > 0", "error": "Choose the host account for this booking"},
+	{"object": "Conversation", "name": "hostAccount", "script": "r_accountConversations_accountEntryId > 0", "error": "Choose the host account for this conversation"},
+	{"object": "Message", "name": "hostAccount", "script": "r_accountMessages_accountEntryId > 0", "error": "Choose the host account for this message"}
 ]

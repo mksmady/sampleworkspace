@@ -1,7 +1,7 @@
 // Creates the expression validation rules in data/validations.json (docs/data-model.md section 5),
 // then verifies each one with a GET.
 // Idempotent: rules are looked up by ERC (MB_<Object>_<name>) and updated in place when they differ.
-// Every rule is a partial validation, so its error shows on the field it checks. Nothing is ever deleted.
+// Rules with a "field" show their error on it; the others on the form. Nothing is ever deleted.
 //
 // Usage: node scripts/setup/validations.js [--verify-only]
 
@@ -24,10 +24,12 @@ function payload(rule) {
 		errorLabel: {[LANGUAGE_ID]: rule.error},
 		externalReferenceCode: ruleERC(rule),
 		name: {[LANGUAGE_ID]: words(rule.name)},
-		objectValidationRuleSettings: [
-			{name: 'outputObjectFieldExternalReferenceCode', value: `MB_${rule.object}_${rule.field}`},
-		],
-		outputType: 'partialValidation',
+		// Rules on a field show their error on it; rules without one (e.g. on a relationship) on the form.
+
+		objectValidationRuleSettings: rule.field
+			? [{name: 'outputObjectFieldExternalReferenceCode', value: `MB_${rule.object}_${rule.field}`}]
+			: [],
+		outputType: rule.field ? 'partialValidation' : 'fullValidation',
 		script: rule.script,
 	};
 }
@@ -56,7 +58,7 @@ function problems(rule, actual) {
 		(setting) => setting.name === 'outputObjectFieldExternalReferenceCode'
 	);
 
-	if (output?.value !== expected.objectValidationRuleSettings[0].value) {
+	if (output?.value !== expected.objectValidationRuleSettings[0]?.value) {
 		issues.push(`output field=${JSON.stringify(output?.value)}`);
 	}
 
