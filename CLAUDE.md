@@ -10,7 +10,7 @@ The website and a mobile app both run on this Liferay instance. The app uses the
 
 * `docs/Maddybaba\_App\_Design.pdf` — website and app screens
 * `docs/data-model.md` — picklists, objects, fields, relationships, validations, permissions, actions. **Source of truth.**
-* `docs/search.md` — search design, Blueprint, synonyms, `/search/trips` API
+* `docs/search.md` — search design, relevance and synonyms (in mb-search-service), `/search/trips` API
 
 Follow the specs exactly. If something in a spec is wrong, unsupported on this Liferay version, or ambiguous, stop and ask. Don't improvise. When a spec changes, update the doc in the same commit.
 
@@ -73,7 +73,7 @@ client-extensions/
 5. Accounts, roles, permissions
 6. Seed data
 7. Object actions (mb-actions-service), including search denormalization
-8. Search: Blueprint, synonyms, mb-search-service
+8. Search: mb-search-service (relevance, synonyms, availability; Blueprints need LES)
 9. Package objects as the mb-objects-batch client extension and test on a clean instance
 10. Website pages, fragments and display pages; then mobile app integration
 

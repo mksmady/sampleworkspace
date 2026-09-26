@@ -369,6 +369,17 @@ Plural label: App Waitlist Entries.
 | source | Text | |
 | signedUpAt | DateTime | R |
 
+### 3.24 SearchQueryLog — `MB_SearchQueryLog`
+Plural label: Search Query Logs. Written by `mb-search-service` for every search (search.md section 9). No relationships; only Ops Admin can read it.
+
+| Field | Type | Flags | Notes |
+|---|---|---|---|
+| queryText | Text | | |
+| filtersUsed | LongText | | JSON of the other parameters |
+| resultCount | Integer | | |
+| source | Picklist `MB_BookingSource` | | web, app or hostLink |
+| searchedAt | DateTime | R | |
+
 ## 4. Relationships
 
 All are one-to-many unless noted. Relationship ERC = `MB_` + name.
