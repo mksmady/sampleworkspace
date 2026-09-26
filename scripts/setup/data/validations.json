@@ -1,0 +1,17 @@
+[
+	{"object": "Host", "name": "phoneFormat", "field": "phone", "script": "match(phone, \"^\\+91[6-9]\\d{9}$\")", "error": "Enter a valid Indian mobile number (+91…)"},
+	{"object": "Host", "name": "termsAccepted", "field": "termsAccepted", "script": "termsAccepted == true", "error": "Please accept the host terms and commission policy"},
+	{"object": "Host", "name": "handleFormat", "field": "handle", "script": "match(handle, \"^[a-z0-9-]{3,30}$\")", "error": "Use 3–30 lowercase letters, numbers or hyphens"},
+	{"object": "Traveler", "name": "phoneFormat", "field": "phone", "script": "isEmpty(phone) OR match(phone, \"^\\+91[6-9]\\d{9}$\")", "error": "Enter a valid Indian mobile number (+91…)"},
+	{"object": "Partner", "name": "phoneFormat", "field": "phone", "script": "isEmpty(phone) OR match(phone, \"^\\+91[6-9]\\d{9}$\")", "error": "Enter a valid Indian mobile number (+91…)"},
+	{"object": "Partner", "name": "emailFormat", "field": "email", "script": "isEmpty(email) OR isEmailAddress(email)", "error": "Enter a valid email address"},
+	{"object": "Partner", "name": "gstinFormat", "field": "gstin", "script": "isEmpty(gstin) OR match(gstin, \"^\\d{2}[A-Z]{5}\\d{4}[A-Z][A-Z\\d]Z[A-Z\\d]$\")", "error": "Invalid GSTIN"},
+	{"object": "Booking", "name": "phoneFormat", "field": "phone", "script": "match(phone, \"^\\+91[6-9]\\d{9}$\")", "error": "Enter a valid Indian mobile number (+91…)"},
+	{"object": "Booking", "name": "emailFormat", "field": "email", "script": "isEmailAddress(email)", "error": "Enter a valid email address"},
+	{"object": "Booking", "name": "travelerCountMin", "field": "travelerCount", "script": "travelerCount >= 1", "error": "Traveler count must be at least 1"},
+	{"object": "AppWaitlist", "name": "emailFormat", "field": "email", "script": "isEmailAddress(email)", "error": "Enter a valid email address"},
+	{"object": "Review", "name": "ratingRange", "field": "rating", "script": "rating >= 1 AND rating <= 5", "error": "Rating must be 1–5"},
+	{"object": "ListingInclusion", "name": "addOnPrice", "field": "addOnPrice", "active": false, "script": "inclusionType != \"addOn\" OR NOT(isEmpty(addOnPrice))", "error": "Add-ons need a price", "note": "Inactive: expressions can't read picklists and Groovy is disabled. Replaced by an objectValidationRule microservice in phase 7."},
+	{"object": "BookingItem", "name": "quantityMin", "field": "quantity", "script": "quantity >= 1", "error": "Quantity must be at least 1"},
+	{"object": "AvailabilitySlot", "name": "capacityMin", "field": "capacity", "script": "capacity >= 1", "error": "Capacity must be at least 1"}
+]
