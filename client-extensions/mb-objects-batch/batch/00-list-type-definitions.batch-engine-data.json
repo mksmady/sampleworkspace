@@ -1,0 +1,1065 @@
+{
+	"configuration": {
+		"className": "com.liferay.headless.admin.list.type.dto.v1_0.ListTypeDefinition",
+		"parameters": {
+			"containsHeaders": "true",
+			"createStrategy": "UPSERT",
+			"importStrategy": "ON_ERROR_FAIL",
+			"updateStrategy": "UPDATE"
+		},
+		"taskItemDelegateName": "DEFAULT"
+	},
+	"items": [
+		{
+			"externalReferenceCode": "MB_BookingSource",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_BookingSource_web",
+					"key": "web",
+					"name_i18n": {
+						"en-US": "Web"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_BookingSource_app",
+					"key": "app",
+					"name_i18n": {
+						"en-US": "App"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_BookingSource_hostLink",
+					"key": "hostLink",
+					"name_i18n": {
+						"en-US": "Host Link"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Booking Source"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_BookingStatus",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_BookingStatus_pendingPayment",
+					"key": "pendingPayment",
+					"name_i18n": {
+						"en-US": "Pending Payment"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_BookingStatus_confirmed",
+					"key": "confirmed",
+					"name_i18n": {
+						"en-US": "Confirmed"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_BookingStatus_completed",
+					"key": "completed",
+					"name_i18n": {
+						"en-US": "Completed"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_BookingStatus_cancelled",
+					"key": "cancelled",
+					"name_i18n": {
+						"en-US": "Cancelled"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_BookingStatus_refunded",
+					"key": "refunded",
+					"name_i18n": {
+						"en-US": "Refunded"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Booking Status"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_CommissionStatus",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_CommissionStatus_pending",
+					"key": "pending",
+					"name_i18n": {
+						"en-US": "Pending"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_CommissionStatus_available",
+					"key": "available",
+					"name_i18n": {
+						"en-US": "Available"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_CommissionStatus_paidOut",
+					"key": "paidOut",
+					"name_i18n": {
+						"en-US": "Paid Out"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_CommissionStatus_reversed",
+					"key": "reversed",
+					"name_i18n": {
+						"en-US": "Reversed"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Commission Status"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_HostStatus",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_HostStatus_pendingVerification",
+					"key": "pendingVerification",
+					"name_i18n": {
+						"en-US": "Pending Verification"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_HostStatus_active",
+					"key": "active",
+					"name_i18n": {
+						"en-US": "Active"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_HostStatus_suspended",
+					"key": "suspended",
+					"name_i18n": {
+						"en-US": "Suspended"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Host Status"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_HostTier",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_HostTier_standard",
+					"key": "standard",
+					"name_i18n": {
+						"en-US": "Standard"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_HostTier_superHost",
+					"key": "superHost",
+					"name_i18n": {
+						"en-US": "Super Host"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Host Tier"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_HostType",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_HostType_partnerStays",
+					"key": "partnerStays",
+					"name_i18n": {
+						"en-US": "Partner Stays"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_HostType_localGuide",
+					"key": "localGuide",
+					"name_i18n": {
+						"en-US": "Local Guide"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_HostType_activities",
+					"key": "activities",
+					"name_i18n": {
+						"en-US": "Activities"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_HostType_tourPackages",
+					"key": "tourPackages",
+					"name_i18n": {
+						"en-US": "Tour Packages"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Host Type"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_InclusionType",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_InclusionType_included",
+					"key": "included",
+					"name_i18n": {
+						"en-US": "Included"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_InclusionType_addOn",
+					"key": "addOn",
+					"name_i18n": {
+						"en-US": "Add-on"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Inclusion Type"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_IndianState",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_IndianState_andhraPradesh",
+					"key": "andhraPradesh",
+					"name_i18n": {
+						"en-US": "Andhra Pradesh"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_arunachalPradesh",
+					"key": "arunachalPradesh",
+					"name_i18n": {
+						"en-US": "Arunachal Pradesh"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_assam",
+					"key": "assam",
+					"name_i18n": {
+						"en-US": "Assam"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_bihar",
+					"key": "bihar",
+					"name_i18n": {
+						"en-US": "Bihar"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_chhattisgarh",
+					"key": "chhattisgarh",
+					"name_i18n": {
+						"en-US": "Chhattisgarh"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_goa",
+					"key": "goa",
+					"name_i18n": {
+						"en-US": "Goa"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_gujarat",
+					"key": "gujarat",
+					"name_i18n": {
+						"en-US": "Gujarat"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_haryana",
+					"key": "haryana",
+					"name_i18n": {
+						"en-US": "Haryana"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_himachalPradesh",
+					"key": "himachalPradesh",
+					"name_i18n": {
+						"en-US": "Himachal Pradesh"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_jharkhand",
+					"key": "jharkhand",
+					"name_i18n": {
+						"en-US": "Jharkhand"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_karnataka",
+					"key": "karnataka",
+					"name_i18n": {
+						"en-US": "Karnataka"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_kerala",
+					"key": "kerala",
+					"name_i18n": {
+						"en-US": "Kerala"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_madhyaPradesh",
+					"key": "madhyaPradesh",
+					"name_i18n": {
+						"en-US": "Madhya Pradesh"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_maharashtra",
+					"key": "maharashtra",
+					"name_i18n": {
+						"en-US": "Maharashtra"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_manipur",
+					"key": "manipur",
+					"name_i18n": {
+						"en-US": "Manipur"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_meghalaya",
+					"key": "meghalaya",
+					"name_i18n": {
+						"en-US": "Meghalaya"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_mizoram",
+					"key": "mizoram",
+					"name_i18n": {
+						"en-US": "Mizoram"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_nagaland",
+					"key": "nagaland",
+					"name_i18n": {
+						"en-US": "Nagaland"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_odisha",
+					"key": "odisha",
+					"name_i18n": {
+						"en-US": "Odisha"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_punjab",
+					"key": "punjab",
+					"name_i18n": {
+						"en-US": "Punjab"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_rajasthan",
+					"key": "rajasthan",
+					"name_i18n": {
+						"en-US": "Rajasthan"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_sikkim",
+					"key": "sikkim",
+					"name_i18n": {
+						"en-US": "Sikkim"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_tamilNadu",
+					"key": "tamilNadu",
+					"name_i18n": {
+						"en-US": "Tamil Nadu"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_telangana",
+					"key": "telangana",
+					"name_i18n": {
+						"en-US": "Telangana"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_tripura",
+					"key": "tripura",
+					"name_i18n": {
+						"en-US": "Tripura"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_uttarPradesh",
+					"key": "uttarPradesh",
+					"name_i18n": {
+						"en-US": "Uttar Pradesh"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_uttarakhand",
+					"key": "uttarakhand",
+					"name_i18n": {
+						"en-US": "Uttarakhand"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_westBengal",
+					"key": "westBengal",
+					"name_i18n": {
+						"en-US": "West Bengal"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_andamanAndNicobarIslands",
+					"key": "andamanAndNicobarIslands",
+					"name_i18n": {
+						"en-US": "Andaman and Nicobar Islands"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_chandigarh",
+					"key": "chandigarh",
+					"name_i18n": {
+						"en-US": "Chandigarh"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_dadraAndNagarHaveliAndDamanAndDiu",
+					"key": "dadraAndNagarHaveliAndDamanAndDiu",
+					"name_i18n": {
+						"en-US": "Dadra and Nagar Haveli and Daman and Diu"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_delhi",
+					"key": "delhi",
+					"name_i18n": {
+						"en-US": "Delhi"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_jammuAndKashmir",
+					"key": "jammuAndKashmir",
+					"name_i18n": {
+						"en-US": "Jammu and Kashmir"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_ladakh",
+					"key": "ladakh",
+					"name_i18n": {
+						"en-US": "Ladakh"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_lakshadweep",
+					"key": "lakshadweep",
+					"name_i18n": {
+						"en-US": "Lakshadweep"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_IndianState_puducherry",
+					"key": "puducherry",
+					"name_i18n": {
+						"en-US": "Puducherry"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Indian State"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_Month",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_Month_january",
+					"key": "january",
+					"name_i18n": {
+						"en-US": "January"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_Month_february",
+					"key": "february",
+					"name_i18n": {
+						"en-US": "February"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_Month_march",
+					"key": "march",
+					"name_i18n": {
+						"en-US": "March"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_Month_april",
+					"key": "april",
+					"name_i18n": {
+						"en-US": "April"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_Month_may",
+					"key": "may",
+					"name_i18n": {
+						"en-US": "May"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_Month_june",
+					"key": "june",
+					"name_i18n": {
+						"en-US": "June"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_Month_july",
+					"key": "july",
+					"name_i18n": {
+						"en-US": "July"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_Month_august",
+					"key": "august",
+					"name_i18n": {
+						"en-US": "August"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_Month_september",
+					"key": "september",
+					"name_i18n": {
+						"en-US": "September"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_Month_october",
+					"key": "october",
+					"name_i18n": {
+						"en-US": "October"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_Month_november",
+					"key": "november",
+					"name_i18n": {
+						"en-US": "November"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_Month_december",
+					"key": "december",
+					"name_i18n": {
+						"en-US": "December"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Month"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_PackageStatus",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_PackageStatus_draft",
+					"key": "draft",
+					"name_i18n": {
+						"en-US": "Draft"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PackageStatus_quoted",
+					"key": "quoted",
+					"name_i18n": {
+						"en-US": "Quoted"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PackageStatus_booked",
+					"key": "booked",
+					"name_i18n": {
+						"en-US": "Booked"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PackageStatus_abandoned",
+					"key": "abandoned",
+					"name_i18n": {
+						"en-US": "Abandoned"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Package Status"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_PartnershipStatus",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_PartnershipStatus_active",
+					"key": "active",
+					"name_i18n": {
+						"en-US": "Active"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PartnershipStatus_paused",
+					"key": "paused",
+					"name_i18n": {
+						"en-US": "Paused"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PartnershipStatus_ended",
+					"key": "ended",
+					"name_i18n": {
+						"en-US": "Ended"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Partnership Status"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_PartnerType",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_PartnerType_hotel",
+					"key": "hotel",
+					"name_i18n": {
+						"en-US": "Hotel"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PartnerType_resort",
+					"key": "resort",
+					"name_i18n": {
+						"en-US": "Resort"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PartnerType_homestay",
+					"key": "homestay",
+					"name_i18n": {
+						"en-US": "Homestay"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PartnerType_camp",
+					"key": "camp",
+					"name_i18n": {
+						"en-US": "Camp"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PartnerType_activityOperator",
+					"key": "activityOperator",
+					"name_i18n": {
+						"en-US": "Activity Operator"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PartnerType_transport",
+					"key": "transport",
+					"name_i18n": {
+						"en-US": "Transport"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Partner Type"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_PaymentMethod",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_PaymentMethod_upi",
+					"key": "upi",
+					"name_i18n": {
+						"en-US": "UPI"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PaymentMethod_card",
+					"key": "card",
+					"name_i18n": {
+						"en-US": "Credit / Debit Card"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PaymentMethod_netBanking",
+					"key": "netBanking",
+					"name_i18n": {
+						"en-US": "Net Banking"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Payment Method"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_PaymentStatus",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_PaymentStatus_initiated",
+					"key": "initiated",
+					"name_i18n": {
+						"en-US": "Initiated"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PaymentStatus_success",
+					"key": "success",
+					"name_i18n": {
+						"en-US": "Success"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PaymentStatus_failed",
+					"key": "failed",
+					"name_i18n": {
+						"en-US": "Failed"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PaymentStatus_refunded",
+					"key": "refunded",
+					"name_i18n": {
+						"en-US": "Refunded"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Payment Status"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_PayoutStatus",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_PayoutStatus_requested",
+					"key": "requested",
+					"name_i18n": {
+						"en-US": "Requested"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PayoutStatus_processing",
+					"key": "processing",
+					"name_i18n": {
+						"en-US": "Processing"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PayoutStatus_paid",
+					"key": "paid",
+					"name_i18n": {
+						"en-US": "Paid"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PayoutStatus_failed",
+					"key": "failed",
+					"name_i18n": {
+						"en-US": "Failed"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Payout Status"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_PriceUnit",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_PriceUnit_perPerson",
+					"key": "perPerson",
+					"name_i18n": {
+						"en-US": "Per Person"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PriceUnit_perNight",
+					"key": "perNight",
+					"name_i18n": {
+						"en-US": "Per Night"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PriceUnit_perRoom",
+					"key": "perRoom",
+					"name_i18n": {
+						"en-US": "Per Room"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PriceUnit_perGroup",
+					"key": "perGroup",
+					"name_i18n": {
+						"en-US": "Per Group"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PriceUnit_perTrip",
+					"key": "perTrip",
+					"name_i18n": {
+						"en-US": "Per Trip"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Price Unit"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_RecoFactor",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_RecoFactor_pastTravel",
+					"key": "pastTravel",
+					"name_i18n": {
+						"en-US": "Past Travel"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_RecoFactor_currentLocation",
+					"key": "currentLocation",
+					"name_i18n": {
+						"en-US": "Current Location"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_RecoFactor_weather",
+					"key": "weather",
+					"name_i18n": {
+						"en-US": "Weather"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_RecoFactor_monthSeason",
+					"key": "monthSeason",
+					"name_i18n": {
+						"en-US": "Month & Season"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_RecoFactor_publicHolidays",
+					"key": "publicHolidays",
+					"name_i18n": {
+						"en-US": "Public Holidays"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Reco Factor"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_RecoSection",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_RecoSection_placesNow",
+					"key": "placesNow",
+					"name_i18n": {
+						"en-US": "Places at Their Best Now"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_RecoSection_hostsForYou",
+					"key": "hostsForYou",
+					"name_i18n": {
+						"en-US": "Hosts You'll Get Along With"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_RecoSection_nearYou",
+					"key": "nearYou",
+					"name_i18n": {
+						"en-US": "Near You This Weekend"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_RecoSection_longWeekend",
+					"key": "longWeekend",
+					"name_i18n": {
+						"en-US": "Long Weekend"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Reco Section"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_SenderType",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_SenderType_traveler",
+					"key": "traveler",
+					"name_i18n": {
+						"en-US": "Traveler"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_SenderType_host",
+					"key": "host",
+					"name_i18n": {
+						"en-US": "Host"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Sender Type"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_ServiceCategory",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_ServiceCategory_flight",
+					"key": "flight",
+					"name_i18n": {
+						"en-US": "Flight"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_ServiceCategory_stay",
+					"key": "stay",
+					"name_i18n": {
+						"en-US": "Stay"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_ServiceCategory_camping",
+					"key": "camping",
+					"name_i18n": {
+						"en-US": "Camping"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_ServiceCategory_trekking",
+					"key": "trekking",
+					"name_i18n": {
+						"en-US": "Trekking"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_ServiceCategory_paragliding",
+					"key": "paragliding",
+					"name_i18n": {
+						"en-US": "Paragliding"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_ServiceCategory_localGuide",
+					"key": "localGuide",
+					"name_i18n": {
+						"en-US": "Local Guide"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_ServiceCategory_activity",
+					"key": "activity",
+					"name_i18n": {
+						"en-US": "Activity"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_ServiceCategory_tourPackage",
+					"key": "tourPackage",
+					"name_i18n": {
+						"en-US": "Tour Package"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Service Category"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_SlotStatus",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_SlotStatus_open",
+					"key": "open",
+					"name_i18n": {
+						"en-US": "Open"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_SlotStatus_full",
+					"key": "full",
+					"name_i18n": {
+						"en-US": "Full"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_SlotStatus_closed",
+					"key": "closed",
+					"name_i18n": {
+						"en-US": "Closed"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Slot Status"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_SubscriptionStatus",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_SubscriptionStatus_active",
+					"key": "active",
+					"name_i18n": {
+						"en-US": "Active"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_SubscriptionStatus_expired",
+					"key": "expired",
+					"name_i18n": {
+						"en-US": "Expired"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_SubscriptionStatus_cancelled",
+					"key": "cancelled",
+					"name_i18n": {
+						"en-US": "Cancelled"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Subscription Status"
+			}
+		}
+	]
+}
