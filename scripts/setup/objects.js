@@ -1,8 +1,9 @@
-// Creates the object definitions and their plain fields from data/objects.json
-// (docs/data-model.md section 3), then verifies them with a GET.
+// Creates the object definitions and their fields from data/objects.json (docs/data-model.md
+// section 3), then verifies them with a GET.
 // Idempotent: looks up definitions by ERC and fields by name, and only writes when something differs.
-// Fields are only changed while a definition is a draft. On published definitions, differences are
-// reported, never applied. Nothing is ever deleted, and a field's type is never changed.
+// Missing fields are added to drafts and published definitions alike. Existing fields are only changed
+// while a definition is a draft; on published definitions, differences are reported, never applied.
+// Nothing is ever deleted, and a field's type is never changed.
 //
 // Usage: node scripts/setup/objects.js [--verify-only] [--publish]
 
@@ -32,7 +33,15 @@ const DB_TYPES = {
 	Text: 'String',
 };
 const TEXT_TYPES = ['LongText', 'RichText', 'Text'];
-const KEYWORD_TYPES = ['MultiselectPicklist', 'Picklist'];
+const KEYWORD_TYPES = ['AutoIncrement', 'MultiselectPicklist', 'Picklist'];
+
+// Computed on read, so they can't be indexed. Liferay picks their DB type.
+
+const COMPUTED_TYPES = ['Aggregation', 'Formula'];
+
+// Liferay doesn't return these after creation, so they're checked by the phase 4 data test instead.
+
+const WRITE_ONLY_SETTINGS = ['initialValue'];
 
 const definitionERC = (object) => `MB_${object.name}`;
 const fieldERC = (object, field) => `MB_${object.name}_${field.name}`;
@@ -69,21 +78,62 @@ function fieldSettings(field) {
 		};
 	}
 
+	if (field.aggregation) {
+		const {field: summarized, filter, relationship} = field.aggregation;
+
+		settings.function = field.aggregation.function;
+		settings.objectRelationshipName = relationship;
+
+		if (summarized) {
+			settings.objectFieldName = summarized;
+		}
+
+		if (filter) {
+			settings.filters = [
+				{filterBy: filter.field, filterType: 'includes', json: {in: filter.includes}},
+			];
+		}
+	}
+
+	if (field.formula) {
+		settings.output = field.formula.output;
+		settings.script = field.formula.script;
+	}
+
+	if (field.autoIncrement) {
+		settings.initialValue = field.autoIncrement.initialValue;
+		settings.prefix = field.autoIncrement.prefix;
+	}
+
 	return settings;
+}
+
+// Reduces aggregation filters to comparable {filterBy, filterType, json} with parsed json.
+
+function filtersKey(filters) {
+	return JSON.stringify(
+		(filters || []).map(({filterBy, filterType, json}) => ({
+			filterBy,
+			filterType,
+			json: typeof json === 'string' ? JSON.parse(json) : json,
+		}))
+	);
 }
 
 function fieldPayload(object, field) {
 	const flags = field.flags || '';
+	const computed = COMPUTED_TYPES.includes(field.type);
+
 	// Liferay always indexes attachment file names as full text in the default language.
 
 	const fullText = (flags.includes('S') && TEXT_TYPES.includes(field.type)) || field.type === 'Attachment';
 	const keyword = !fullText && (TEXT_TYPES.includes(field.type) || KEYWORD_TYPES.includes(field.type));
 
 	return {
-		DBType: DB_TYPES[field.type],
+		...(DB_TYPES[field.type] && {DBType: DB_TYPES[field.type]}),
 		businessType: field.type,
 		externalReferenceCode: fieldERC(object, field),
-		indexed: true,
+		indexed: !computed,
 		indexedAsKeyword: keyword,
 		...(fullText && {indexedLanguageId: LANGUAGE_ID}),
 		label: {[LANGUAGE_ID]: words(field.name)},
@@ -127,12 +177,23 @@ function settingProblems(expected, actual) {
 	const problems = [];
 
 	for (const {name, value} of expected) {
+		if (WRITE_ONLY_SETTINGS.includes(name)) {
+			continue;
+		}
+
 		const actualValue = actualByName.get(name);
 
-		const same =
-			name === 'stateFlow'
-				? JSON.stringify(stateFlowMap(value)) === JSON.stringify(stateFlowMap(actualValue))
-				: String(actualValue) === String(value);
+		let same;
+
+		if (name === 'stateFlow') {
+			same = JSON.stringify(stateFlowMap(value)) === JSON.stringify(stateFlowMap(actualValue));
+		}
+		else if (name === 'filters') {
+			same = filtersKey(value) === filtersKey(actualValue);
+		}
+		else {
+			same = String(actualValue) === String(value);
+		}
 
 		if (!same) {
 			problems.push(`${name}=${JSON.stringify(actualValue)}`);
@@ -211,18 +272,18 @@ async function sync(object) {
 			continue;
 		}
 
-		if (actual && actual.businessType !== expected.businessType) {
+		if (!actual) {
+			await liferay.post(`${API}/object-definitions/by-external-reference-code/${definitionERC(object)}/object-fields`, expected);
+			changed = true;
+		}
+		else if (actual.businessType !== expected.businessType) {
 			console.warn(`  ${object.name}.${field.name}: type is ${actual.businessType}, spec says ${expected.businessType}. Needs a migration, not changed.`);
 		}
 		else if (!draft) {
 			console.warn(`  ${object.name}.${field.name}: differs on a published object, not changed: ${problems.join('; ')}`);
 		}
-		else if (actual) {
-			await liferay.put(`${API}/object-fields/${actual.id}`, expected);
-			changed = true;
-		}
 		else {
-			await liferay.post(`${API}/object-definitions/by-external-reference-code/${definitionERC(object)}/object-fields`, expected);
+			await liferay.put(`${API}/object-fields/${actual.id}`, expected);
 			changed = true;
 		}
 	}

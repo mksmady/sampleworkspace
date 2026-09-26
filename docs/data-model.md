@@ -121,7 +121,7 @@ Plural label: Hosts. Title field: `displayName`. Workflow: Single Approver (KYC 
 | linkClicks | Aggregation | | Count of ReferralClick |
 | totalBookings | Aggregation | | Count of Booking via `MB_hostBookings` |
 | partnerCount | Aggregation | | Count of HostPartnership where partnershipStatus = active |
-| earningsThisMonth | Aggregation | | Sum of Commission.amount, filter createDate in current month (if the version can't filter by relative date, compute with a scheduled action into a PrecisionDecimal field) |
+| earningsThisMonth | PrecisionDecimal | | Sum of Commission.amount created this month. Aggregation filters only take fixed date ranges on this version, so a scheduled action (phase 7) stores it |
 | availableBalance | Aggregation | | Sum of Commission.amount where commissionStatus = available |
 
 ### 3.4 HostPartnership — `MB_HostPartnership`
@@ -233,7 +233,7 @@ Plural label: Bookings. Title field: `bookingNumber` (set in phase 4, when the A
 
 | Field | Type | Flags | Notes |
 |---|---|---|---|
-| bookingNumber | AutoIncrement | R | Prefix `MB-`, start 100001 |
+| bookingNumber | AutoIncrement | | Prefix `MB-`, start 100001. Always filled by Liferay, so not marked required. Numbers can skip: a Booking POST that fails validation still uses one. If gap-free invoice numbers are needed, add a separate numbering step in phase 7 |
 | leadName | Text | R | |
 | phone | Text | R | Indian phone validation |
 | email | Text | R | Email validation |
@@ -242,7 +242,7 @@ Plural label: Bookings. Title field: `bookingNumber` (set in phase 4, when the A
 | subtotal | Aggregation | | Sum of BookingItem.lineTotal |
 | serviceFee | PrecisionDecimal | | Set by action |
 | taxes | PrecisionDecimal | | GST, set by action |
-| total | Formula | | `subtotal + serviceFee + taxes` |
+| total | PrecisionDecimal | | `subtotal + serviceFee + taxes`, stored by the checkout action (phase 7). Not a Formula: formulas can't read aggregation fields (`Variable "subtotal" not defined`) |
 | bookingStatus | Picklist `MB_BookingStatus` | R | Default pendingPayment. Use as a State field if supported |
 | source | Picklist `MB_BookingSource` | | |
 
@@ -258,7 +258,7 @@ Plural label: Booking Items.
 | itemDetail | Text | | "Delhi → Dharamshala (Gaggal)" |
 | quantity | Integer | R | ≥ 1 |
 | unitPrice | PrecisionDecimal | R | Snapshot of the price |
-| lineTotal | Formula | | `quantity * unitPrice` |
+| lineTotal | PrecisionDecimal | | `quantity * unitPrice`, stored by an action (phase 7). Not a Formula: aggregations (subtotal, packageTotal) can't sum Formula fields |
 | supplierReference | Text | | PNR or external reference |
 | isSelected | Boolean | | Default true |
 
@@ -282,7 +282,7 @@ Plural label: Commissions.
 |---|---|---|---|
 | rate | PrecisionDecimal | R | Percent, copied at booking time |
 | baseAmount | PrecisionDecimal | R | |
-| amount | Formula | | `baseAmount * rate / 100` |
+| amount | PrecisionDecimal | | `baseAmount * rate / 100`, stored by an action (phase 7). Not a Formula: aggregations (availableBalance) can't sum Formula fields |
 | commissionStatus | Picklist `MB_CommissionStatus` | R | |
 | availableOn | Date | | |
 
@@ -423,18 +423,25 @@ A BookingItem belongs either to a TripPackage (while the cart is being built) or
 
 ## 5. Validations
 
+Expression rules on a single field show their error on that field (partial validation); the others show it on the form.
+
 | Object | Rule | Type | Error message |
 |---|---|---|---|
-| Host, Traveler, Partner, Booking | phone matches `^\+91[6-9]\d{9}$` | Expression | Enter a valid Indian mobile number (+91…) |
+| Host, Booking | phone matches `^\+91[6-9]\d{9}$` | Expression | Enter a valid Indian mobile number (+91…) |
+| Traveler, Partner | phone empty or matches `^\+91[6-9]\d{9}$` | Expression | Enter a valid Indian mobile number (+91…) |
+| Booking | email is a valid email address | Expression | Enter a valid email address |
+| Partner | email empty or a valid email address | Expression | Enter a valid email address |
+| AppWaitlist | email is a valid email address | Expression | Enter a valid email address |
 | Host | `termsAccepted == true` | Expression | Please accept the host terms and commission policy |
 | Host | handle matches `^[a-z0-9-]{3,30}$` | Expression | Use 3–30 lowercase letters, numbers or hyphens |
-| Partner | gstin matches `^\d{2}[A-Z]{5}\d{4}[A-Z][A-Z\d]Z[A-Z\d]$` | Expression | Invalid GSTIN |
+| Partner | gstin empty or matches `^\d{2}[A-Z]{5}\d{4}[A-Z][A-Z\d]Z[A-Z\d]$` | Expression | Invalid GSTIN |
 | Review | rating between 1 and 5 | Expression | Rating must be 1–5 |
-| ListingInclusion | addOnPrice required when inclusionType = addOn | Expression or Groovy | Add-ons need a price |
-| BookingItem, Booking | quantity ≥ 1, travelerCount ≥ 1 | Expression | |
-| AvailabilitySlot | capacity ≥ 1 | Expression | |
-| Payout | amount ≤ host availableBalance | Groovy or microservice | Amount exceeds available balance |
-| Booking | travelerCount ≤ remaining slot capacity | Microservice | Not enough spots on this date |
+| ListingInclusion | addOnPrice required when inclusionType = addOn | Microservice (phase 7, `objectValidationRule` client extension). Expressions can't read picklists and Groovy is disabled on this instance; the expression rule stays inactive until then | Add-ons need a price |
+| BookingItem | quantity ≥ 1 | Expression | Quantity must be at least 1 |
+| Booking | travelerCount ≥ 1 | Expression | Traveler count must be at least 1 |
+| AvailabilitySlot | capacity ≥ 1 | Expression | Capacity must be at least 1 |
+| Payout | amount ≤ host availableBalance | Microservice (phase 7) | Amount exceeds available balance |
+| Booking | travelerCount ≤ remaining slot capacity | Microservice (phase 7) | Not enough spots on this date |
 
 ## 6. Accounts, roles and permissions
 
@@ -458,7 +465,10 @@ Each Host has a Liferay **Account** (created on host approval). Enable **account
 | On update | Destination / Host | name or region changed | Update denormalized fields on related Listings |
 | On add / update | AvailabilitySlot | | Recalculate Listing.nextAvailableDate; set slotStatus = full when bookedCount ≥ capacity |
 | On add / update | Review | | Recalculate Listing.ratingValue |
-| Before checkout | Booking | | Compute serviceFee and taxes (microservice) |
+| On add / update | BookingItem | | Set lineTotal = quantity × unitPrice (overwrites any client value) |
+| On add / update | Commission | | Set amount = baseAmount × rate / 100 (overwrites any client value) |
+| Scheduled daily | Host | | Recompute earningsThisMonth = sum of the host's Commission.amount created this month |
+| Before checkout | Booking | | Compute serviceFee, taxes and total = subtotal + serviceFee + taxes (microservice) |
 | On update | Payment | paymentStatus = success | Booking.bookingStatus = confirmed |
 | On update | Booking | bookingStatus = confirmed | Create Commission(s) for host and referral host (commissionStatus pending); notify traveler and host (email/SMS) |
 | On update | Booking | bookingStatus = cancelled or refunded | Commission.commissionStatus = reversed; trigger gateway refund |
