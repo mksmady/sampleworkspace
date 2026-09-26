@@ -1,0 +1,21 @@
+{
+	"note": "Search tuning for mb-search-service (docs/search.md sections 4 and 5). Synonyms: each set lists phrases that mean the same; a query phrase matches any of them. Pins: when the whole query equals the pin's query, that listing goes first (if it is in the results). Add synonyms from the zero-result queries in MB_SearchQueryLog.",
+	"synonyms": [
+		["bir", "bir billing", "billing"],
+		["dharamshala", "dharamsala", "gaggal", "kangra"],
+		["mcleod ganj", "mcleodganj", "mcleod", "dharamkot"],
+		["rishikesh", "hrishikesh", "rishikesh uttarakhand"],
+		["kasol", "parvati valley", "tosh", "malana"],
+		["rafting", "river rafting", "white water"],
+		["stay", "hotel", "homestay", "resort", "room"],
+		["camp", "camping", "tent", "glamping"],
+		["trek", "hike", "hiking", "trekking"],
+		["paragliding", "tandem flight", "tandem paragliding"],
+		["guide", "local guide", "city tour", "walk"],
+		["flight", "flights", "tickets", "air ticket"]
+	],
+	"pins": [
+		{"query": "paragliding", "listing": "MB_SEED_listing_paragliding"}
+	],
+	"stopWords": ["a", "an", "and", "at", "for", "from", "in", "near", "of", "on", "the", "to", "with"]
+}
