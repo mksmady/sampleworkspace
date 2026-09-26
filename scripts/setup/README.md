@@ -6,6 +6,7 @@ Environment:
 
 - `LIFERAY_USER`, `LIFERAY_PASSWORD` (required)
 - `LIFERAY_URL` (optional, default `http://localhost:8080`)
+- `LIFERAY_BEARER_TOKEN` (optional): an OAuth2 access token to use instead of basic auth, e.g. to run the `--verify-only` checks on another instance as a client extension's app
 
 | Script | Phase | What it does |
 |---|---|---|
@@ -19,5 +20,6 @@ Environment:
 | `test-users.js` | 5 | **Local instance only.** Creates the test traveler, two hosts (each in their own account, with the Host account role) and ops admin. Sets fresh random passwords on every run and prints them to the terminal only. |
 | `seed.js` | 6 | **Local instance only.** Loads the seed data in `data/seed/` (destinations, partner, hosts, listings, slots, a traveler with a confirmed booking, public holidays), approves seeded Hosts and Listings as the ops test user, and verifies values, aggregations and what each test user can see. Needs `test-users.js` first. Resets the test users' passwords (rerun `test-users.js` to see new ones). `--verify-only` skips the writes. |
 | `actions.js` | 7a | Registers the object actions in `data/actions.json` (ERC `MB_<Object>_<trigger>`, executor `function#mb-actions-service-…`). Deploy `client-extensions/mb-actions-service` first. `--verify-only` skips the writes. |
+| `export-objects-batch.js` | 9 | Regenerates `client-extensions/mb-objects-batch/batch/` (picklists and object definitions) from the configured instance. Run after changing the data model, and review the diff. |
 
 Run them in the order above. Scripts never delete picklists, objects, fields, relationships, roles or data on the instance; things found on the instance but missing from the spec are kept and reported. The one exception is permissions: `roles.js` revokes actions on MB object resources that `data/roles.json` no longer grants.
