@@ -534,7 +534,22 @@ Spring Boot 3.5 / Java 21 microservice client extension. Object actions (ERC `MB
 - Every handler reads fresh, writes only fields that differ, and so ends any chain it starts.
 - Validation rules (section 5): add-on price, payout balance, slot capacity.
 
-Still to do: 7b (host approval → account, payments, commissions from bookings, payouts, host sign-up) and 7c (scheduled jobs, weather/holiday/recommendation refresh, gateways). The daily `nextAvailableDate` refresh (dates pass without any slot change) belongs to 7c.
+### 7.2 Implemented in phase 7b (booking lifecycle)
+
+- **Host** add: `termsAcceptedDate` = now when `termsAccepted` and no date yet.
+- **Host** approved (the update whose workflow status becomes approved): create the host's Account (name = displayName, ERC `MB_account_<host ERC>`) unless the Host is already linked to one, link it (`r_accountHosts_accountEntryId`), add the host's user (`r_userHost_userId`) to it with the account role for their tier (Host, or Super Host for `superHost`), set `hostStatus = active`. The service approves its own follow-up update (6.4). Steps already done are skipped, so re-approval changes nothing.
+- **Payment** add/update: when `paymentStatus` becomes success, a `pendingPayment` booking becomes `confirmed`.
+- **Booking** `bookingStatus` becomes confirmed: commissions, at most one per role (ERC `MB_commission_<booking id>_host` / `_referral`):
+  - host (`hostBookings`): `Host.commissionRate` % of the lineTotal of the booking's items whose listing belongs to that host (flights have no host);
+  - referral host (`referralBookings`, if different): `mb.commission.referral-percent` (default **5**) % of the subtotal;
+  - `commissionStatus = pending`, `availableOn` = trip end (package endDate, else travelDate) + `mb.commission.available-after-days` (default **7**), account = the host's account. The two defaults are 7b assumptions (the spec left them open).
+  - Traveler and host notification: logged only until email/SMS is configured.
+- **Booking** becomes cancelled or refunded: pending and available commissions become `reversed`; paid-out ones are logged for Ops. Gateway refund: logged (7c).
+- **Payout** add (requested): links the host's free available commissions (not linked to another payout), oldest `availableOn` first, while their total fits the amount. The payout-balance rule (section 5) checks against those free commissions, so the same money can't be requested twice. Gateway call: logged (7c).
+- **Payout** becomes paid: linked commissions → `paidOut`, `processedAt` set. Becomes failed: linked commissions are released (still available).
+- **Deferred to phase 10:** the host sign-up and profile-edit service. It needs the signed-in user's token from the website or app.
+
+Still to do in 7c: scheduled jobs (commissions become available, `earningsThisMonth`, daily `nextAvailableDate`), weather/holiday/recommendation refresh, payment and payout gateways, refunds, notifications.
 
 ## 8. Integrations outside Liferay Objects
 
