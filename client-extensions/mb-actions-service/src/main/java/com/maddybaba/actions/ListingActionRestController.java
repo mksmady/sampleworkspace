@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Keeps each Listing's derived fields current (ListingRefresher):
  * - Listing add or update: the listing itself.
- * - Destination or Host update: their listings, when a copied field changed.
+ * - Destination update: its listings, when a copied field changed (Host: HostActionRestController).
  * - Review add, update or delete: the listing it belongs (or belonged) to (slots: see
  *   AvailabilitySlotActionRestController).
  */
@@ -37,7 +37,7 @@ public class ListingActionRestController extends BaseRestController {
 		return ResponseEntity.ok("{}");
 	}
 
-	@PostMapping("/{source:destination|host}")
+	@PostMapping("/{source:destination}")
 	public ResponseEntity<String> parent(
 		@AuthenticationPrincipal Jwt jwt, @PathVariable String source, @RequestBody String json) {
 
@@ -71,13 +71,13 @@ public class ListingActionRestController extends BaseRestController {
 	}
 
 	private static final Map<String, List<String>> _COPIED_FIELDS = Map.of(
-		"destination", List.of("latitude", "longitude", "name", "region", "state"), "host", List.of("displayName"));
+		"destination", List.of("latitude", "longitude", "name", "region", "state"));
 
 	private static final Map<String, String> _LISTING_FIELDS = Map.of(
 		"review", "r_listingReviews_c_listingId");
 
 	private static final Map<String, String> _RELATIONSHIP_FIELDS = Map.of(
-		"destination", "r_destinationListings_c_destinationId", "host", "r_hostListings_c_hostId");
+		"destination", "r_destinationListings_c_destinationId");
 
 	private final ListingRefresher _listingRefresher;
 

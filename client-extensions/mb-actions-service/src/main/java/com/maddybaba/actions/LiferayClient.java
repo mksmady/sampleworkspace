@@ -108,10 +108,13 @@ public class LiferayClient {
 		).toBodilessEntity();
 	}
 
-	public void post(String path, JSONObject body) {
+	/**
+	 * Returns the created or updated resource, or an empty object when the response has no body.
+	 */
+	public JSONObject post(String path, JSONObject body) {
 		_log.info("POST {} {}", path, body);
 
-		_restClient.post(
+		String response = _restClient.post(
 		).uri(
 			path
 		).header(
@@ -121,7 +124,11 @@ public class LiferayClient {
 		).body(
 			body.toString()
 		).retrieve(
-		).toBodilessEntity();
+		).body(
+			String.class
+		);
+
+		return ((response == null) || response.isBlank() || !response.trim().startsWith("{")) ? new JSONObject() : new JSONObject(response);
 	}
 
 	public void put(String path, String body) {
