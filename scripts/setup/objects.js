@@ -149,6 +149,10 @@ function fieldPayload(object, field) {
 
 function definitionProps(object) {
 	return {
+		...(object.accountRestriction && {
+			accountEntryRestricted: true,
+			accountEntryRestrictedObjectFieldName: `r_${object.accountRestriction}_accountEntryId`,
+		}),
 		enableCategorization: false,
 		enableComments: false,
 		externalReferenceCode: definitionERC(object),
@@ -227,7 +231,7 @@ function definitionProblems(object, definition) {
 	const expected = definitionProps(object);
 	const problems = [];
 
-	for (const key of ['enableCategorization', 'enableComments', 'name', 'panelCategoryKey', 'scope', 'titleObjectFieldName']) {
+	for (const key of ['accountEntryRestricted', 'accountEntryRestrictedObjectFieldName', 'enableCategorization', 'enableComments', 'name', 'panelCategoryKey', 'scope', 'titleObjectFieldName']) {
 		if (key in expected && String(definition[key]) !== String(expected[key])) {
 			problems.push(`${key}=${JSON.stringify(definition[key])}`);
 		}

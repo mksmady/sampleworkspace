@@ -11,7 +11,7 @@ const relationships = require('./data/relationships.json');
 const API = '/o/object-admin/v1.0';
 const LANGUAGE_ID = 'en_US';
 
-const SYSTEM_ERCS = {User: 'L_USER'};
+const SYSTEM_ERCS = {Account: 'L_ACCOUNT', User: 'L_USER'};
 
 const definitionERC = (name) => SYSTEM_ERCS[name] || `MB_${name}`;
 const relationshipERC = (relationship) => `MB_${relationship.name}`;

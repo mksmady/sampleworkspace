@@ -440,27 +440,69 @@ Expression rules on a single field show their error on that field (partial valid
 | BookingItem | quantity ≥ 1 | Expression | Quantity must be at least 1 |
 | Booking | travelerCount ≥ 1 | Expression | Traveler count must be at least 1 |
 | AvailabilitySlot | capacity ≥ 1 | Expression | Capacity must be at least 1 |
+| Booking, Conversation, Message | has a host account (`r_account<Object>s_accountEntryId > 0`, section 6.1) | Expression (form-level) | Choose the host account for this booking / conversation / message |
 | Payout | amount ≤ host availableBalance | Microservice (phase 7) | Amount exceeds available balance |
 | Booking | travelerCount ≤ remaining slot capacity | Microservice (phase 7) | Not enough spots on this date |
 
 ## 6. Accounts, roles and permissions
 
-Each Host has a Liferay **Account** (created on host approval). Enable **account restriction** on Listing, Booking, Commission, Payout, HostPartnership, HostSubscription and ReferralClick via a relationship to Account Entry, so hosts only see their own records.
+Each Host has a Liferay **Account** (created on host approval). Scripts: `relationships.js`, `objects.js`, `roles.js`, `workflows.js`; local test users: `test-users.js`.
 
-| Role | Access |
-|---|---|
-| Guest | View published Listing, Destination, Host (public fields), Review, ListingInclusion, AvailabilitySlot. Create AppWaitlist |
-| Traveler (regular role) | Create and view own Traveler, TripPackage, BookingItem, Booking, Payment, Review, Favorite, Conversation, Message. View own Recommendation |
-| Host (account role) | Manage own Listing, ListingInclusion, AvailabilitySlot, HostPartnership. View own Booking, Commission, ReferralClick. Create Payout. Reply in own Conversations |
-| Super Host (account role) | Host permissions plus early-access partner features |
-| Ops Admin (regular role) | Full access. Approves Host and Listing workflows, handles refunds |
+### 6.1 Account restriction
+
+These objects have a one-to-many relationship `account<Object>s` from Account (`L_ACCOUNT`, deletion type prevent) and are **account-restricted** by it: Host, Listing, ListingInclusion, AvailabilitySlot, HostPartnership, HostSubscription, Booking, Commission, Payout, ReferralClick, Conversation, Message.
+
+- Account members see and act on their account's entries through **account roles**. A **regular role** with View on the object sees every account's entries. The **owner** of an entry keeps access to it even when not an account member (a traveler sees their own Booking on the host's account).
+- To create an entry on an account they don't belong to, a regular-role user needs `Account Entry: View` (Traveler has it; it also lets travelers list host account names).
+- Only one relationship drives the restriction, so a referral host can't see referral bookings (`referralBookings`); they see their own Commission records instead.
+- The API accepts an entry without an account, which no host can then see. Booking, Conversation and Message have a validation rule "must have a host account" (`r_account<Object>s_accountEntryId > 0`, section 5 scripts).
+- The Host record is linked to its account by the host-approval action (section 7).
+
+### 6.2 Roles and permissions
+
+`ADD` = add entry. View/Update/Delete apply to entries the role can reach (all entries for regular roles, the account's entries for account roles).
+
+| Role (ERC) | Type | Permissions |
+|---|---|---|
+| Guest (`L_GUEST`, built-in; only these permissions are managed) | regular | View Destination, ListingInclusion, AvailabilitySlot, Review. ADD AppWaitlist |
+| Traveler (`MB_Traveler`) | regular | View Destination, ListingInclusion, AvailabilitySlot, Review, Account Entry. ADD Traveler, TripPackage, BookingItem, Booking, Review, Favorite, Conversation, Message. Own entries through the Owner role |
+| Host (`MB_Host`) | account | View, ADD, Update, Delete Listing, ListingInclusion, AvailabilitySlot, HostPartnership. View Host, Booking, Commission, ReferralClick, Conversation. ADD and View Payout, Message |
+| Super Host (`MB_SuperHost`) | account | Same as Host (early-access features to follow) |
+| Ops Admin (`MB_OpsAdmin`) | regular | ADD, View, Update, Delete, Permissions on every MB object. View Account Entry. Reviews Host and Listing approvals |
+
+Deliberate differences from the original access table:
+
+- **Listings are not viewable directly by guests or travelers.** Liferay doesn't hide entries awaiting approval from users with View, so public listings (approved only) are served by `mb-search-service` (phase 8, see search.md). Hosts see their own account's listings; Ops sees all.
+- **No direct Host access for guests or travelers.** There are no field-level permissions, and Host holds private fields (phone, payoutUpiId, commissionRate). The public host profile comes from `mb-search-service` with public fields only. Hosts see their own Host record (View only, so they can't change tier, hostStatus or commissionRate); host sign-up and profile edits go through a phase 7 service.
+- **Payments and Recommendations are not writable by travelers.** Payments are written only by the payment integration (a traveler-created "success" payment would confirm a booking). Recommendations are created by the nightly job, so travelers don't own them; a phase 7/8 endpoint serves them per traveler.
+- **Reviews**: Guest View includes unpublished reviews. The website and app show only `isPublished = true` (display filter, not access control).
+
+### 6.3 Owner permissions
+
+Liferay grants the Owner role Delete, Permissions, Update and View on each entry when it's created. This can't be changed per object through role permissions. So a traveler can edit or delete their own Booking (tested: they could set `bookingStatus = confirmed` and `total = 1`). Mitigation (phase 7, section 7): an action on Booking add trims the Owner's entry permissions to View, and no action trusts traveler-supplied values: checkout recalculates fees and totals, only a successful Payment webhook confirms a booking, and commissions need a successful Payment.
+
+### 6.4 Approval workflow
+
+"MB Ops Approval" (`scripts/setup/data/mb-ops-approval.xml`) is Liferay's Single Approver with the review task assigned only to Ops Admin and Administrator. Single Approver also assigns review to the account roles Account Administrator and Account Member, which would let a host approve their own listing. It's linked to Host and Listing (company scope). Editing an approved entry sends it back for review.
+
+### 6.5 Instance settings (local instance; required on any instance)
+
+Until a user finishes first login, Liferay treats their API requests as a guest's, so none of their roles apply. On this instance:
+
+- Instance Settings: email verification at login is **disabled**.
+- Password Policies → Default Password Policy: **Change Required** is off (users created by an admin were forced to change their password first).
+- `test-users.js` also accepts the terms of use and sets a reminder question for the test users.
+
+These must be set the same way on the clean instance in phase 9 (and decided for production, where travelers sign up themselves).
 
 ## 7. Object actions and jobs
 
 | Trigger | Object | Condition | Action |
 |---|---|---|---|
 | On add | Host | | Set termsAcceptedDate; start KYC workflow |
-| Workflow approved | Host | | Create Account, assign Host account role, set hostStatus = active |
+| Workflow approved | Host | | Create Account, link the Host record to it (`r_accountHosts_accountEntryId`), assign the Host account role, set hostStatus = active |
+| On add | Booking | | Trim the Owner's entry permissions to View (`PUT /o/c/bookings/{id}/permissions`), see section 6.3 |
+| Host sign-up / profile edit | Host | | Service endpoint that creates the Host entry and applies allowed profile changes (hosts only have View on Host) |
 | On add / update | Listing | | Copy destinationName, stateName, region, latitude, longitude from Destination and hostDisplayName from Host (see search.md) |
 | On update | Destination / Host | name or region changed | Update denormalized fields on related Listings |
 | On add / update | AvailabilitySlot | | Recalculate Listing.nextAvailableDate; set slotStatus = full when bookedCount ≥ capacity |
