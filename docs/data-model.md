@@ -33,6 +33,8 @@ Dependencies force this order:
 7. Object actions and scheduled jobs (section 7)
 8. Seed data (section 9)
 
+On the local instance, steps 1–7 are applied by the setup scripts (`scripts/setup/`). On any other instance, the data model (steps 1–5 and the object actions of step 7, including the relationships from the User and Account system objects and account restriction) is installed by the **`mb-objects-batch` client extension** (phase 9), generated from the local instance by `scripts/setup/export-objects-batch.js`. Roles and permissions, the approval workflow and the instance settings (section 6) are not batch-importable and are applied with `roles.js`, `workflows.js` and the Instance Settings UI; see `client-extensions/mb-objects-batch/README.md` for the install order. Verified in phase 9 on a new virtual instance: every check matches the data files, and a redeploy changes nothing.
+
 Some field types and features (AutoIncrement, Formula, aggregation filters, account restriction) depend on the Liferay version. Check the version in CLAUDE.md and flag anything unsupported instead of silently skipping it.
 
 ## 2. Picklists
