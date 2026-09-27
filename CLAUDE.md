@@ -77,5 +77,5 @@ client-extensions/
 9. Package objects as the mb-objects-batch client extension and test on a clean instance
 10. Website pages, fragments and display pages; then mobile app integration
 
-Current phase: **1**
+Current phase: **10a** (website; host sign-up and profile edit follow in 10b)
 
