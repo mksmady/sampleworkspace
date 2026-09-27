@@ -1,0 +1,108 @@
+assemble:
+    -   from: assets/mb-web.css
+        hashify: mb-web.css
+        into: static
+    -   from: assets/mb-web.js
+        hashify: mb-web.js
+        into: static
+
+# The Maddybaba website's custom elements (phase 10a). One script defines them all and one stylesheet
+# styles them, so every element shares the same files: the browser loads them once.
+# Search, listing and host data come from mb-search-service's public /search API (docs/search.md 8);
+# the app waitlist form posts to /o/c/appwaitlists as the signed-in user or guest.
+
+mb-app-waitlist:
+    cssURLs:
+        -   mb-web.*.css
+    htmlElementName: mb-app-waitlist
+    instanceable: false
+    name: MB App Waitlist
+    portletCategoryName: category.client-extensions
+    type: customElement
+    urls:
+        -   mb-web.*.js
+    useESM: false
+
+mb-categories:
+    cssURLs:
+        -   mb-web.*.css
+    htmlElementName: mb-categories
+    instanceable: false
+    name: MB Categories
+    portletCategoryName: category.client-extensions
+    type: customElement
+    urls:
+        -   mb-web.*.js
+    useESM: false
+
+mb-hero-search:
+    cssURLs:
+        -   mb-web.*.css
+    htmlElementName: mb-hero-search
+    instanceable: false
+    name: MB Hero Search
+    portletCategoryName: category.client-extensions
+    type: customElement
+    urls:
+        -   mb-web.*.js
+    useESM: false
+
+mb-host-profile:
+    cssURLs:
+        -   mb-web.*.css
+    htmlElementName: mb-host-profile
+    instanceable: false
+    name: MB Host Profile
+    portletCategoryName: category.client-extensions
+    type: customElement
+    urls:
+        -   mb-web.*.js
+    useESM: false
+
+mb-listing-detail:
+    cssURLs:
+        -   mb-web.*.css
+    htmlElementName: mb-listing-detail
+    instanceable: false
+    name: MB Listing Detail
+    portletCategoryName: category.client-extensions
+    type: customElement
+    urls:
+        -   mb-web.*.js
+    useESM: false
+
+mb-search-results:
+    cssURLs:
+        -   mb-web.*.css
+    htmlElementName: mb-search-results
+    instanceable: false
+    name: MB Search Results
+    portletCategoryName: category.client-extensions
+    type: customElement
+    urls:
+        -   mb-web.*.js
+    useESM: false
+
+mb-site-footer:
+    cssURLs:
+        -   mb-web.*.css
+    htmlElementName: mb-site-footer
+    instanceable: false
+    name: MB Site Footer
+    portletCategoryName: category.client-extensions
+    type: customElement
+    urls:
+        -   mb-web.*.js
+    useESM: false
+
+mb-site-header:
+    cssURLs:
+        -   mb-web.*.css
+    htmlElementName: mb-site-header
+    instanceable: false
+    name: MB Site Header
+    portletCategoryName: category.client-extensions
+    type: customElement
+    urls:
+        -   mb-web.*.js
+    useESM: false

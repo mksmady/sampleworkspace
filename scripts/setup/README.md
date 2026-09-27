@@ -21,5 +21,25 @@ Environment:
 | `seed.js` | 6 | **Local instance only.** Loads the seed data in `data/seed/` (destinations, partner, hosts, listings, slots, a traveler with a confirmed booking, public holidays), approves seeded Hosts and Listings as the ops test user, and verifies values, aggregations and what each test user can see. Needs `test-users.js` first. Resets the test users' passwords (rerun `test-users.js` to see new ones). `--verify-only` skips the writes. |
 | `actions.js` | 7a | Registers the object actions in `data/actions.json` (ERC `MB_<Object>_<trigger>`, executor `function#mb-actions-service-…`). Deploy `client-extensions/mb-actions-service` first. `--verify-only` skips the writes. |
 | `export-objects-batch.js` | 9 | Regenerates `client-extensions/mb-objects-batch/batch/` (picklists and object definitions) from the configured instance. Run after changing the data model, and review the diff. |
+| `site.js` | 10a | Creates/updates the home page's marketing copy (`data/site/web-content/`) as Basic Web Content articles by ERC, then verifies that each page in `data/site/site.json` shows its widgets in order and renders them for a guest. Pages are built in the UI (below). Deploy `client-extensions/mb-web-elements` and run `mb-search-service` first. `--verify-only` skips the writes. |
 
 Run them in the order above. Scripts never delete picklists, objects, fields, relationships, roles or data on the instance; things found on the instance but missing from the spec are kept and reported. The one exception is permissions: `roles.js` revokes actions on MB object resources that `data/roles.json` no longer grants.
+
+## Website pages (phase 10a)
+
+This Liferay version rejects page creation through the headless APIs, so the pages are built by hand once; `site.js --verify-only` then checks them. On the Maddybaba site (`/web/maddybaba`):
+
+1. **Site Builder → Pages:** content pages `home` (Home), `search` (Explore), `listing` (Trip) and `host` (Host), all top-level. In each page's configuration, tick **Hidden from navigation** for `listing` and `host`.
+2. Edit each page and drop these widgets in this order (Fragments and Widgets → **Widgets**). The MB elements are under **Client Extensions**; each **Web Content Display** is set to show the named article (Select → Web Content → the article title).
+
+   | Page | Widgets, top to bottom |
+   |---|---|
+   | `home` | MB Site Header, MB Hero Search, MB Categories, Web Content Display ×5 ("Home: How it works", "Home: AI recommendations", "Home: Why Maddybaba (comparison)", "Home: Become a host", "Home: Custom tour packages"), MB Site Footer |
+   | `search` | MB Site Header, MB Search Results, MB Site Footer |
+   | `listing` | MB Site Header, MB Listing Detail, MB Site Footer |
+   | `host` | MB Site Header, MB Host Profile, MB Site Footer |
+
+   For each Web Content Display, turn off its title and decoration (Configuration → Look and Feel / Decoration: Barebone) so only the article renders.
+3. **Publish** each page, then run `node scripts/setup/site.js --verify-only`.
+
+The elements call `mb-search-service` at `http://localhost:58082` (its `mb.search.cors-origins` must include the site's origin). Another environment sets `window.MBConfig = {searchURL: '…'}` before the elements load.

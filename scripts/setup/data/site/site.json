@@ -1,0 +1,44 @@
+{
+	"site": "/maddybaba",
+	"webContent": [
+		{"erc": "MB_WC_how_it_works", "title": "Home: How it works", "file": "how-it-works.html"},
+		{"erc": "MB_WC_ai_picks", "title": "Home: AI recommendations", "file": "ai-picks.html"},
+		{"erc": "MB_WC_why_maddybaba", "title": "Home: Why Maddybaba (comparison)", "file": "why-maddybaba.html"},
+		{"erc": "MB_WC_become_a_host", "title": "Home: Become a host", "file": "become-a-host.html"},
+		{"erc": "MB_WC_tour_packages", "title": "Home: Custom tour packages", "file": "tour-packages.html"}
+	],
+	"pages": [
+		{
+			"friendlyUrlPath": "/home",
+			"title": "Home",
+			"elements": [
+				"mb-site-header",
+				"mb-hero-search",
+				"mb-categories",
+				{"webContent": "MB_WC_how_it_works"},
+				{"webContent": "MB_WC_ai_picks"},
+				{"webContent": "MB_WC_why_maddybaba"},
+				{"webContent": "MB_WC_become_a_host"},
+				{"webContent": "MB_WC_tour_packages"},
+				"mb-site-footer"
+			]
+		},
+		{
+			"friendlyUrlPath": "/search",
+			"title": "Explore",
+			"elements": ["mb-site-header", "mb-search-results", "mb-site-footer"]
+		},
+		{
+			"friendlyUrlPath": "/listing",
+			"title": "Trip",
+			"hiddenFromNavigation": true,
+			"elements": ["mb-site-header", "mb-listing-detail", "mb-site-footer"]
+		},
+		{
+			"friendlyUrlPath": "/host",
+			"title": "Host",
+			"hiddenFromNavigation": true,
+			"elements": ["mb-site-header", "mb-host-profile", "mb-site-footer"]
+		}
+	]
+}

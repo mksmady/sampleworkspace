@@ -197,6 +197,8 @@ Review weekly:
 
 - **Website hero:** a custom fragment or custom element that calls the orchestrator and routes to a `/search` page.
 - **`/search` page:** a results fragment backed by the orchestrator. Liferay's Search Bar, Search Results and facet widgets are an alternative for simple text search; custom facets on object fields depend on the Liferay version.
+- **Listing and host pages (website):** plain `/listing?slug=` and `/host?handle=` content pages (hidden from navigation) whose custom elements call `/search/listings/{slug}` and `/search/hosts/{handle}`. Not display page templates: guests can't read Listing or Host entries directly (data-model.md 6.2), so a display page couldn't render them.
+- **Website elements:** `client-extensions/mb-web-elements` (header, hero search, categories, search results, listing detail, host profile, app waitlist, footer). Page layout lives in `scripts/setup/data/site/site.json`.
 - **App:** calls the orchestrator for the search box. Category chips and "See all" call the orchestrator too (guests and travelers can't read listings directly, data-model.md 6.2), e.g.
   ```
   /search/trips?category=paragliding&sort=priceAsc
