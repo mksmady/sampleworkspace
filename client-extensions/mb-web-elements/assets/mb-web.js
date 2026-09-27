@@ -650,9 +650,19 @@
 						message.textContent = 'You’re on the list. We’ll email you when the app is out.';
 					}
 					else {
-						const {title = ''} = await response.json().catch(() => ({}));
+						// Duplicates come back in title; validation rule errors as a JSON list in detail.
 
-						message.textContent = /unique|already|duplicate/i.test(title) ? 'You’re already on the list.' : title || 'That didn’t work. Please check the address and try again.';
+						const {detail = '', title = ''} = await response.json().catch(() => ({}));
+						let ruleMessage = '';
+
+						try {
+							ruleMessage = JSON.parse(detail)[0].errorMessage;
+						}
+						catch (error) {
+							// Not a validation rule error.
+						}
+
+						message.textContent = /unique|already|duplicate/i.test(title) ? 'You’re already on the list.' : ruleMessage || title || 'That didn’t work. Please check the address and try again.';
 					}
 				}
 				catch (error) {
