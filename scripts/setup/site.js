@@ -78,7 +78,7 @@ function liveWidgets(pageElement, out = []) {
 		const instance = child.definition?.widgetInstance;
 
 		if (instance) {
-			out.push(instance.widgetName === JOURNAL_CONTENT ? `${JOURNAL_CONTENT}:${instance.widgetConfig?.articleId}` : instance.widgetName);
+			out.push(instance.widgetName === JOURNAL_CONTENT ? `${JOURNAL_CONTENT}:${instance.widgetConfig?.articleExternalReferenceCode}` : instance.widgetName);
 		}
 
 		liveWidgets(child, out);
@@ -87,23 +87,13 @@ function liveWidgets(pageElement, out = []) {
 	return out;
 }
 
-// The widget names site.json expects on a page; Web Content Display widgets carry the article key.
+// The widget names site.json expects on a page; Web Content Display widgets carry the article's ERC.
 
-async function expectedWidgets(ctx, page) {
-	return Promise.all(
-		page.elements.map(async (element) => {
-			if (typeof element === 'string') {
-				return customElementWidget(ctx.companyId, element);
-			}
-
-			const article = await liferay.get(articlePath(ctx, element.webContent));
-
-			return `${JOURNAL_CONTENT}:${article ? article.key : element.webContent}`;
-		})
-	);
+function expectedWidgets(ctx, page) {
+	return page.elements.map((element) => (typeof element === 'string' ? customElementWidget(ctx.companyId, element) : `${JOURNAL_CONTENT}:${element.webContent}`));
 }
 
-const shortName = (name) => name.replace(/^.*_LXC_/, '').replace(JOURNAL_CONTENT, 'Web Content Display');
+const shortName = (name) => name.replace(/^.*_LXC_/, '').replace(JOURNAL_CONTENT + ':', '');
 
 // A guest's view of the page: the published HTML must contain every custom element and every article's
 // ERC-identified content.
@@ -161,7 +151,7 @@ async function main() {
 	for (const page of site.pages) {
 		const live = await liferay.get(pagePath(ctx, page));
 		const widgets = live ? liveWidgets(live.pageDefinition.pageElement) : [];
-		const expected = await expectedWidgets(ctx, page);
+		const expected = expectedWidgets(ctx, page);
 
 		checks.push([
 			`page ${page.friendlyUrlPath} "${page.title}" has its ${expected.length} widgets in order${page.hiddenFromNavigation ? ', hidden from navigation' : ''}`,
