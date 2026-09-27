@@ -34,7 +34,7 @@ This Liferay version rejects page creation through the headless APIs, so the pag
 
    | Page | Widgets, top to bottom |
    |---|---|
-   | `home` | MB Site Header, MB Hero Search, MB Categories, Web Content Display ×5 ("Home: How it works", "Home: AI recommendations", "Home: Why Maddybaba (comparison)", "Home: Become a host", "Home: Custom tour packages"), MB App Waitlist, MB Site Footer |
+   | `home` | MB Site Header, MB Hero Search, MB Categories, Web Content Display ×5 ("Home: How it works", "Home: AI recommendations", "Home: Why Maddybaba (comparison)", "Home: Become a host", "Home: Custom tour packages"), MB Site Footer |
    | `search` | MB Site Header, MB Search Results, MB Site Footer |
    | `listing` | MB Site Header, MB Listing Detail, MB Site Footer |
    | `host` | MB Site Header, MB Host Profile, MB Site Footer |
