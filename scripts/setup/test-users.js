@@ -1,5 +1,5 @@
 // LOCAL INSTANCE ONLY. Creates the non-admin test users (and their host accounts) used to test
-// permissions: a traveler, two hosts in separate accounts, and an ops admin.
+// permissions: a traveler, four hosts in separate accounts, and an ops admin.
 // Idempotent: users and accounts are looked up by ERC; memberships and roles are only added if missing.
 // Every run sets a fresh random password on each user and prints it to the terminal only. Passwords
 // are never written to files. Then it logs in as each user to prove the credentials work.
@@ -13,16 +13,32 @@ const liferay = require('./lib/liferay');
 const API = '/o/headless-admin-user/v1.0';
 
 const ACCOUNTS = [
-	// Named after the seed hosts (seed.js): host1 is the Bir pilot/guide, host2 the Rishikesh partner host.
+	// Named after the seed hosts (seed.js, docs/data-model.md section 9).
 
-	{erc: 'MB_TEST_account_host1', name: 'Bir Sky Adventures'},
-	{erc: 'MB_TEST_account_host2', name: 'Ganga Trails'},
+	{erc: 'MB_TEST_account_host1', name: 'YourManali Trips'},
+	{erc: 'MB_TEST_account_host2', name: 'Haveli Udaipur'},
+	{erc: 'MB_TEST_account_host3', name: 'Rishikesh Adventures'},
+	{erc: 'MB_TEST_account_host4', name: 'Kashmir Houseboat Trips'},
 ];
+
+// Hosts also get the regular Traveler role (section 6.2): their account role can't grant View on
+// Destination and Review.
+
+const hostUser = (number, familyName) => ({
+	account: `MB_TEST_account_host${number}`,
+	accountRoles: ['MB_Host'],
+	email: `mb.test.host${number}@example.com`,
+	erc: `MB_TEST_user_host${number}`,
+	familyName,
+	roles: ['MB_Traveler'],
+});
 
 const USERS = [
 	{email: 'mb.test.traveler@example.com', erc: 'MB_TEST_user_traveler', familyName: 'Traveler', roles: ['MB_Traveler']},
-	{account: 'MB_TEST_account_host1', accountRoles: ['MB_Host'], email: 'mb.test.host1@example.com', erc: 'MB_TEST_user_host1', familyName: 'Host One'},
-	{account: 'MB_TEST_account_host2', accountRoles: ['MB_Host'], email: 'mb.test.host2@example.com', erc: 'MB_TEST_user_host2', familyName: 'Host Two'},
+	hostUser(1, 'Host Rahul'),
+	hostUser(2, 'Host Priya'),
+	hostUser(3, 'Host Amit'),
+	hostUser(4, 'Host Irfan'),
 	{email: 'mb.test.ops@example.com', erc: 'MB_TEST_user_ops', familyName: 'Ops', roles: ['MB_OpsAdmin']},
 ];
 
