@@ -3,32 +3,41 @@
 		"erc": "MB_ServiceCategory",
 		"name": "Service Category",
 		"entries": {
-			"flight": "Flight",
 			"stay": "Stay",
-			"camping": "Camping",
-			"trekking": "Trekking",
-			"paragliding": "Paragliding",
-			"localGuide": "Local Guide",
-			"activity": "Activity",
-			"tourPackage": "Tour Package"
-		}
-	},
-	{
-		"erc": "MB_HostType",
-		"name": "Host Type",
-		"entries": {
-			"partnerStays": "Partner Stays",
-			"localGuide": "Local Guide",
+			"homestay": "Homestay",
+			"transport": "Transport",
+			"food": "Local Food",
+			"tours": "Tours",
 			"activities": "Activities",
-			"tourPackages": "Tour Packages"
+			"experiences": "Experiences",
+			"trekking": "Trekking",
+			"camping": "Camping",
+			"rafting": "Rafting",
+			"paragliding": "Paragliding",
+			"shikara": "Shikara",
+			"photography": "Photography",
+			"localGuide": "Local Guide",
+			"completeTrip": "Complete Trip"
 		}
 	},
 	{
-		"erc": "MB_HostTier",
-		"name": "Host Tier",
+		"erc": "MB_HostRole",
+		"name": "Host Role",
 		"entries": {
-			"standard": "Standard",
-			"superHost": "Super Host"
+			"localTripHost": "Local Trip Host",
+			"experienceHost": "Local Experience Host",
+			"adventureHost": "Adventure Host"
+		}
+	},
+	{
+		"erc": "MB_HostOffer",
+		"name": "Host Offer",
+		"entries": {
+			"ownServices": "Offering Own Services",
+			"connectServices": "Connecting Guests with Local Services",
+			"guiding": "Guiding Travelers",
+			"planTrips": "Planning Complete Trips",
+			"fullTrip": "Managing Everything for a Guest"
 		}
 	},
 	{
@@ -48,8 +57,10 @@
 			"resort": "Resort",
 			"homestay": "Homestay",
 			"camp": "Camp",
+			"houseboat": "Houseboat",
 			"activityOperator": "Activity Operator",
-			"transport": "Transport"
+			"transport": "Transport",
+			"restaurant": "Restaurant"
 		}
 	},
 	{
@@ -159,41 +170,11 @@
 		}
 	},
 	{
-		"erc": "MB_SubscriptionStatus",
-		"name": "Subscription Status",
-		"entries": {
-			"active": "Active",
-			"expired": "Expired",
-			"cancelled": "Cancelled"
-		}
-	},
-	{
 		"erc": "MB_SenderType",
 		"name": "Sender Type",
 		"entries": {
 			"traveler": "Traveler",
 			"host": "Host"
-		}
-	},
-	{
-		"erc": "MB_RecoFactor",
-		"name": "Reco Factor",
-		"entries": {
-			"pastTravel": "Past Travel",
-			"currentLocation": "Current Location",
-			"weather": "Weather",
-			"monthSeason": "Month & Season",
-			"publicHolidays": "Public Holidays"
-		}
-	},
-	{
-		"erc": "MB_RecoSection",
-		"name": "Reco Section",
-		"entries": {
-			"placesNow": "Places at Their Best Now",
-			"hostsForYou": "Hosts You'll Get Along With",
-			"nearYou": "Near You This Weekend",
-			"longWeekend": "Long Weekend"
 		}
 	},
 	{
