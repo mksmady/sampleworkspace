@@ -10,7 +10,6 @@
 const liferay = require('./lib/liferay');
 // --plain (phase 2): Aggregation, Formula and AutoIncrement fields and account restriction depend on
 // relationships (phase 3), so leave them, and a title field among them, for a later run without --plain.
-// Objects with no plain fields (Favorite) can't be published yet.
 
 const PLAIN = process.argv.includes('--plain');
 const LATER_TYPES = ['Aggregation', 'AutoIncrement', 'Formula'];
@@ -23,7 +22,6 @@ function plain(object) {
 		...rest,
 		fields,
 		...(fields.some((field) => field.name === titleField) && {titleField}),
-		...(!fields.length && {publish: false}),
 	};
 }
 
@@ -382,6 +380,13 @@ async function publish(results) {
 
 		if (!ok) {
 			console.log(`  skipped   ${definitionERC(object)} (does not match the spec)`);
+			continue;
+		}
+
+		// Liferay needs at least one field to publish: Favorite only has relationship fields (phase 3).
+
+		if (!definition.objectFields.some((field) => !field.system)) {
+			console.log(`  skipped   ${definitionERC(object)} (no fields yet; publish after relationships)`);
 			continue;
 		}
 
