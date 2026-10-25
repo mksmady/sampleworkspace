@@ -128,9 +128,8 @@ Plural label: Hosts. Title field: `displayName`. Workflow: Single Approver (KYC 
 | payoutUpiId | Text | | Consider storing only a gateway token |
 | destinationName | Text | S | Derived from the host's Destination (`destinationHosts`) |
 | stateName | Text | S | Derived: the Destination's state label |
-| averageRating | Aggregation | | Average of Review.rating via `hostReviews`, filter isPublished = true |
-| reviewCount | Aggregation | | Count of Review via `hostReviews`, filter isPublished = true |
-| ratingValue | PrecisionDecimal | | Derived: stored copy of averageRating, for sorting |
+| ratingValue | PrecisionDecimal | | Derived: average rating of the host's published reviews (`hostReviews`), 1 decimal. Aggregation filters only take date, integer and picklist fields, so a Boolean `isPublished` filter isn't possible and an action stores it |
+| reviewCount | Integer | | Derived: number of the host's published reviews |
 | priceFrom | PrecisionDecimal | | Derived: lowest basePrice of the host's approved listings other than complete trips ("From ₹1,499") |
 | completeTripsFrom | PrecisionDecimal | | Derived: lowest basePrice of the host's approved `completeTrip` listings ("Complete trips from ₹8,999"). Empty when there are none; the card then shows priceFrom |
 | linkClicks | Aggregation | | Count of ReferralClick |
@@ -179,8 +178,6 @@ Plural label: Listings. Title field: `title`. Workflow: Single Approver, set up 
 | seasonMonths | MultiselectPicklist `MB_Month` | | |
 | isTrending | Boolean | | |
 | isFeatured | Boolean | | |
-| averageRating | Aggregation | | Average of Review.rating, filter isPublished = true |
-| reviewCount | Aggregation | | Count of Review, filter isPublished = true |
 | destinationName | Text | S | Derived, see search.md |
 | stateName | Text | S | Derived |
 | region | Text | S | Derived |
@@ -188,7 +185,8 @@ Plural label: Listings. Title field: `title`. Workflow: Single Approver, set up 
 | searchKeywords | LongText | S | Manual keywords |
 | latitude | PrecisionDecimal | | Derived from Destination |
 | longitude | PrecisionDecimal | | Derived from Destination |
-| ratingValue | PrecisionDecimal | | Derived: stored copy of averageRating, for sorting |
+| ratingValue | PrecisionDecimal | | Derived: average rating of the listing's published reviews, 1 decimal (see Host.ratingValue) |
+| reviewCount | Integer | | Derived: number of the listing's published reviews |
 | nextAvailableDate | Date | | Derived: earliest open slot |
 
 ### 3.7 ListingInclusion — `MB_ListingInclusion`
@@ -481,7 +479,7 @@ These must be set the same way on the clean instance in phase 9 (and decided for
 | On update, workflow change | Host | hostStatus or approval changed | Recompute the Destination's hostCount (approved, active hosts) |
 | On add / update | AvailabilitySlot | | Recalculate Listing.nextAvailableDate; set slotStatus = full when bookedCount ≥ capacity |
 | On add | Review | | Fill reviewerName and reviewerCity from the Traveler when empty; copy hostDisplayName and destinationName |
-| On add / update / delete | Review | | Recalculate Listing.ratingValue and Host.ratingValue |
+| On add / update / delete | Review | | Recalculate ratingValue and reviewCount on the Listing and the Host from their published reviews |
 | On add / update | BookingItem | | Set lineTotal = quantity × unitPrice (overwrites any client value) |
 | On add / update | Commission | | Set amount = baseAmount × rate / 100 (overwrites any client value) |
 | On add | Booking | | Trim the Owner's entry permissions to View (`PUT /o/c/bookings/{id}/permissions`), see section 6.3 |
@@ -506,7 +504,7 @@ Spring Boot / Java 21 microservice client extension (phase 7). Object actions (E
 - **Booking** add/update: `serviceFee = 5% of subtotal`, `taxes = 18% GST on the fee`, `total = subtotal + serviceFee + taxes`, rounded half up to the paisa (rates in `application-default.properties`: `mb.pricing.*`). On add, the Owner keeps View only (6.3).
 - **Commission** add/update: `amount = baseAmount × rate / 100`.
 - **AvailabilitySlot** add/update/delete: slotStatus full when bookedCount ≥ capacity, open again below it (closed slots are left alone); refresh the listing.
-- **Listing** add/update/delete, **Destination** update, **Host** update, **Review** add/update/delete: refresh the derived fields of the affected listings (destinationName, stateName, region, latitude, longitude, hostDisplayName, nextAvailableDate = earliest open slot from today IST, ratingValue = averageRating), hosts (destinationName, stateName, ratingValue, priceFrom, completeTripsFrom), destinations (hostCount) and reviews (hostDisplayName, destinationName). If the entry was approved, the service approves its own update (6.4).
+- **Listing** add/update/delete, **Destination** update, **Host** update, **Review** add/update/delete: refresh the derived fields of the affected listings (destinationName, stateName, region, latitude, longitude, hostDisplayName, nextAvailableDate = earliest open slot from today IST, ratingValue and reviewCount from published reviews), hosts (destinationName, stateName, ratingValue, reviewCount, priceFrom, completeTripsFrom), destinations (hostCount) and reviews (hostDisplayName, destinationName). If the entry was approved, the service approves its own update (6.4).
 - Every handler reads fresh, writes only fields that differ, and so ends any chain it starts.
 - Validation rules (section 5): add-on price, payout balance, slot capacity.
 - **Host** add: `termsAcceptedDate` = now when `termsAccepted` and no date yet.

@@ -40,10 +40,10 @@ Liferay indexes relationships as IDs, so a search for "Manali" would not match a
 |---|---|---|
 | Listing destinationName, stateName, region, latitude, longitude | Destination | Listing on add/update; Destination on update |
 | Listing hostDisplayName | Host.displayName | Listing on add/update; Host on update |
-| Listing ratingValue | averageRating aggregation | Review on add/update/delete |
+| Listing ratingValue, reviewCount | the listing's published reviews | Review on add/update/delete |
 | Listing nextAvailableDate | earliest open AvailabilitySlot | AvailabilitySlot on add/update, plus a daily job (dates pass) |
 | Host destinationName, stateName | Destination | Host on add/update; Destination on update |
-| Host ratingValue | averageRating aggregation | Review on add/update/delete |
+| Host ratingValue, reviewCount | the host's published reviews | Review on add/update/delete |
 | Host priceFrom, completeTripsFrom | the host's approved listings | Listing on add/update/delete and workflow change |
 | Destination hostCount | approved, active hosts | Host on update and workflow change |
 

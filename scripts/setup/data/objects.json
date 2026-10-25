@@ -206,25 +206,12 @@
 				"flags": "S"
 			},
 			{
-				"name": "averageRating",
-				"type": "Aggregation",
-				"aggregation": {
-					"function": "AVERAGE",
-					"relationship": "hostReviews",
-					"field": "rating"
-				}
+				"name": "ratingValue",
+				"type": "PrecisionDecimal"
 			},
 			{
 				"name": "reviewCount",
-				"type": "Aggregation",
-				"aggregation": {
-					"function": "COUNT",
-					"relationship": "hostReviews"
-				}
-			},
-			{
-				"name": "ratingValue",
-				"type": "PrecisionDecimal"
+				"type": "Integer"
 			},
 			{
 				"name": "priceFrom",
@@ -415,23 +402,6 @@
 				"type": "Boolean"
 			},
 			{
-				"name": "averageRating",
-				"type": "Aggregation",
-				"aggregation": {
-					"function": "AVERAGE",
-					"relationship": "listingReviews",
-					"field": "rating"
-				}
-			},
-			{
-				"name": "reviewCount",
-				"type": "Aggregation",
-				"aggregation": {
-					"function": "COUNT",
-					"relationship": "listingReviews"
-				}
-			},
-			{
 				"name": "destinationName",
 				"type": "Text",
 				"flags": "S"
@@ -467,6 +437,10 @@
 			{
 				"name": "ratingValue",
 				"type": "PrecisionDecimal"
+			},
+			{
+				"name": "reviewCount",
+				"type": "Integer"
 			},
 			{
 				"name": "nextAvailableDate",
