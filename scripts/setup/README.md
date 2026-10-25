@@ -11,7 +11,7 @@ Environment:
 | Script | Phase | What it does |
 |---|---|---|
 | `picklists.js` | 1 | Creates/updates the picklists in `data/picklists.json`, then verifies each one with a GET by ERC. `--verify-only` skips the writes. |
-| `objects.js` | 2 | Creates the object definitions and plain fields in `data/objects.json` as drafts, verifies them with a GET, and with `--publish` publishes those that match the spec. Fields are only changed while a definition is a draft. `--verify-only` skips the writes. |
+| `objects.js --plain` | 2 | Creates the object definitions and plain fields in `data/objects.json` as drafts (`--plain` leaves out the Aggregation, Formula and AutoIncrement fields and account restriction, which need relationships), verifies them with a GET, and with `--publish` publishes those that match the spec. Fields are only changed while a definition is a draft. `--verify-only` skips the writes. |
 | `relationships.js` | 3, 5 | Creates the one-to-many relationships in `data/relationships.json` on the parent object, then verifies each one and the `r_<name>_…Id` field it adds to the child. Only the label and deletion type are ever updated. `--verify-only` skips the writes. |
 | `objects.js` | 4, 5 | Rerun to add the Aggregation, Formula, AutoIncrement and stored computed fields (new fields are added to published objects too) and to enable account restriction. |
 | `validations.js` | 4, 5, 7a | Creates the expression validation rules in `data/validations.json` by ERC (`MB_<Object>_<name>`) and verifies each one. Rules with a `field` show their error on it, the others on the form. Rules the engine can't enforce stay inactive (see their `note`). `--verify-only` skips the writes. |

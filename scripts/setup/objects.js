@@ -5,10 +5,29 @@
 // while a definition is a draft; on published definitions, differences are reported, never applied.
 // Nothing is ever deleted, and a field's type is never changed.
 //
-// Usage: node scripts/setup/objects.js [--verify-only] [--publish]
+// Usage: node scripts/setup/objects.js [--plain] [--verify-only] [--publish]
 
 const liferay = require('./lib/liferay');
-const objects = require('./data/objects.json');
+// --plain (phase 2): Aggregation, Formula and AutoIncrement fields and account restriction depend on
+// relationships (phase 3), so leave them, and a title field among them, for a later run without --plain.
+// Objects with no plain fields (Favorite) can't be published yet.
+
+const PLAIN = process.argv.includes('--plain');
+const LATER_TYPES = ['Aggregation', 'AutoIncrement', 'Formula'];
+
+function plain(object) {
+	const fields = object.fields.filter((field) => !LATER_TYPES.includes(field.type));
+	const {accountRestriction, titleField, ...rest} = object;
+
+	return {
+		...rest,
+		fields,
+		...(fields.some((field) => field.name === titleField) && {titleField}),
+		...(!fields.length && {publish: false}),
+	};
+}
+
+const objects = require('./data/objects.json').map((object) => (PLAIN ? plain(object) : object));
 
 const API = '/o/object-admin/v1.0';
 const LANGUAGE_ID = 'en_US';
@@ -255,10 +274,14 @@ async function sync(object) {
 	const definition = await getDefinition(object);
 
 	if (!definition) {
-		await liferay.post(`${API}/object-definitions`, {
+		const created = await liferay.post(`${API}/object-definitions`, {
 			...definitionProps(object),
 			objectFields: object.fields.map((field) => fieldPayload(object, field)),
 		});
+
+		// The POST ignores enableCategorization (it's created as true); a PATCH applies it.
+
+		await liferay.patch(`${API}/object-definitions/${created.id}`, definitionProps(object));
 
 		return 'created';
 	}
