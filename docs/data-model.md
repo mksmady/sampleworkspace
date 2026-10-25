@@ -1,16 +1,18 @@
 # Maddybaba – Liferay Objects Data Model
 
 Source of truth for all Liferay Objects, picklists, relationships, permissions and automation.
-Design reference: `docs/Maddybaba_App_Design.pdf`. Search design: `docs/search.md`.
+Design reference: `docs/Homepage — desktop.pdf`. Search design: `docs/search.md`.
+
+Maddybaba is built around the **local host**: a traveler finds one person at their destination who can arrange the whole trip (stay, transport, food, tours, activities) or offer a single experience. Hosts don't need to own a hotel or vehicle; they can offer their own services, connect guests with local services, guide, plan complete trips or manage everything for a guest.
 
 ## 0. Conventions
 
 - Every picklist, object definition, field and relationship has an **external reference code (ERC)** prefixed `MB_`.
-- Object names: PascalCase singular (`Listing`). Field names: camelCase (`basePrice`). Field ERC = `MB_<Object>_<field>` (`MB_Host_handle`). Field labels are the name split into words (`hostRegion` → Host Region).
+- Object names: PascalCase singular (`Listing`). Field names: camelCase (`basePrice`). Field ERC = `MB_<Object>_<field>` (`MB_Host_handle`). Field labels are the name split into words (`hostRole` → Host Role).
 - `status` is reserved by Liferay (it's the workflow status), so status picklists are named `<object>Status` (`bookingStatus`).
 - Objects appear in the Control Panel under Objects. Comments and categorization are off. No field is localized (this Liferay version keeps `enableLocalization` on for every object and ignores attempts to turn it off).
-- Picklist item keys: camelCase (`superHost`); names are the display labels.
-- Picklist names are the ERC without `MB_`, split into words (`MB_HostTier` → Host Tier). Picklist item ERC = `<picklist ERC>_<key>` (`MB_HostTier_superHost`).
+- Picklist item keys: camelCase (`localTripHost`); names are the display labels.
+- Picklist names are the ERC without `MB_`, split into words (`MB_HostRole` → Host Role). Picklist item ERC = `<picklist ERC>_<key>` (`MB_HostRole_localTripHost`).
 - Labels are `en-US` only for now.
 - Currency is INR. Money fields use **PrecisionDecimal**.
 - Scope: all objects are **company-scoped**.
@@ -18,7 +20,8 @@ Design reference: `docs/Maddybaba_App_Design.pdf`. Search design: `docs/search.m
 - `R` = required. `U` = unique values. Every plain field is indexed (search.md filters, boosts and sorts on non-text fields). `S` = searchable: `Text`/`LongText`/`RichText` fields marked S are indexed as analyzed full text (`en-US`); other text fields are indexed as keywords.
 - Attachment fields accept `jpg, jpeg, png, webp` up to 5 MB, uploaded from the user's device, unless noted otherwise.
 - `DateTime` fields store in UTC (`timeStorage = convertToUTC`).
-- REST paths are generated from the object name, pluralized and lowercased (`/o/c/<name>s`), not from the plural label: AppWaitlist is `/o/c/appwaitlists`. Verify the actual path in `/o/api` after publishing.
+- REST paths are generated from the object name, pluralized and lowercased (`/o/c/<name>s`), not from the plural label: Destination is `/o/c/destinations`. Verify the actual path in `/o/api` after publishing.
+- **Derived fields** (stored copies of related or computed values) are written only by `mb-actions-service` (section 7). Any value a client sends for them is overwritten.
 
 ## 1. Build order
 
@@ -33,7 +36,9 @@ Dependencies force this order:
 7. Object actions and scheduled jobs (section 7)
 8. Seed data (section 9)
 
-On the local instance, steps 1–7 are applied by the setup scripts (`scripts/setup/`). On any other instance, the data model (steps 1–5 and the object actions of step 7, including the relationships from the User and Account system objects and account restriction) is installed by the **`mb-objects-batch` client extension** (phase 9), generated from the local instance by `scripts/setup/export-objects-batch.js`. Roles and permissions, the approval workflow and the instance settings (section 6) are not batch-importable and are applied with `roles.js`, `workflows.js` and the Instance Settings UI; see `client-extensions/mb-objects-batch/README.md` for the install order. Verified in phase 9 on a new virtual instance: every check matches the data files, and a redeploy changes nothing.
+On the local instance, steps 1–7 are applied by the setup scripts (`scripts/setup/`). On any other instance, the data model (steps 1–5 and the object actions of step 7, including the relationships from the User and Account system objects and account restriction) is installed by the **`mb-objects-batch` client extension** (phase 9), generated from the local instance by `scripts/setup/export-objects-batch.js`. Roles and permissions, the approval workflow and the instance settings (section 6) are not batch-importable and are applied with `roles.js`, `workflows.js` and the Instance Settings UI; see `client-extensions/mb-objects-batch/README.md` for the install order.
+
+The data files in `scripts/setup/data/` are brought in line with this spec in the phase that uses them (picklists in phase 1, objects in phase 2, …).
 
 Some field types and features (AutoIncrement, Formula, aggregation filters, account restriction) depend on the Liferay version. Check the version in CLAUDE.md and flag anything unsupported instead of silently skipping it.
 
@@ -41,11 +46,11 @@ Some field types and features (AutoIncrement, Formula, aggregation filters, acco
 
 | ERC | Items (key → label) |
 |---|---|
-| `MB_ServiceCategory` | flight → Flight, stay → Stay, camping → Camping, trekking → Trekking, paragliding → Paragliding, localGuide → Local Guide, activity → Activity, tourPackage → Tour Package |
-| `MB_HostType` | partnerStays → Partner Stays, localGuide → Local Guide, activities → Activities, tourPackages → Tour Packages |
-| `MB_HostTier` | standard → Standard, superHost → Super Host |
+| `MB_ServiceCategory` | stay → Stay, homestay → Homestay, transport → Transport, food → Local Food, tours → Tours, activities → Activities, experiences → Experiences, trekking → Trekking, camping → Camping, rafting → Rafting, paragliding → Paragliding, shikara → Shikara, photography → Photography, localGuide → Local Guide, completeTrip → Complete Trip |
+| `MB_HostRole` | localTripHost → Local Trip Host, experienceHost → Local Experience Host, adventureHost → Adventure Host |
+| `MB_HostOffer` | ownServices → Offering Own Services, connectServices → Connecting Guests with Local Services, guiding → Guiding Travelers, planTrips → Planning Complete Trips, fullTrip → Managing Everything for a Guest |
 | `MB_HostStatus` | pendingVerification → Pending Verification, active → Active, suspended → Suspended |
-| `MB_PartnerType` | hotel → Hotel, resort → Resort, homestay → Homestay, camp → Camp, activityOperator → Activity Operator, transport → Transport |
+| `MB_PartnerType` | hotel → Hotel, resort → Resort, homestay → Homestay, camp → Camp, houseboat → Houseboat, activityOperator → Activity Operator, transport → Transport, restaurant → Restaurant |
 | `MB_PartnershipStatus` | active → Active, paused → Paused, ended → Ended |
 | `MB_PriceUnit` | perPerson → Per Person, perNight → Per Night, perRoom → Per Room, perGroup → Per Group, perTrip → Per Trip |
 | `MB_InclusionType` | included → Included, addOn → Add-on |
@@ -57,26 +62,25 @@ Some field types and features (AutoIncrement, Formula, aggregation filters, acco
 | `MB_PaymentStatus` | initiated → Initiated, success → Success, failed → Failed, refunded → Refunded |
 | `MB_CommissionStatus` | pending → Pending, available → Available, paidOut → Paid Out, reversed → Reversed |
 | `MB_PayoutStatus` | requested → Requested, processing → Processing, paid → Paid, failed → Failed |
-| `MB_SubscriptionStatus` | active → Active, expired → Expired, cancelled → Cancelled |
 | `MB_SenderType` | traveler → Traveler, host → Host |
-| `MB_RecoFactor` | pastTravel → Past Travel, currentLocation → Current Location, weather → Weather, monthSeason → Month & Season, publicHolidays → Public Holidays |
-| `MB_RecoSection` | placesNow → Places at Their Best Now, hostsForYou → Hosts You'll Get Along With, nearYou → Near You This Weekend, longWeekend → Long Weekend |
 | `MB_Month` | january … december → January … December |
 | `MB_IndianState` | All 28 states and 8 union territories. "and" is spelled out in keys. States: andhraPradesh → Andhra Pradesh, arunachalPradesh → Arunachal Pradesh, assam → Assam, bihar → Bihar, chhattisgarh → Chhattisgarh, goa → Goa, gujarat → Gujarat, haryana → Haryana, himachalPradesh → Himachal Pradesh, jharkhand → Jharkhand, karnataka → Karnataka, kerala → Kerala, madhyaPradesh → Madhya Pradesh, maharashtra → Maharashtra, manipur → Manipur, meghalaya → Meghalaya, mizoram → Mizoram, nagaland → Nagaland, odisha → Odisha, punjab → Punjab, rajasthan → Rajasthan, sikkim → Sikkim, tamilNadu → Tamil Nadu, telangana → Telangana, tripura → Tripura, uttarPradesh → Uttar Pradesh, uttarakhand → Uttarakhand, westBengal → West Bengal. Union territories: andamanAndNicobarIslands → Andaman and Nicobar Islands, chandigarh → Chandigarh, dadraAndNagarHaveliAndDamanAndDiu → Dadra and Nagar Haveli and Daman and Diu, delhi → Delhi, jammuAndKashmir → Jammu and Kashmir, ladakh → Ladakh, lakshadweep → Lakshadweep, puducherry → Puducherry |
+
+`MB_ServiceCategory` is both a Listing's category and the service tags on a host card (`Host.specialties`). The design's "Food" and "Local Food" are one item. `completeTrip` is a Listing category only.
 
 The setup script reads these from `scripts/setup/data/picklists.json`. Keep the two in sync.
 
 ## 3. Object definitions
 
 ### 3.1 Destination — `MB_Destination`
-Plural label: Destinations. Title field: `name`.
+Plural label: Destinations. Title field: `name`. Shown as the "Where Do You Want To Go?" tiles and the footer's destination list.
 
 | Field | Type | Flags | Notes |
 |---|---|---|---|
-| name | Text | R S | "Bir Billing" |
+| name | Text | R S | "Manali" |
 | slug | Text | R U | |
 | state | Picklist `MB_IndianState` | R S | |
-| region | Text | S | "Himalayas" |
+| region | Text | S | "Kullu Valley" |
 | latitude | PrecisionDecimal | | |
 | longitude | PrecisionDecimal | | |
 | description | RichText | S | |
@@ -84,10 +88,12 @@ Plural label: Destinations. Title field: `name`.
 | bestMonths | MultiselectPicklist `MB_Month` | | |
 | activities | MultiselectPicklist `MB_ServiceCategory` | | |
 | isTrending | Boolean | | Default false |
-| searchKeywords | LongText | S | Alternate spellings, nearby towns |
+| sortOrder | Integer | | Order of the home page tiles (lowest first) |
+| searchKeywords | LongText | S | Alternate spellings, nearby towns ("Srinagar, Gulmarg, Pahalgam") |
+| hostCount | Integer | | Derived: number of approved, active hosts ("128 Hosts"). An aggregation can't filter on workflow status, so an action stores it |
 
 ### 3.2 Partner — `MB_Partner`
-Plural label: Partners. Title field: `name`.
+Plural label: Partners. Title field: `name`. A local business a host works with ("connecting guests with local services").
 
 | Field | Type | Flags | Notes |
 |---|---|---|---|
@@ -102,29 +108,38 @@ Plural label: Partners. Title field: `name`.
 | isVerified | Boolean | | Default false |
 
 ### 3.3 Host — `MB_Host`
-Plural label: Hosts. Title field: `displayName`. Workflow: Single Approver (KYC review), set up in phase 5 with the Ops Admin role.
+Plural label: Hosts. Title field: `displayName`. Workflow: Single Approver (KYC review), set up in phase 5 with the Ops Admin role. The host card shows: Verified Host badge, rating and review count, `hostRole` label, "displayName — Your{destinationName} Local", "destinationName, stateName", `quote`, `specialties` tags, "Can arrange your entire trip", and the price line.
 
 | Field | Type | Flags | Notes |
 |---|---|---|---|
-| displayName | Text | R S | |
+| displayName | Text | R S | "Rahul" |
 | handle | Text | R U | Booking link `maddybaba.com/h/{handle}`; lowercase, a–z 0–9 and hyphen |
-| hostTypes | MultiselectPicklist `MB_HostType` | R | "What can you offer?" |
+| hostRole | Picklist `MB_HostRole` | R | The card label |
+| hostOffers | MultiselectPicklist `MB_HostOffer` | R | "What can you offer?". The card shows "Can arrange your entire trip" when it contains `fullTrip` |
 | phone | Text | R | Indian phone validation |
-| hostRegion | Text | R S | "Bir, Himachal Pradesh" |
-| specialties | MultiselectPicklist `MB_ServiceCategory` | | For host search |
-| bio | LongText | S | |
+| quote | Text | S | The quote on the card, max 160 characters |
+| bio | LongText | S | Host profile page |
+| specialties | MultiselectPicklist `MB_ServiceCategory` | | Card tags and host search |
 | avatar | Attachment | | |
-| tier | Picklist `MB_HostTier` | R | Default standard |
-| hostStatus | Picklist `MB_HostStatus` | R | Default pendingVerification |
+| hostStatus | Picklist `MB_HostStatus` | R | Default pendingVerification. `active` (set after KYC approval) shows the Verified Host badge |
 | commissionRate | PrecisionDecimal | | Base percent |
 | termsAccepted | Boolean | R | Must be true |
 | termsAcceptedDate | DateTime | | Set by action |
 | payoutUpiId | Text | | Consider storing only a gateway token |
+| destinationName | Text | S | Derived from the host's Destination (`destinationHosts`) |
+| stateName | Text | S | Derived: the Destination's state label |
+| averageRating | Aggregation | | Average of Review.rating via `hostReviews`, filter isPublished = true |
+| reviewCount | Aggregation | | Count of Review via `hostReviews`, filter isPublished = true |
+| ratingValue | PrecisionDecimal | | Derived: stored copy of averageRating, for sorting |
+| priceFrom | PrecisionDecimal | | Derived: lowest basePrice of the host's approved listings other than complete trips ("From ₹1,499") |
+| completeTripsFrom | PrecisionDecimal | | Derived: lowest basePrice of the host's approved `completeTrip` listings ("Complete trips from ₹8,999"). Empty when there are none; the card then shows priceFrom |
 | linkClicks | Aggregation | | Count of ReferralClick |
-| totalBookings | Aggregation | | Count of Booking via `MB_hostBookings` |
+| totalBookings | Aggregation | | Count of Booking via `hostBookings` |
 | partnerCount | Aggregation | | Count of HostPartnership where partnershipStatus = active |
-| earningsThisMonth | PrecisionDecimal | | Sum of Commission.amount created this month. Aggregation filters only take fixed date ranges on this version, so a scheduled action (phase 7) stores it |
+| earningsThisMonth | PrecisionDecimal | | Derived: sum of Commission.amount created this month. Aggregation filters only take fixed date ranges on this version, so a scheduled action stores it |
 | availableBalance | Aggregation | | Sum of Commission.amount where commissionStatus = available |
+
+A host has one home Destination for now. Places nearby (Gulmarg and Pahalgam for a Kashmir host) go in the destination's `searchKeywords` and the host's `quote`/`bio`.
 
 ### 3.4 HostPartnership — `MB_HostPartnership`
 Plural label: Host Partnerships. A junction object between Host and Partner, with its own terms.
@@ -136,66 +151,48 @@ Plural label: Host Partnerships. A junction object between Host and Partner, wit
 | endDate | Date | |
 | partnershipStatus | Picklist `MB_PartnershipStatus` | R |
 
-### 3.5 HostSubscription — `MB_HostSubscription`
-Plural label: Host Subscriptions. For the Super Host plan.
-
-| Field | Type | Flags |
-|---|---|---|
-| planName | Text | R |
-| amount | PrecisionDecimal | R |
-| startDate | Date | R |
-| endDate | Date | R |
-| subscriptionStatus | Picklist `MB_SubscriptionStatus` | R |
-
-### 3.6 Traveler — `MB_Traveler`
+### 3.5 Traveler — `MB_Traveler`
 Plural label: Travelers. Title field: `fullName`. One per Liferay User.
 
 | Field | Type | Flags | Notes |
 |---|---|---|---|
 | fullName | Text | R | "As on your ID" |
 | phone | Text | | Indian phone validation |
-| homeCity | Text | | |
-| latitude | PrecisionDecimal | | Only stored with location consent |
-| longitude | PrecisionDecimal | | |
-| useFactorPastTravel | Boolean | | Default true |
-| useFactorLocation | Boolean | | Default false (opt-in) |
-| useFactorWeather | Boolean | | Default true |
-| useFactorSeason | Boolean | | Default true |
-| useFactorHolidays | Boolean | | Default true |
+| homeCity | Text | | Shown on reviews ("Delhi → Manali") |
 | pastTripCount | Aggregation | | Count of Booking where bookingStatus = completed |
 
-### 3.7 Listing — `MB_Listing`
-Plural label: Listings. Title field: `title`. Workflow: Single Approver, set up in phase 5. Covers stays, camps, treks, paragliding, guides and activities. Flights are not listings (see 8.1).
+### 3.6 Listing — `MB_Listing`
+Plural label: Listings. Title field: `title`. Workflow: Single Approver, set up in phase 5. Everything a host sells: a service (stay, transport, food, tour, activity, experience) or a **complete trip** (`category = completeTrip`), a packaged whole trip with a fixed "from" price.
 
 | Field | Type | Flags | Notes |
 |---|---|---|---|
 | title | Text | R S | |
-| slug | Text | R U | Display page URL |
+| slug | Text | R U | Listing page URL |
 | category | Picklist `MB_ServiceCategory` | R S | |
 | shortDescription | Text | S | Card subtitle |
 | description | RichText | S | |
 | basePrice | PrecisionDecimal | R | "From ₹[PRICE]" |
 | priceUnit | Picklist `MB_PriceUnit` | R | |
-| durationText | Text | | "2 nights" |
+| durationText | Text | | "2 nights", "5 days / 4 nights" |
 | maxGuests | Integer | | |
 | heroImage | Attachment | | |
 | seasonMonths | MultiselectPicklist `MB_Month` | | |
 | isTrending | Boolean | | |
 | isFeatured | Boolean | | |
-| averageRating | Aggregation | | Average of Review.rating |
-| reviewCount | Aggregation | | Count of Review |
-| destinationName | Text | S | Denormalized, see search.md |
-| stateName | Text | S | Denormalized |
-| region | Text | S | Denormalized |
-| hostDisplayName | Text | S | Denormalized |
+| averageRating | Aggregation | | Average of Review.rating, filter isPublished = true |
+| reviewCount | Aggregation | | Count of Review, filter isPublished = true |
+| destinationName | Text | S | Derived, see search.md |
+| stateName | Text | S | Derived |
+| region | Text | S | Derived |
+| hostDisplayName | Text | S | Derived |
 | searchKeywords | LongText | S | Manual keywords |
-| latitude | PrecisionDecimal | | Copied from Destination |
-| longitude | PrecisionDecimal | | Copied from Destination |
-| ratingValue | PrecisionDecimal | | Stored copy of averageRating, for sorting |
-| nextAvailableDate | Date | | Earliest open slot |
+| latitude | PrecisionDecimal | | Derived from Destination |
+| longitude | PrecisionDecimal | | Derived from Destination |
+| ratingValue | PrecisionDecimal | | Derived: stored copy of averageRating, for sorting |
+| nextAvailableDate | Date | | Derived: earliest open slot |
 
-### 3.8 ListingInclusion — `MB_ListingInclusion`
-Plural label: Listing Inclusions. For "What's included".
+### 3.7 ListingInclusion — `MB_ListingInclusion`
+Plural label: Listing Inclusions. For "What's included" (for a complete trip: stay, transport, food, sightseeing…).
 
 | Field | Type | Flags | Notes |
 |---|---|---|---|
@@ -204,8 +201,8 @@ Plural label: Listing Inclusions. For "What's included".
 | addOnPrice | PrecisionDecimal | | Required when inclusionType = addOn |
 | sortOrder | Integer | | |
 
-### 3.9 AvailabilitySlot — `MB_AvailabilitySlot`
-Plural label: Availability Slots. For "Pick a date".
+### 3.8 AvailabilitySlot — `MB_AvailabilitySlot`
+Plural label: Availability Slots. For "Pick a date". A complete trip has a slot per start date.
 
 | Field | Type | Flags | Notes |
 |---|---|---|---|
@@ -216,8 +213,8 @@ Plural label: Availability Slots. For "Pick a date".
 | priceOverride | PrecisionDecimal | | |
 | slotStatus | Picklist `MB_SlotStatus` | R | |
 
-### 3.10 TripPackage — `MB_TripPackage`
-Plural label: Trip Packages. For the "Build your trip" cart.
+### 3.9 TripPackage — `MB_TripPackage`
+Plural label: Trip Packages. The traveler's cart ("Plan My Trip"): items from one or more listings before checkout.
 
 | Field | Type | Flags |
 |---|---|---|
@@ -230,7 +227,7 @@ Plural label: Trip Packages. For the "Build your trip" cart.
 | itemCount | Aggregation | Count of BookingItem |
 | packageTotal | Aggregation | Sum of BookingItem.lineTotal |
 
-### 3.11 Booking — `MB_Booking`
+### 3.10 Booking — `MB_Booking`
 Plural label: Bookings. Title field: `bookingNumber` (set in phase 4, when the AutoIncrement field is added).
 
 | Field | Type | Flags | Notes |
@@ -242,29 +239,29 @@ Plural label: Bookings. Title field: `bookingNumber` (set in phase 4, when the A
 | travelDate | Date | R | |
 | travelerCount | Integer | R | ≥ 1 |
 | subtotal | Aggregation | | Sum of BookingItem.lineTotal |
-| serviceFee | PrecisionDecimal | | Set by action |
-| taxes | PrecisionDecimal | | GST, set by action |
-| total | PrecisionDecimal | | `subtotal + serviceFee + taxes`, stored by the checkout action (phase 7). Not a Formula: formulas can't read aggregation fields (`Variable "subtotal" not defined`) |
+| serviceFee | PrecisionDecimal | | Derived |
+| taxes | PrecisionDecimal | | Derived: GST |
+| total | PrecisionDecimal | | Derived: `subtotal + serviceFee + taxes`. Not a Formula: formulas can't read aggregation fields (`Variable "subtotal" not defined`) |
 | bookingStatus | Picklist `MB_BookingStatus` | R | Default pendingPayment. Use as a State field if supported |
 | source | Picklist `MB_BookingSource` | | |
 
 State transitions for `bookingStatus`: pendingPayment → confirmed / cancelled; confirmed → completed / cancelled; cancelled → refunded.
 
-### 3.12 BookingItem — `MB_BookingItem`
+### 3.11 BookingItem — `MB_BookingItem`
 Plural label: Booking Items.
 
 | Field | Type | Flags | Notes |
 |---|---|---|---|
 | category | Picklist `MB_ServiceCategory` | R | |
 | itemTitle | Text | R | Snapshot of the title at booking time |
-| itemDetail | Text | | "Delhi → Dharamshala (Gaggal)" |
+| itemDetail | Text | | "Manali, 5 days / 4 nights" |
 | quantity | Integer | R | ≥ 1 |
 | unitPrice | PrecisionDecimal | R | Snapshot of the price |
-| lineTotal | PrecisionDecimal | | `quantity * unitPrice`, stored by an action (phase 7). Not a Formula: aggregations (subtotal, packageTotal) can't sum Formula fields |
-| supplierReference | Text | | PNR or external reference |
+| lineTotal | PrecisionDecimal | | Derived: `quantity * unitPrice`. Not a Formula: aggregations (subtotal, packageTotal) can't sum Formula fields |
+| supplierReference | Text | | External reference (partner booking number) |
 | isSelected | Boolean | | Default true |
 
-### 3.13 Payment — `MB_Payment`
+### 3.12 Payment — `MB_Payment`
 Plural label: Payments.
 
 | Field | Type | Flags |
@@ -277,18 +274,18 @@ Plural label: Payments.
 | paymentStatus | Picklist `MB_PaymentStatus` | R |
 | paidAt | DateTime | |
 
-### 3.14 Commission — `MB_Commission`
+### 3.13 Commission — `MB_Commission`
 Plural label: Commissions.
 
 | Field | Type | Flags | Notes |
 |---|---|---|---|
 | rate | PrecisionDecimal | R | Percent, copied at booking time |
 | baseAmount | PrecisionDecimal | R | |
-| amount | PrecisionDecimal | | `baseAmount * rate / 100`, stored by an action (phase 7). Not a Formula: aggregations (availableBalance) can't sum Formula fields |
+| amount | PrecisionDecimal | | Derived: `baseAmount * rate / 100`. Not a Formula: aggregations (availableBalance) can't sum Formula fields |
 | commissionStatus | Picklist `MB_CommissionStatus` | R | |
 | availableOn | Date | | |
 
-### 3.15 Payout — `MB_Payout`
+### 3.14 Payout — `MB_Payout`
 Plural label: Payouts.
 
 | Field | Type | Flags |
@@ -300,7 +297,7 @@ Plural label: Payouts.
 | requestedAt | DateTime | R |
 | processedAt | DateTime | |
 
-### 3.16 ReferralClick — `MB_ReferralClick`
+### 3.15 ReferralClick — `MB_ReferralClick`
 Plural label: Referral Clicks.
 
 | Field | Type | Flags |
@@ -309,69 +306,31 @@ Plural label: Referral Clicks.
 | channel | Text | |
 | converted | Boolean | |
 
-### 3.17 Review — `MB_Review`
-Plural label: Reviews.
+### 3.16 Review — `MB_Review`
+Plural label: Reviews. A review of a host (always) and of the listing booked (when there is one). Featured reviews are the home page's "What Travelers Say".
 
-| Field | Type | Flags |
-|---|---|---|
-| rating | Integer | R (1–5) |
-| comment | LongText | S |
-| isPublished | Boolean | |
+| Field | Type | Flags | Notes |
+|---|---|---|---|
+| rating | Integer | R | 1–5 |
+| comment | LongText | S | |
+| isPublished | Boolean | | |
+| isFeatured | Boolean | | Ops picks the home page testimonials. Only published reviews are shown |
+| reviewerName | Text | | "Ankit & Neha". Filled from Traveler.fullName on add when empty; editable |
+| reviewerCity | Text | | "Delhi". Filled from Traveler.homeCity on add when empty; editable |
+| hostDisplayName | Text | | Derived from the Host ("Hosted by Rahul"). Guests can't read Host, so the testimonial needs a copy |
+| destinationName | Text | | Derived from the Host's Destination ("Delhi → Manali") |
 
-### 3.18 Favorite — `MB_Favorite`
-Plural label: Favorites. Has relationship fields only. Liferay needs at least one field to publish, so Favorite is published in phase 3, after its relationships are added.
+### 3.17 Favorite — `MB_Favorite`
+Plural label: Favorites. "Saved Hosts" and saved listings. Has relationship fields only: a Favorite points at a Host or a Listing. Liferay needs at least one field to publish, so Favorite is published in phase 3, after its relationships are added.
 
-### 3.19 Conversation — `MB_Conversation` and Message — `MB_Message`
-Plural labels: Conversations, Messages.
+### 3.18 Conversation — `MB_Conversation` and Message — `MB_Message`
+Plural labels: Conversations, Messages. "One person. One chat." A conversation is between a traveler and a host, optionally about a listing.
 
 Conversation fields: `subject` (Text).
 
 Message fields: `body` (LongText, R), `senderType` (Picklist `MB_SenderType`, R), `readAt` (DateTime).
 
-### 3.20 PublicHoliday — `MB_PublicHoliday`
-Plural label: Public Holidays.
-
-| Field | Type | Flags |
-|---|---|---|
-| name | Text | R |
-| holidayDate | Date | R |
-| longWeekendStart | Date | |
-| longWeekendEnd | Date | |
-| leaveDaysNeeded | Integer | |
-| applicableStates | MultiselectPicklist `MB_IndianState` | |
-
-### 3.21 WeatherSnapshot — `MB_WeatherSnapshot`
-Plural label: Weather Snapshots.
-
-| Field | Type | Flags |
-|---|---|---|
-| forecastDate | Date | R |
-| condition | Text | |
-| tempC | PrecisionDecimal | |
-| isGoodForActivity | Boolean | |
-
-### 3.22 Recommendation — `MB_Recommendation`
-Plural label: Recommendations.
-
-| Field | Type | Flags |
-|---|---|---|
-| reasonText | Text | R |
-| factorsUsed | MultiselectPicklist `MB_RecoFactor` | R |
-| section | Picklist `MB_RecoSection` | R |
-| score | PrecisionDecimal | |
-| generatedAt | DateTime | R |
-| expiresAt | DateTime | |
-
-### 3.23 AppWaitlist — `MB_AppWaitlist`
-Plural label: App Waitlist Entries.
-
-| Field | Type | Flags |
-|---|---|---|
-| email | Text | R U |
-| source | Text | |
-| signedUpAt | DateTime | R |
-
-### 3.24 SearchQueryLog — `MB_SearchQueryLog`
+### 3.19 SearchQueryLog — `MB_SearchQueryLog`
 Plural label: Search Query Logs. Written by `mb-search-service` for every search (search.md section 9). No relationships; only Ops Admin can read it.
 
 | Field | Type | Flags | Notes |
@@ -379,6 +338,7 @@ Plural label: Search Query Logs. Written by `mb-search-service` for every search
 | queryText | Text | | |
 | filtersUsed | LongText | | JSON of the other parameters |
 | resultCount | Integer | | |
+| endpoint | Text | | `trips` or `hosts` |
 | source | Picklist `MB_BookingSource` | | web, app or hostLink |
 | searchedAt | DateTime | R | |
 
@@ -390,18 +350,17 @@ All are one-to-many unless noted. Relationship ERC = `MB_` + name.
 |---|---|---|---|
 | User (system) | Traveler | userTraveler | prevent |
 | User (system) | Host | userHost | prevent |
+| Destination | Host | destinationHosts | prevent |
 | Destination | Listing | destinationListings | prevent |
 | Destination | Partner | destinationPartners | prevent |
 | Destination | TripPackage | destinationPackages | prevent |
-| Destination | WeatherSnapshot | destinationWeather | cascade |
 | Host | Listing | hostListings | prevent |
 | Partner | Listing | partnerListings | disassociate |
 | Host | HostPartnership | hostPartnerships | cascade |
 | Partner | HostPartnership | partnerHosts | cascade |
-| Host | HostSubscription | hostSubscriptions | cascade |
 | Listing | ListingInclusion | listingInclusions | cascade |
 | Listing | AvailabilitySlot | listingSlots | cascade |
-| Listing | Review | listingReviews | cascade |
+| Listing | Review | listingReviews | disassociate |
 | Traveler | TripPackage | travelerPackages | prevent |
 | Host | TripPackage | hostPackages | disassociate |
 | TripPackage | BookingItem | packageItems | cascade |
@@ -419,18 +378,15 @@ All are one-to-many unless noted. Relationship ERC = `MB_` + name.
 | Host | Payout | hostPayouts | prevent |
 | Host | ReferralClick | hostClicks | cascade |
 | Booking | Review | bookingReviews | cascade |
-| Host | Review | hostReviews | disassociate |
+| Host | Review | hostReviews | cascade |
 | Traveler | Review | travelerReviews | disassociate |
 | Traveler | Favorite | travelerFavorites | cascade |
 | Listing | Favorite | listingFavorites | cascade |
+| Host | Favorite | hostFavorites | cascade |
 | Traveler | Conversation | travelerConversations | cascade |
 | Host | Conversation | hostConversations | cascade |
 | Listing | Conversation | listingConversations | disassociate |
 | Conversation | Message | conversationMessages | cascade |
-| Traveler | Recommendation | travelerRecommendations | cascade |
-| Listing | Recommendation | listingRecommendations | disassociate |
-| Destination | Recommendation | destinationRecommendations | disassociate |
-| Host | Recommendation | hostRecommendations | disassociate |
 
 A BookingItem belongs either to a TripPackage (while the cart is being built) or to a Booking (after checkout). At checkout, set the `bookingItems` relationship on each item; keep the package link for history.
 
@@ -444,11 +400,14 @@ Expression rules on a single field show their error on that field (partial valid
 | Traveler, Partner | phone empty or matches `^\+91[6-9]\d{9}$` | Expression | Enter a valid Indian mobile number (+91…) |
 | Booking | email is a valid email address | Expression | Enter a valid email address |
 | Partner | email empty or a valid email address | Expression | Enter a valid email address |
-| AppWaitlist | email is a valid email address | Expression | Enter a valid email address |
 | Host | `termsAccepted == true` | Expression | Please accept the host terms and commission policy |
 | Host | handle matches `^[a-z0-9-]{3,30}$` | Expression | Use 3–30 lowercase letters, numbers or hyphens |
+| Host | quote empty or at most 160 characters | Expression | Keep your quote under 160 characters |
+| Host | has a Destination (`r_destinationHosts_c_destinationId > 0`) | Expression (form-level) | Choose your destination |
 | Partner | gstin empty or matches `^\d{2}[A-Z]{5}\d{4}[A-Z][A-Z\d]Z[A-Z\d]$` | Expression | Invalid GSTIN |
 | Review | rating between 1 and 5 | Expression | Rating must be 1–5 |
+| Review | has a Host (`r_hostReviews_c_hostId > 0`) | Expression (form-level) | Choose the host you're reviewing |
+| Favorite | has a Host or a Listing | Expression (form-level) | Choose a host or listing to save |
 | ListingInclusion | addOnPrice required (above 0) when inclusionType = addOn | Microservice (`mb-actions-service-add-on-price`). Expressions can't read picklists and Groovy is disabled on this instance | Add-ons need a price |
 | BookingItem | quantity ≥ 1 | Expression | Quantity must be at least 1 |
 | Booking | travelerCount ≥ 1 | Expression | Traveler count must be at least 1 |
@@ -463,12 +422,12 @@ Each Host has a Liferay **Account** (created on host approval). Scripts: `relati
 
 ### 6.1 Account restriction
 
-These objects have a one-to-many relationship `account<Object>s` from Account (`L_ACCOUNT`, deletion type prevent) and are **account-restricted** by it: Host, Listing, ListingInclusion, AvailabilitySlot, HostPartnership, HostSubscription, Booking, Commission, Payout, ReferralClick, Conversation, Message.
+These objects have a one-to-many relationship `account<Object>s` from Account (`L_ACCOUNT`, deletion type prevent) and are **account-restricted** by it: Host, Listing, ListingInclusion, AvailabilitySlot, HostPartnership, Booking, Commission, Payout, ReferralClick, Conversation, Message.
 
 - Account members see and act on their account's entries through **account roles**. A **regular role** with View on the object sees every account's entries. The **owner** of an entry keeps access to it even when not an account member (a traveler sees their own Booking on the host's account).
 - To create an entry on an account they don't belong to, a regular-role user needs `Account Entry: View` (Traveler has it; it also lets travelers list host account names).
 - Only one relationship drives the restriction, so a referral host can't see referral bookings (`referralBookings`); they see their own Commission records instead.
-- The API accepts an entry without an account, which no host can then see. Booking, Conversation and Message have a validation rule "must have a host account" (`r_account<Object>s_accountEntryId > 0`, section 5 scripts).
+- The API accepts an entry without an account, which no host can then see. Booking, Conversation and Message have a validation rule "must have a host account" (`r_account<Object>s_accountEntryId > 0`, section 5).
 - The Host record is linked to its account by the host-approval action (section 7).
 
 ### 6.2 Roles and permissions
@@ -477,26 +436,25 @@ These objects have a one-to-many relationship `account<Object>s` from Account (`
 
 | Role (ERC) | Type | Permissions |
 |---|---|---|
-| Guest (`L_GUEST`, built-in; only these permissions are managed) | regular | View Destination, ListingInclusion, AvailabilitySlot, Review. ADD AppWaitlist |
+| Guest (`L_GUEST`, built-in; only these permissions are managed) | regular | View Destination, ListingInclusion, AvailabilitySlot, Review |
 | Traveler (`MB_Traveler`) | regular | View Destination, ListingInclusion, AvailabilitySlot, Review, Account Entry. ADD Traveler, TripPackage, BookingItem, Booking, Review, Favorite, Conversation, Message. Own entries through the Owner role |
 | Host (`MB_Host`) | account | View, ADD, Update, Delete Listing, ListingInclusion, AvailabilitySlot, HostPartnership. View Host, Booking, Commission, ReferralClick, Conversation. ADD and View Payout, Message |
-| Super Host (`MB_SuperHost`) | account | Same as Host (early-access features to follow) |
-| Ops Admin (`MB_OpsAdmin`) | regular | ADD, View, Update, Delete, Permissions on every MB object. View Account Entry. Reviews Host and Listing approvals |
+| Ops Admin (`MB_OpsAdmin`) | regular | ADD, View, Update, Delete, Permissions on every MB object. View Account Entry. Reviews Host and Listing approvals; picks featured reviews |
 
-Deliberate differences from the original access table:
+Deliberate differences from a plain access table:
 
-- **Listings are not viewable directly by guests or travelers.** Liferay doesn't hide entries awaiting approval from users with View, so public listings (approved only) are served by `mb-search-service` (phase 8, see search.md). Hosts see their own account's listings; Ops sees all.
-- **No direct Host access for guests or travelers.** There are no field-level permissions, and Host holds private fields (phone, payoutUpiId, commissionRate). The public host profile comes from `mb-search-service` with public fields only. Hosts see their own Host record (View only, so they can't change tier, hostStatus or commissionRate); host sign-up and profile edits go through a phase 7 service.
-- **Payments and Recommendations are not writable by travelers.** Payments are written only by the payment integration (a traveler-created "success" payment would confirm a booking). Recommendations are created by the nightly job, so travelers don't own them; a phase 7/8 endpoint serves them per traveler.
+- **Listings and Hosts are not viewable directly by guests or travelers.** Liferay doesn't hide entries awaiting approval from users with View, and there are no field-level permissions (Host holds phone, payoutUpiId, commissionRate). Public host cards, host profiles and listings are served by `mb-search-service` (phase 8, see search.md) with public fields only. Hosts see their own account's listings and their own Host record (View only, so they can't change hostStatus or commissionRate); host sign-up and profile edits go through a service endpoint (section 7).
+- **Destination tiles and testimonials are read directly** (`/o/c/destinations`, `/o/c/reviews`): Guest View on Destination and Review. Destination holds `hostCount`, and Review holds `hostDisplayName`, `destinationName` and the reviewer fields, so neither needs Host access.
+- **Payments are not writable by travelers.** Payments are written only by the payment integration (a traveler-created "success" payment would confirm a booking).
 - **Reviews**: Guest View includes unpublished reviews. The website and app show only `isPublished = true` (display filter, not access control).
 
 ### 6.3 Owner permissions
 
-Liferay grants the Owner role Delete, Permissions, Update and View on each entry when it's created. This can't be changed per object through role permissions. So a traveler can edit or delete their own Booking (tested: they could set `bookingStatus = confirmed` and `total = 1`). Mitigation (phase 7, section 7): an action on Booking add trims the Owner's entry permissions to View, and no action trusts traveler-supplied values: checkout recalculates fees and totals, only a successful Payment webhook confirms a booking, and commissions need a successful Payment.
+Liferay grants the Owner role Delete, Permissions, Update and View on each entry when it's created. This can't be changed per object through role permissions. So a traveler can edit or delete their own Booking (they could set `bookingStatus = confirmed` and `total = 1`). Mitigation (section 7): an action on Booking add trims the Owner's entry permissions to View, and no action trusts traveler-supplied values: checkout recalculates fees and totals, only a successful Payment confirms a booking, and commissions need a successful Payment.
 
 ### 6.4 Approval workflow
 
-"MB Ops Approval" (`scripts/setup/data/mb-ops-approval.xml`) is Liferay's Single Approver with the review task assigned only to Ops Admin and Administrator. Single Approver also assigns review to the account roles Account Administrator and Account Member, which would let a host approve their own listing. It's linked to Host and Listing (company scope). Editing an approved entry sends it back for review. Exception: when `mb-actions-service` changes only derived Listing fields (section 7) of an approved listing, it approves the resulting task itself (comment "Automatic update by mb-actions-service"), so the listing stays live. Host edits always go to Ops.
+"MB Ops Approval" (`scripts/setup/data/mb-ops-approval.xml`) is Liferay's Single Approver with the review task assigned only to Ops Admin and Administrator. Single Approver also assigns review to the account roles Account Administrator and Account Member, which would let a host approve their own listing. It's linked to Host and Listing (company scope). Editing an approved entry sends it back for review. Exception: when `mb-actions-service` changes only derived fields (section 7) of an approved Host or Listing, it approves the resulting task itself (comment "Automatic update by mb-actions-service"), so the entry stays live. Host edits always go to Ops.
 
 ### 6.5 Instance settings (local instance; required on any instance)
 
@@ -514,111 +472,110 @@ These must be set the same way on the clean instance in phase 9 (and decided for
 |---|---|---|---|
 | On add | Host | | Set termsAcceptedDate; start KYC workflow |
 | Workflow approved | Host | | Create Account, link the Host record to it (`r_accountHosts_accountEntryId`), assign the Host account role, set hostStatus = active |
-| On add | Booking | | Trim the Owner's entry permissions to View (`PUT /o/c/bookings/{id}/permissions`), see section 6.3 |
 | Host sign-up / profile edit | Host | | Service endpoint that creates the Host entry and applies allowed profile changes (hosts only have View on Host) |
+| On add / update | Host | | Copy destinationName and stateName from the Host's Destination |
 | On add / update | Listing | | Copy destinationName, stateName, region, latitude, longitude from Destination and hostDisplayName from Host (see search.md) |
-| On update | Destination / Host | name or region changed | Update denormalized fields on related Listings |
+| On update | Destination | name, state, region or coordinates changed | Update the derived fields on its Hosts and Listings |
+| On update | Host | displayName changed | Update hostDisplayName on its Listings and Reviews |
+| On add / update / delete, workflow change | Listing | | Recompute the Host's priceFrom and completeTripsFrom (approved listings only) |
+| On update, workflow change | Host | hostStatus or approval changed | Recompute the Destination's hostCount (approved, active hosts) |
 | On add / update | AvailabilitySlot | | Recalculate Listing.nextAvailableDate; set slotStatus = full when bookedCount ≥ capacity |
-| On add / update | Review | | Recalculate Listing.ratingValue |
+| On add | Review | | Fill reviewerName and reviewerCity from the Traveler when empty; copy hostDisplayName and destinationName |
+| On add / update / delete | Review | | Recalculate Listing.ratingValue and Host.ratingValue |
 | On add / update | BookingItem | | Set lineTotal = quantity × unitPrice (overwrites any client value) |
 | On add / update | Commission | | Set amount = baseAmount × rate / 100 (overwrites any client value) |
+| On add | Booking | | Trim the Owner's entry permissions to View (`PUT /o/c/bookings/{id}/permissions`), see section 6.3 |
 | Scheduled daily | Host | | Recompute earningsThisMonth = sum of the host's Commission.amount created this month |
-| Before checkout | Booking | | Compute serviceFee, taxes and total = subtotal + serviceFee + taxes (microservice) |
+| On add / update | Booking | | Compute serviceFee, taxes and total = subtotal + serviceFee + taxes |
 | On update | Payment | paymentStatus = success | Booking.bookingStatus = confirmed |
 | On update | Booking | bookingStatus = confirmed | Create Commission(s) for host and referral host (commissionStatus pending); notify traveler and host (email/SMS) |
 | On update | Booking | bookingStatus = cancelled or refunded | Commission.commissionStatus = reversed; trigger gateway refund |
 | Scheduled daily | Commission | Booking completed and availableOn ≤ today | commissionStatus = available |
 | On add | Payout | | Call payout gateway (webhook/microservice) |
 | Gateway callback | Payout | success | Payout.payoutStatus = paid; linked Commissions → paidOut |
-| Scheduled nightly | WeatherSnapshot, PublicHoliday | | Refresh from weather and holiday APIs |
-| Scheduled nightly | Recommendation | | Regenerate per traveler, respecting the `useFactor*` toggles; delete expired |
 
 Implement logic heavier than a notification as **microservice client extensions** triggered by object action webhooks. Use Groovy only where the instance allows it (not on Liferay SaaS).
 
-### 7.1 Implemented in phase 7a (`client-extensions/mb-actions-service`)
+### 7.1 `mb-actions-service`
 
-Spring Boot 3.5 / Java 21 microservice client extension. Object actions (ERC `MB_<Object>_<trigger>`, executor `function#mb-actions-service-<object>`) are registered by `scripts/setup/actions.js`; the service calls Liferay back as its headless-server OAuth2 app (instance administrator). Custom object OAuth2 scopes are named `c_<object name in lower case>.everything[.read]`.
+Spring Boot / Java 21 microservice client extension (phase 7). Object actions (ERC `MB_<Object>_<trigger>`, executor `function#mb-actions-service-<object>`) are registered by `scripts/setup/actions.js`; the service calls Liferay back as its headless-server OAuth2 app (instance administrator). Custom object OAuth2 scopes are named `c_<object name in lower case>.everything[.read]`.
+
+**Trust rule (security).** An object action webhook carries a JWT from the client extension's user-agent OAuth2 app, and any signed-in user can obtain a token for that app. So the payload is never trusted: every handler takes only the entry ID from the request, **re-reads the entry from Liferay** with the service's own identity, and acts on the stored values. In particular, a Payment confirms a booking only if the stored Payment (re-read) has `paymentStatus = success`, a gateway transaction ID, and an amount equal to the booking's stored total. Endpoints for users (host sign-up and profile edit) use a **separate** user-agent OAuth2 app and act only on the token's own user.
 
 - **BookingItem** add/update/delete: `lineTotal = quantity × unitPrice`; refresh the pricing of its booking(s) and the status of its slot(s).
-- **Booking** add/update: `serviceFee = 5% of subtotal`, `taxes = 18% GST on the fee`, `total = subtotal + serviceFee + taxes`, rounded half up to the paisa (rates in `application-default.properties`: `mb.pricing.*`). This replaces the "Before checkout" row. On add, the Owner keeps View only (6.3).
+- **Booking** add/update: `serviceFee = 5% of subtotal`, `taxes = 18% GST on the fee`, `total = subtotal + serviceFee + taxes`, rounded half up to the paisa (rates in `application-default.properties`: `mb.pricing.*`). On add, the Owner keeps View only (6.3).
 - **Commission** add/update: `amount = baseAmount × rate / 100`.
 - **AvailabilitySlot** add/update/delete: slotStatus full when bookedCount ≥ capacity, open again below it (closed slots are left alone); refresh the listing.
-- **Listing** add/update, **Destination** update (name, state, region, latitude, longitude), **Host** update (displayName), **Review** add/update/delete: refresh the listing's derived fields: destinationName, stateName, region, latitude, longitude, hostDisplayName, nextAvailableDate (earliest open slot from today, IST) and ratingValue (= averageRating). If the listing was approved, the service approves its own update (6.4).
+- **Listing** add/update/delete, **Destination** update, **Host** update, **Review** add/update/delete: refresh the derived fields of the affected listings (destinationName, stateName, region, latitude, longitude, hostDisplayName, nextAvailableDate = earliest open slot from today IST, ratingValue = averageRating), hosts (destinationName, stateName, ratingValue, priceFrom, completeTripsFrom), destinations (hostCount) and reviews (hostDisplayName, destinationName). If the entry was approved, the service approves its own update (6.4).
 - Every handler reads fresh, writes only fields that differ, and so ends any chain it starts.
 - Validation rules (section 5): add-on price, payout balance, slot capacity.
-
-### 7.2 Implemented in phase 7b (booking lifecycle)
-
 - **Host** add: `termsAcceptedDate` = now when `termsAccepted` and no date yet.
-- **Host** approved (the update whose workflow status becomes approved): create the host's Account (name = displayName, ERC `MB_account_<host ERC>`) unless the Host is already linked to one, link it (`r_accountHosts_accountEntryId`), add the host's user (`r_userHost_userId`) to it with the account role for their tier (Host, or Super Host for `superHost`), set `hostStatus = active`. The service approves its own follow-up update (6.4). Steps already done are skipped, so re-approval changes nothing.
-- **Payment** add/update: when `paymentStatus` becomes success, a `pendingPayment` booking becomes `confirmed`.
+- **Host** approved (the update whose workflow status becomes approved): create the host's Account (name = displayName, ERC `MB_account_<host ERC>`) unless the Host is already linked to one, link it (`r_accountHosts_accountEntryId`), add the host's user (`r_userHost_userId`) to it with the Host account role, set `hostStatus = active`. Steps already done are skipped, so re-approval changes nothing.
+- **Payment** add/update: when the re-read Payment passes the trust rule, a `pendingPayment` booking becomes `confirmed`.
 - **Booking** `bookingStatus` becomes confirmed: commissions, at most one per role (ERC `MB_commission_<booking id>_host` / `_referral`):
-  - host (`hostBookings`): `Host.commissionRate` % of the lineTotal of the booking's items whose listing belongs to that host (flights have no host);
+  - host (`hostBookings`): `Host.commissionRate` % of the lineTotal of the booking's items whose listing belongs to that host;
   - referral host (`referralBookings`, if different): `mb.commission.referral-percent` (default **5**) % of the subtotal;
-  - `commissionStatus = pending`, `availableOn` = trip end (package endDate, else travelDate) + `mb.commission.available-after-days` (default **7**), account = the host's account. The two defaults are 7b assumptions (the spec left them open).
+  - `commissionStatus = pending`, `availableOn` = trip end (package endDate, else travelDate) + `mb.commission.available-after-days` (default **7**), account = the host's account.
   - Traveler and host notification: logged only until email/SMS is configured.
-- **Booking** becomes cancelled or refunded: pending and available commissions become `reversed`; paid-out ones are logged for Ops. Gateway refund: logged (7c).
-- **Payout** add (requested): links the host's free available commissions (not linked to another payout), oldest `availableOn` first, while their total fits the amount. The payout-balance rule (section 5) checks against those free commissions, so the same money can't be requested twice. Gateway call: logged (7c).
+- **Booking** becomes cancelled or refunded: pending and available commissions become `reversed`; paid-out ones are logged for Ops. Gateway refund: logged.
+- **Payout** add (requested): links the host's free available commissions (not linked to another payout), oldest `availableOn` first, while their total fits the amount. The payout-balance rule (section 5) checks against those free commissions, so the same money can't be requested twice. Gateway call: logged.
 - **Payout** becomes paid: linked commissions → `paidOut`, `processedAt` set. Becomes failed: linked commissions are released (still available).
-- **Deferred to phase 10:** the host sign-up and profile-edit service. It needs the signed-in user's token from the website or app.
+- **Host sign-up and profile edit** (phase 10b): endpoints called with the signed-in user's token from the website or app.
 
-### 7.3 Implemented in phase 7c (scheduled jobs)
+### 7.2 Scheduled jobs
 
 Jobs run inside `mb-actions-service` (Spring scheduling, IST; run a single instance). `mb.jobs.run-on-startup=true` also runs them once at startup (local testing).
 
 - **Daily 01:30** (`mb.jobs.daily-cron`):
   - pending commissions become `available` when their booking is completed and `availableOn` ≤ today;
   - Host `earningsThisMonth` = sum of the host's commissions created this month (IST), reversed ones excluded; the service approves its own update of approved hosts (6.4);
-  - every Listing's derived fields are refreshed, so `nextAvailableDate` moves on as dates pass.
-- **Nightly 02:00** (`mb.jobs.nightly-cron`):
-  - **Weather**: Open-Meteo (no API key), 7-day forecast per Destination, one WeatherSnapshot per destination and day (ERC `MB_weather_<destination id>_<date>`, replaced each run): condition (from the WMO weather code), tempC (daily maximum), isGoodForActivity = rain probability ≤ 40%, wind ≤ 30 km/h and no thunderstorm (`mb.weather.*`).
-  - **Recommendations** (the spec left the logic open; this is the phase 7c default), per traveler and only for enabled factors, at most 3 per section, ERC `MB_reco_<traveler>_<section>_<target>`, `expiresAt` = generated + 36 h; expired recommendations are deleted each run:
-    - placesNow (`useFactorSeason`, `useFactorWeather`): destinations whose bestMonths include this month; score 50, +20 trending, +20 with ≥ 4 good-weather days this week.
-    - longWeekend (`useFactorHolidays`): the first long weekend starting within 60 days; destinations at their best that month; score 60, +10 trending.
-    - hostsForYou (`useFactorPastTravel`): approved, active hosts whose specialties match the categories of the traveler's completed bookings (flights excluded); score 50 + 10 per match.
-    - nearYou (`useFactorLocation`, needs latitude/longitude): destinations within 300 km with a listing available in the next 7 days; score 100 − km/5.
-- **Public holidays**: no job. There's no public API for the Central Government gazetted list, so `scripts/setup/data/seed/holidays.json` (DoP&T) is updated once a year and loaded by `seed.js`.
+  - every Listing's and Host's derived fields and every Destination's hostCount are refreshed, so `nextAvailableDate` moves on as dates pass and nothing drifts.
 - **Payment and payout gateways (Razorpay), refunds and notifications** stay stubbed: logged only (`PAYOUT GATEWAY`, `REFUND`, `NOTIFY`). Integrate when gateway keys and email/SMS are available.
 
 ## 8. Integrations outside Liferay Objects
 
-### 8.1 Flights
-Flights come from a supplier API through a microservice client extension. They are not stored as Listings. A confirmed fare is saved as a BookingItem with `category = flight`, `itemDetail` = route, and `supplierReference` = PNR.
+### 8.1 Payments
+Use a payment gateway (e.g. Razorpay) for UPI, cards and net banking. The gateway webhook updates Payment records; the Payment handler applies the trust rule (7.1).
 
-### 8.2 Payments
-Use a payment gateway (e.g. Razorpay) for UPI, cards and net banking. The gateway webhook updates Payment records.
+### 8.2 Travel Journal
+"Discover Somewhere New" and the Travel Journal are Liferay **Blogs** entries on the Maddybaba site, categorized with the vocabulary **Journal Topics**: Hidden places, Weekend trips, Local food, Trekking, Road trips, Local experiences. Not objects.
 
 ### 8.3 Content that is not objects
-The "Other apps" comparison table, marketing copy and footer are Web Content and fragments.
+"The MaddyBaba Difference", the Become-a-Host section, the closing call to action and the footer are Web Content and fragments.
+
+### 8.4 Dropped for now
+Not in the current design, so not built: flights, AI recommendations (and the weather, public-holiday and recommendation data behind them), the app waitlist, and host subscriptions / Super Host. Add them back to this spec when a design needs them.
 
 ## 9. Seed data (local development)
 
-- Destinations: Bir Billing (Himachal Pradesh), Rishikesh (Uttarakhand), Kasol (Himachal Pradesh), McLeod Ganj (Himachal Pradesh)
-- Listings:
-  - Tandem paragliding, Bir Billing (paragliding, per person)
-  - Riverside camp, Kasol (camping, per night)
-  - Triund trek, McLeod Ganj (trekking)
-  - River rafting, Rishikesh (activity)
-  - Partner mountain camp, Bir (stay)
-  - Rajgundha valley day hike (trekking)
-  - Monastery & village walk (local guide)
-- Inclusions for paragliding: transport to take-off point, tandem flight with certified pilot, safety gear and briefing (all included); photos & video (add-on)
-- Availability slots for the next 14 days on each activity listing
-- Two hosts: a local pilot/guide in Bir, and a partner host in Rishikesh
-- One partner camp, linked to the Bir host through HostPartnership
-- One traveler with a sample TripPackage (flight, stay, paragliding) and one confirmed Booking with Payment and Commission
-- Public holidays for the next 12 months
+Matches the home page design, so the page can be checked against it.
 
-Use realistic INR prices in the seed data.
+- **Destinations** (tile order): Manali (Himachal Pradesh), Udaipur (Rajasthan), Rishikesh (Uttarakhand), Goa (Goa), Kashmir (Jammu and Kashmir; keywords Srinagar, Gulmarg, Pahalgam), Meghalaya (Meghalaya; keywords Shillong, Cherrapunji, Sohra).
+- **Hosts** (one test user each, section 9.1):
+
+  | Host | Destination | hostRole | hostOffers | specialties | quote |
+  |---|---|---|---|---|---|
+  | Rahul (`rahul-manali`) | Manali | localTripHost | ownServices, connectServices, planTrips, fullTrip | stay, transport, tours, food, activities | I help travelers arrange stays, transport, food, sightseeing and local experiences. |
+  | Priya (`priya-udaipur`) | Udaipur | experienceHost | ownServices, guiding | homestay, food, experiences, photography | Stay in my family haveli, eat what we cook, and see the lakes the way locals do. |
+  | Amit (`amit-rishikesh`) | Rishikesh | adventureHost | ownServices, connectServices, guiding, fullTrip | trekking, transport, camping, activities | Treks, riverside camps and rafting — with the transport sorted from Dehradun. |
+  | Irfan (`irfan-kashmir`) | Kashmir | localTripHost | connectServices, planTrips, fullTrip | stay, shikara, transport, tours | Houseboat stays, shikara rides and drives to Gulmarg and Pahalgam, all arranged. |
+
+- **Listings** (realistic INR prices; the lowest per host gives the card's price line):
+  - Rahul: "Manali complete trip, 5 days / 4 nights" (completeTrip, ₹8,999/person), "Solang Valley day tour" (tours, ₹1,800/person), "Manali–Rohtang cab" (transport, ₹4,500/trip).
+  - Priya: "Haveli homestay room" (homestay, ₹1,499/night), "Cook dal baati with my mother" (experiences, ₹1,200/person), "Old city photo walk" (photography, ₹1,500/person).
+  - Amit: "Rishikesh adventure trip, 3 days / 2 nights" (completeTrip, ₹6,999/person), "Riverside camp" (camping, ₹1,800/night), "River rafting" (rafting, ₹800/person).
+  - Irfan: "Kashmir complete trip, 6 days / 5 nights" (completeTrip, ₹9,499/person), "Dal Lake houseboat" (stay, ₹3,500/night), "Shikara ride" (shikara, ₹900/boat, perGroup).
+- **Inclusions** on each complete trip: stay, transport, breakfast and dinner, sightseeing (included); one add-on activity.
+- **Availability slots:** every listing, one per day for the next 14 days (stays and camps need a slot per night), plus any date the seed booking uses.
+- **Partner:** Manali Pine Cottages (hotel, 12%), linked to Rahul through an active HostPartnership.
+- **Traveler:** Ankit Sharma, home city Delhi, with a TripPackage and one confirmed Booking of Rahul's complete trip: 2 × ₹8,999 = ₹17,998; 5% fee ₹899.90 + 18% GST on the fee ₹161.98 = **₹19,059.88**, paid by UPI; commission 10% of ₹17,998 = ₹1,799.80 (pending).
+- **Reviews** (published and featured): "Ankit & Neha", Delhi, 5★ for Rahul ("We didn't have to worry about anything. Rahul arranged our stay, cab, sightseeing and food. We just enjoyed Manali."); "Sneha R.", Pune, 5★ for Priya; "Karthik & friends", Bengaluru, 5★ for Amit (texts from the design). Plus a few unfeatured reviews per host. Rating and review counts will be the seed's real values, not the design's placeholders (4.9 · 87), and the same goes for the destination tiles' host counts.
+- **Journal:** six Blogs entries, one per Journal Topic.
+- No images are seeded.
 
 ### 9.1 How it's loaded
 
 `scripts/setup/seed.js` (local instance only; refuses any other `LIFERAY_URL`) loads `scripts/setup/data/seed/`. Entries have ERCs `MB_SEED_…`, are upserted by ERC and only patched where they differ. Seeded Hosts and Listings go through the MB Ops Approval workflow and are approved by the ops test user.
 
-- **People:** the test users from `test-users.js`. Bir host (Karan Thakur, pilot and guide) = `mb.test.host1`, account "Bir Sky Adventures". Rishikesh partner host (Meera Rawat) = `mb.test.host2`, account "Ganga Trails". Traveler (Ananya Iyer) = `mb.test.traveler`, who creates their own profile, package, booking and items so they own them.
-- **Listings:** paragliding ₹2,500/person, partner mountain camp ₹3,500/night, Rajgundha hike ₹2,000/person, monastery walk ₹900/person and Triund trek ₹1,500/person (Bir host); river rafting ₹800/person and Kasol riverside camp ₹1,800/night (Rishikesh host). Partner: Bir Mountain Camp (12%), linked to the Bir host through an active HostPartnership.
-- **Availability slots:** every listing, one per day for the next 14 days (stays and camps need a slot per night), plus any date the seed booking uses.
-- **Booking:** 8–10 Oct 2026, 2 adults: flight 2 × ₹6,500, 2 nights camp 2 × ₹3,500, paragliding 2 × ₹2,500 = ₹25,000. Seed-only pricing (phase 7 sets the real rules): 5% platform fee ₹1,250 + 18% GST on the fee ₹225 = **₹26,475**. Confirmed, paid by UPI; commission 10% of the Bir host's ₹12,000 = ₹1,200 (pending).
-- **Values phase 7 will compute** (lineTotal, commission amount, fees, total, denormalized listing fields, nextAvailableDate, termsAcceptedDate, hostStatus active, Host linked to its account) are set by hand in the seed.
-- **Public holidays:** gazetted holidays for Central Government offices (DoP&T lists for 2026 and 2027), 26 Sep 2026 – 25 Sep 2027, nationwide (`applicableStates` empty = all states). Long weekend = the days off around the holiday, bridging at most two working days: Tue → Sat–Tue (1 leave day), Wed → Wed–Sun (2), Thu → Thu–Sun (1); Fri, Sat, Sun and Mon need none.
-- No images are seeded.
+- **People:** the test users from `test-users.js`: one traveler (`mb.test.traveler`, Ankit Sharma), four hosts (`mb.test.host1`–`host4` = Rahul, Priya, Amit, Irfan, each in their own account named after the host's business) and ops admin (`mb.test.ops`). The traveler creates their own profile, package, booking, items and reviews so they own them.
+- **Derived values** (lineTotal, commission amount, fees, total, derived Host/Listing/Review/Destination fields, termsAcceptedDate, hostStatus active, Host linked to its account) are left to `mb-actions-service` if it's running, and are otherwise set by hand in the seed so the pages render.

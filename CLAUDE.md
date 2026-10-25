@@ -2,15 +2,15 @@
 
 ## What this is
 
-Maddybaba is a travel marketplace. Travelers book stays, flights, camping, treks, paragliding and local guides, or build a custom tour package. Hosts earn commission without owning property: they partner with hotels, guide travelers or list activities, and share a personal booking link.
+Maddybaba is a travel marketplace built around the local host: "Your Local Host. Your Whole Trip." Travelers find one local at their destination who can arrange the whole trip (stay, transport, food, tours, activities) or offer a single experience, and book complete trips or individual services. Hosts earn commission without owning a hotel or vehicle: they offer their own services, connect guests with local businesses, guide travelers, plan complete trips or manage everything for a guest, and share a personal booking link.
 
 The website and a mobile app both run on this Liferay instance. The app uses the headless APIs.
 
 ## Specs (read before working)
 
-* `docs/Maddybaba\_App\_Design.pdf` — website and app screens
+* `docs/Homepage — desktop.pdf` — website home page design (other screens follow)
 * `docs/data-model.md` — picklists, objects, fields, relationships, validations, permissions, actions. **Source of truth.**
-* `docs/search.md` — search design, relevance and synonyms (in mb-search-service), `/search/trips` API
+* `docs/search.md` — search design, relevance and synonyms (in mb-search-service), `/search/hosts` and `/search/trips` APIs
 
 Follow the specs exactly. If something in a spec is wrong, unsupported on this Liferay version, or ambiguous, stop and ask. Don't improvise. When a spec changes, update the doc in the same commit.
 
@@ -25,7 +25,7 @@ Follow the specs exactly. If something in a spec is wrong, unsupported on this L
 
   * Picklists: `/o/headless-admin-list-type/v1.0/list-type-definitions`
   * Objects: `/o/object-admin/v1.0/object-definitions` (fields, relationships, actions, validations)
-  * Object data: `/o/c/<pluralized object name>`, e.g. `/o/c/appwaitlists` (confirm the path in /o/api after publishing)
+  * Object data: `/o/c/<pluralized object name>`, e.g. `/o/c/destinations` (confirm the path in /o/api after publishing)
 
 ## Repository layout
 
@@ -77,5 +77,5 @@ client-extensions/
 9. Package objects as the mb-objects-batch client extension and test on a clean instance
 10. Website pages, fragments and display pages; then mobile app integration
 
-Current phase: **10a** (website; host sign-up and profile edit follow in 10b)
+Current phase: **1** (restart on the host-centric spec from `docs/Homepage — desktop.pdf`, 2026-10-25; the local instance's earlier MB data model was wiped)
 
