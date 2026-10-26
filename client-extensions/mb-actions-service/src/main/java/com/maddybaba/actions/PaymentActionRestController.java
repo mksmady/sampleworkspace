@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Payment add or update: when paymentStatus becomes success, confirm the booking (pendingPayment ->
- * confirmed), which in turn creates its commissions. Only the payment integration writes payments
- * (docs/data-model.md 6.2).
+ * Payment add or update: a pendingPayment booking becomes confirmed (which creates its commissions) only
+ * when the stored payment (ActionPayload trust rule) passes all of docs/data-model.md 7.1: paymentStatus
+ * success, a gateway transaction ID, and an amount equal to the booking's stored total. Only the payment
+ * integration and Ops write payments (6.2).
  */
 @RequestMapping("/object/action/payment")
 @RestController
@@ -30,21 +31,44 @@ public class PaymentActionRestController extends BaseRestController {
 
 	@PostMapping
 	public ResponseEntity<String> post(@AuthenticationPrincipal Jwt jwt, @RequestBody String json) {
-		ActionPayload payload = ActionPayload.of(json);
+		ActionPayload payload = ActionPayload.trusted(json, _liferayClient, "payments");
+
+		if ((payload == null) || !"success".equals(payload.key("paymentStatus"))) {
+			return ResponseEntity.ok("{}");
+		}
+
+		long paymentId = payload.entryId();
 		long bookingId = payload.id("r_bookingPayments_c_bookingId");
 
-		if (!"success".equals(payload.key("paymentStatus")) || "success".equals(payload.originalKey("paymentStatus")) || (bookingId <= 0)) {
+		if (bookingId <= 0) {
+			_log.warn("Payment {} succeeded without a booking; nothing confirmed", paymentId);
+
+			return ResponseEntity.ok("{}");
+		}
+
+		if (payload.values().optString("gatewayTxnId", "").isBlank()) {
+			_log.warn("Payment {} has no gateway transaction ID; booking {} not confirmed", paymentId, bookingId);
+
 			return ResponseEntity.ok("{}");
 		}
 
 		JSONObject booking = _liferayClient.get("/o/c/bookings/" + bookingId);
-		String bookingStatus = booking.optJSONObject("bookingStatus").optString("key");
+
+		if (!Money.same(payload.decimal("amount"), booking.opt("total"))) {
+			_log.warn(
+				"Payment {} amount {} doesn't match booking {} total {}; not confirmed", paymentId, payload.decimal("amount"), bookingId,
+				booking.opt("total"));
+
+			return ResponseEntity.ok("{}");
+		}
+
+		String bookingStatus = Values.key(booking.opt("bookingStatus"));
 
 		if ("pendingPayment".equals(bookingStatus)) {
 			_liferayClient.patch("/o/c/bookings/" + bookingId, new JSONObject().put("bookingStatus", "confirmed"));
 		}
 		else {
-			_log.warn("Payment {} succeeded for booking {} in status {}; not changed", payload.entryId(), bookingId, bookingStatus);
+			_log.info("Payment {} succeeded for booking {} in status {}; not changed", paymentId, bookingId, bookingStatus);
 		}
 
 		return ResponseEntity.ok("{}");

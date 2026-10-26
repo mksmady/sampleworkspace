@@ -38,6 +38,16 @@ public class Commissions {
 	 */
 	public void createForBooking(long bookingId) {
 		JSONObject booking = _liferayClient.get("/o/c/bookings/" + bookingId);
+
+		// Trust rule (docs/data-model.md 6.3, 7.1): only a stored confirmed booking with a successful
+		// payment earns commissions, whatever the triggering request claimed.
+
+		if (!"confirmed".equals(Values.key(booking.opt("bookingStatus"))) || !_paid(bookingId)) {
+			_log.warn("Booking {} is not confirmed with a successful payment; no commissions", bookingId);
+
+			return;
+		}
+
 		long hostId = booking.optLong("r_hostBookings_c_hostId", 0);
 		long referralHostId = booking.optLong("r_referralBookings_c_hostId", 0);
 		String availableOn = _tripEnd(booking).plusDays(_availableAfterDays).toString();
@@ -61,6 +71,14 @@ public class Commissions {
 	 * and logged; recovering them is a manual step for Ops.
 	 */
 	public void reverseForBooking(long bookingId) {
+		String bookingStatus = Values.key(_liferayClient.get("/o/c/bookings/" + bookingId).opt("bookingStatus"));
+
+		if (!"cancelled".equals(bookingStatus) && !"refunded".equals(bookingStatus)) {
+			_log.warn("Booking {} is {}, not cancelled or refunded; commissions kept", bookingId, bookingStatus);
+
+			return;
+		}
+
 		for (JSONObject commission : _liferayClient.getAll("/o/c/commissions?filter=r_bookingCommissions_c_bookingId eq '" + bookingId + "'")) {
 			String status = _key(commission.opt("commissionStatus"));
 
@@ -134,6 +152,15 @@ public class Commissions {
 		}
 
 		return total;
+	}
+
+	private boolean _paid(long bookingId) {
+		return _liferayClient.getAll(
+			"/o/c/payments?filter=r_bookingPayments_c_bookingId eq '" + bookingId + "'"
+		).stream(
+		).anyMatch(
+			payment -> "success".equals(Values.key(payment.opt("paymentStatus"))) && !payment.optString("gatewayTxnId", "").isBlank()
+		);
 	}
 
 	private static String _key(Object picklistValue) {

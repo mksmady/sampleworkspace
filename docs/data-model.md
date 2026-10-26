@@ -128,10 +128,10 @@ Plural label: Hosts. Title field: `displayName`. Workflow: Single Approver (KYC 
 | payoutUpiId | Text | | Consider storing only a gateway token |
 | destinationName | Text | S | Derived from the host's Destination (`destinationHosts`) |
 | stateName | Text | S | Derived: the Destination's state label |
-| ratingValue | PrecisionDecimal | | Derived: average rating of the host's published reviews (`hostReviews`), 1 decimal. Aggregation filters only take date, integer and picklist fields, so a Boolean `isPublished` filter isn't possible and an action stores it |
+| ratingValue | PrecisionDecimal | | Derived: average rating of the host's published reviews (`hostReviews`), 1 decimal; 0 when there are none. Aggregation filters only take date, integer and picklist fields, so a Boolean `isPublished` filter isn't possible and an action stores it |
 | reviewCount | Integer | | Derived: number of the host's published reviews |
 | priceFrom | PrecisionDecimal | | Derived: lowest basePrice of the host's approved listings other than complete trips ("From ₹1,499") |
-| completeTripsFrom | PrecisionDecimal | | Derived: lowest basePrice of the host's approved `completeTrip` listings ("Complete trips from ₹8,999"). Empty when there are none; the card then shows priceFrom |
+| completeTripsFrom | PrecisionDecimal | | Derived: lowest basePrice of the host's approved `completeTrip` listings ("Complete trips from ₹8,999"). 0 when there are none (Liferay stores an empty PrecisionDecimal as 0); the card then shows priceFrom |
 | linkClicks | Aggregation | | Count of ReferralClick |
 | totalBookings | Aggregation | | Count of Booking via `hostBookings` |
 | partnerCount | Aggregation | | Count of HostPartnership where partnershipStatus = active |
@@ -539,7 +539,7 @@ Use a payment gateway (e.g. Razorpay) for UPI, cards and net banking. The gatewa
 "Discover Somewhere New" and the Travel Journal are Liferay **Blogs** entries on the Maddybaba site, categorized with the vocabulary **Journal Topics**: Hidden places, Weekend trips, Local food, Trekking, Road trips, Local experiences. Not objects.
 
 ### 8.3 Content that is not objects
-"The MaddyBaba Difference", the Become-a-Host section, the closing call to action and the footer are Web Content and fragments.
+"The MaddyBaba Difference", the Become-a-Host section, the closing call to action and the footer are custom elements with static copy (`docs/website.md` section 3).
 
 ### 8.4 Dropped for now
 Not in the current design, so not built: flights, AI recommendations (and the weather, public-holiday and recommendation data behind them), the app waitlist, and host subscriptions / Super Host. Add them back to this spec when a design needs them.

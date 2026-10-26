@@ -21,14 +21,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AvailabilitySlotActionRestController extends BaseRestController {
 
-	public AvailabilitySlotActionRestController(ListingRefresher listingRefresher, Recalculator recalculator) {
+	public AvailabilitySlotActionRestController(
+		LiferayClient liferayClient, ListingRefresher listingRefresher, Recalculator recalculator) {
+
+		_liferayClient = liferayClient;
 		_listingRefresher = listingRefresher;
 		_recalculator = recalculator;
 	}
 
 	@PostMapping
 	public ResponseEntity<String> post(@AuthenticationPrincipal Jwt jwt, @RequestBody String json) {
-		ActionPayload payload = ActionPayload.of(json);
+		ActionPayload payload = ActionPayload.trusted(json, _liferayClient, "availabilityslots");
+
+		if (payload == null) {
+			return ResponseEntity.ok("{}");
+		}
 
 		if (!"onAfterDelete".equals(payload.trigger())) {
 			_recalculator.slotStatus(payload.entryId());
@@ -43,6 +50,7 @@ public class AvailabilitySlotActionRestController extends BaseRestController {
 
 	private static final String _LISTING = "r_listingSlots_c_listingId";
 
+	private final LiferayClient _liferayClient;
 	private final ListingRefresher _listingRefresher;
 	private final Recalculator _recalculator;
 

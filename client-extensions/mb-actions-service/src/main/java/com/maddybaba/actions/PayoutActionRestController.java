@@ -38,7 +38,11 @@ public class PayoutActionRestController extends BaseRestController {
 
 	@PostMapping
 	public ResponseEntity<String> post(@AuthenticationPrincipal Jwt jwt, @RequestBody String json) {
-		ActionPayload payload = ActionPayload.of(json);
+		ActionPayload payload = ActionPayload.trusted(json, _liferayClient, "payouts");
+
+		if (payload == null) {
+			return ResponseEntity.ok("{}");
+		}
 		long payoutId = payload.entryId();
 		String status = payload.key("payoutStatus");
 

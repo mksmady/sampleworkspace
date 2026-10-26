@@ -1,11 +1,9 @@
 package com.maddybaba.actions;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 import org.json.JSONObject;
 
@@ -14,8 +12,9 @@ import org.springframework.stereotype.Component;
 /**
  * A Listing's derived fields (docs/search.md section 3): copies of its Destination (destinationName,
  * stateName, region, latitude, longitude) and Host (hostDisplayName), the earliest open slot from today
- * (nextAvailableDate) and a stored copy of averageRating (ratingValue). Only differing fields are
- * written; if the listing was approved, the service approves its own update (WorkflowApprover).
+ * (nextAvailableDate) and ratingValue and reviewCount from its published reviews (Ratings). Only
+ * differing fields are written; if the listing was approved, the service approves its own update
+ * (WorkflowApprover).
  */
 @Component
 public class ListingRefresher {
@@ -57,25 +56,21 @@ public class ListingRefresher {
 		}
 
 		wanted.put("nextAvailableDate", _nextAvailableDate(listingId));
-		wanted.put("ratingValue", listing.opt("averageRating"));
 
-		JSONObject patch = new JSONObject();
+		Ratings ratings = Ratings.of(_liferayClient.getAll("/o/c/reviews?filter=r_listingReviews_c_listingId eq '" + listingId + "'"));
 
-		for (String name : wanted.keySet()) {
-			if (!_same(wanted.opt(name), listing.opt(name))) {
-				patch.put(name, wanted.get(name));
-			}
-		}
+		wanted.put("ratingValue", ratings.ratingValue());
+		wanted.put("reviewCount", ratings.reviewCount());
+
+		JSONObject patch = Values.diff(wanted, listing);
 
 		if (patch.isEmpty()) {
 			return;
 		}
 
-		boolean wasApproved = listing.optJSONObject("status").optInt("code", -1) == 0;
-
 		_liferayClient.patch("/o/c/listings/" + listingId, patch);
 
-		if (wasApproved) {
+		if (Values.isApproved(listing)) {
 			_workflowApprover.approveAutomaticUpdate(listingId);
 		}
 	}
@@ -96,7 +91,7 @@ public class ListingRefresher {
 
 		return slots.stream(
 		).filter(
-			slot -> "open".equals(_key(slot.opt("slotStatus")))
+			slot -> "open".equals(Values.key(slot.opt("slotStatus")))
 		).map(
 			slot -> slot.optString("slotDate").substring(0, 10)
 		).filter(
@@ -108,44 +103,6 @@ public class ListingRefresher {
 		).orElse(
 			JSONObject.NULL
 		);
-	}
-
-	private static String _key(Object picklistValue) {
-		if (picklistValue instanceof JSONObject jsonObject) {
-			return jsonObject.optString("key");
-		}
-
-		return (picklistValue == null) ? "" : picklistValue.toString();
-	}
-
-	/**
-	 * Compares a wanted value with the stored one: numbers by value, dates by day, empty and null alike.
-	 */
-	private static boolean _same(Object wanted, Object stored) {
-		boolean wantedEmpty = (wanted == null) || (wanted == JSONObject.NULL) || "".equals(wanted);
-		boolean storedEmpty = (stored == null) || (stored == JSONObject.NULL) || "".equals(stored);
-
-		if (wantedEmpty || storedEmpty) {
-			return wantedEmpty && storedEmpty;
-		}
-
-		if ((wanted instanceof Number) || (stored instanceof Number)) {
-			try {
-				return new BigDecimal(wanted.toString()).compareTo(new BigDecimal(stored.toString())) == 0;
-			}
-			catch (NumberFormatException numberFormatException) {
-				return false;
-			}
-		}
-
-		String a = wanted.toString();
-		String b = stored.toString();
-
-		if (a.matches("\\d{4}-\\d{2}-\\d{2}")) {
-			return b.startsWith(a);
-		}
-
-		return Objects.equals(a, b);
 	}
 
 	private final LiferayClient _liferayClient;

@@ -32,7 +32,11 @@ public class BookingItemActionRestController extends BaseRestController {
 
 	@PostMapping
 	public ResponseEntity<String> post(@AuthenticationPrincipal Jwt jwt, @RequestBody String json) {
-		ActionPayload payload = ActionPayload.of(json);
+		ActionPayload payload = ActionPayload.trusted(json, _liferayClient, "bookingitems");
+
+		if (payload == null) {
+			return ResponseEntity.ok("{}");
+		}
 
 		if (!"onAfterDelete".equals(payload.trigger())) {
 			BigDecimal lineTotal = payload.decimal("unitPrice").multiply(BigDecimal.valueOf(payload.values().optLong("quantity")));

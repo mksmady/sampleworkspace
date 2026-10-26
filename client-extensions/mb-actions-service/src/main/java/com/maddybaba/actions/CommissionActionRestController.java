@@ -27,7 +27,11 @@ public class CommissionActionRestController extends BaseRestController {
 
 	@PostMapping
 	public ResponseEntity<String> post(@AuthenticationPrincipal Jwt jwt, @RequestBody String json) {
-		ActionPayload payload = ActionPayload.of(json);
+		ActionPayload payload = ActionPayload.trusted(json, _liferayClient, "commissions");
+
+		if (payload == null) {
+			return ResponseEntity.ok("{}");
+		}
 		BigDecimal amount = Money.percentOf(payload.decimal("baseAmount"), payload.decimal("rate"));
 
 		if (!Money.same(amount, payload.values().opt("amount"))) {

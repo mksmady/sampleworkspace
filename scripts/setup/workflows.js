@@ -3,7 +3,11 @@
 // Idempotent: each deploy creates a new workflow version, so the definition is only deployed when the
 // live one differs from the file; links are only added when missing. Nothing is ever deleted.
 //
-// Usage: node scripts/setup/workflows.js [--verify-only]
+// --redeploy deploys a new version even when the XML matches: Liferay resolves the assigned role names to
+// role IDs at deploy time, so a role that was deleted and recreated (same name, new ID) gets no tasks
+// until the definition is deployed again.
+//
+// Usage: node scripts/setup/workflows.js [--verify-only] [--redeploy]
 
 const fs = require('fs');
 const path = require('path');
@@ -51,7 +55,7 @@ const liveXml = (definition) => '<?xml version="1.0"?>\n\n' + toXml(JSON.parse(d
 async function syncDefinition() {
 	const live = await liferay.get(`${WORKFLOW}/workflow-definitions/by-name/${encodeURIComponent(DEFINITION.name)}`);
 
-	if (live && live.active && liveXml(live) === xml) {
+	if (live && live.active && liveXml(live) === xml && !process.argv.includes('--redeploy')) {
 		return 'unchanged';
 	}
 

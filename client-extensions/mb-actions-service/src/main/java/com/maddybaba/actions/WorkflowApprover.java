@@ -21,9 +21,10 @@ public class WorkflowApprover {
 
 	public void approveAutomaticUpdate(long entryId) {
 
-		// Liferay starts the workflow asynchronously after the save, so the task can take a moment.
+		// Liferay starts the workflow asynchronously after the save, so the task can take a moment: more
+		// than 15 s under load (seeding many slots at once), so wait up to a minute.
 
-		for (int attempt = 0; attempt < 30; attempt++) {
+		for (int attempt = 0; attempt < 120; attempt++) {
 			for (JSONObject task : _liferayClient.getAll(_TASKS + "/assigned-to-my-roles")) {
 				JSONObject objectReviewed = task.optJSONObject("objectReviewed");
 

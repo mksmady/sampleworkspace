@@ -26,14 +26,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class BookingActionRestController extends BaseRestController {
 
-	public BookingActionRestController(Commissions commissions, Recalculator recalculator) {
+	public BookingActionRestController(Commissions commissions, LiferayClient liferayClient, Recalculator recalculator) {
 		_commissions = commissions;
+		_liferayClient = liferayClient;
 		_recalculator = recalculator;
 	}
 
 	@PostMapping
 	public ResponseEntity<String> post(@AuthenticationPrincipal Jwt jwt, @RequestBody String json) {
-		ActionPayload payload = ActionPayload.of(json);
+		ActionPayload payload = ActionPayload.trusted(json, _liferayClient, "bookings");
+
+		if (payload == null) {
+			return ResponseEntity.ok("{}");
+		}
+
 		long bookingId = payload.entryId();
 
 		if ("onAfterAdd".equals(payload.trigger())) {
@@ -58,7 +64,7 @@ public class BookingActionRestController extends BaseRestController {
 		else if (_REVERSING.contains(status)) {
 			_commissions.reverseForBooking(bookingId);
 
-			// The payment gateway refund is phase 7c; logged until then.
+			// The payment gateway refund is logged until a gateway is integrated.
 
 			_log.info("REFUND requested for booking {} ({})", bookingId, status);
 		}
@@ -71,6 +77,7 @@ public class BookingActionRestController extends BaseRestController {
 	private static final Logger _log = LoggerFactory.getLogger(BookingActionRestController.class);
 
 	private final Commissions _commissions;
+	private final LiferayClient _liferayClient;
 	private final Recalculator _recalculator;
 
 }

@@ -30,34 +30,27 @@ import org.springframework.stereotype.Component;
 public class Jobs {
 
 	public Jobs(
-		LiferayClient liferayClient, ListingRefresher listingRefresher, Recommender recommender, WeatherRefresher weatherRefresher,
+		HostRefresher hostRefresher, LiferayClient liferayClient, ListingRefresher listingRefresher,
 		WorkflowApprover workflowApprover, @Value("${mb.jobs.run-on-startup}") boolean runOnStartup) {
 
+		_hostRefresher = hostRefresher;
 		_liferayClient = liferayClient;
 		_listingRefresher = listingRefresher;
-		_recommender = recommender;
-		_weatherRefresher = weatherRefresher;
 		_workflowApprover = workflowApprover;
 		_runOnStartup = runOnStartup;
 	}
 
 	/**
-	 * Daily: commissions become available, hosts' earningsThisMonth, listings' nextAvailableDate.
+	 * Daily: commissions become available, hosts' earningsThisMonth, then every listing's and host's
+	 * derived fields and every destination's hostCount (nextAvailableDate moves on as dates pass, and
+	 * nothing drifts).
 	 */
 	@Scheduled(cron = "${mb.jobs.daily-cron}", zone = "Asia/Kolkata")
 	public void daily() {
 		_run("commissions available", this::_commissionsAvailable);
 		_run("earnings this month", this::_earningsThisMonth);
-		_run("listings next available date", this::_listings);
-	}
-
-	/**
-	 * Nightly: weather first, since recommendations use it.
-	 */
-	@Scheduled(cron = "${mb.jobs.nightly-cron}", zone = "Asia/Kolkata")
-	public void nightly() {
-		_run("weather", _weatherRefresher::refresh);
-		_run("recommendations", _recommender::refresh);
+		_run("listings", this::_listings);
+		_run("hosts and destinations", this::_hosts);
 	}
 
 	@EventListener(ApplicationReadyEvent.class)
@@ -66,7 +59,6 @@ public class Jobs {
 			new Thread(
 				() -> {
 					daily();
-					nightly();
 					_log.info("JOBS startup run finished");
 				},
 				"mb-jobs-startup"
@@ -165,6 +157,25 @@ public class Jobs {
 		return count;
 	}
 
+	/**
+	 * Every host's derived fields (which also refreshes its destination's hostCount), then destinations
+	 * without hosts.
+	 */
+	private int _hosts() {
+		int count = 0;
+
+		for (JSONObject host : _liferayClient.getAll("/o/c/hosts")) {
+			_hostRefresher.refresh(host.getLong("id"));
+			count++;
+		}
+
+		for (JSONObject destination : _liferayClient.getAll("/o/c/destinations")) {
+			_hostRefresher.refreshDestination(destination.getLong("id"));
+		}
+
+		return count;
+	}
+
 	private void _run(String name, Job job) {
 		try {
 			_log.info("JOB {} done: {}", name, job.run());
@@ -178,11 +189,10 @@ public class Jobs {
 
 	private static final Logger _log = LoggerFactory.getLogger(Jobs.class);
 
+	private final HostRefresher _hostRefresher;
 	private final LiferayClient _liferayClient;
 	private final ListingRefresher _listingRefresher;
-	private final Recommender _recommender;
 	private final boolean _runOnStartup;
-	private final WeatherRefresher _weatherRefresher;
 	private final WorkflowApprover _workflowApprover;
 
 	@FunctionalInterface

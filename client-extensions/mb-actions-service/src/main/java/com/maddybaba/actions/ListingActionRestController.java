@@ -4,81 +4,87 @@ import com.liferay.client.extension.util.spring.boot3.BaseRestController;
 
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Keeps each Listing's derived fields current (ListingRefresher):
- * - Listing add or update: the listing itself.
- * - Destination update: its listings, when a copied field changed (Host: HostActionRestController).
- * - Review add, update or delete: the listing it belongs (or belonged) to (slots: see
- *   AvailabilitySlotActionRestController).
+ * Keeps derived fields current when a Listing or Destination changes (Host: HostActionRestController,
+ * Review: ReviewActionRestController, slots: AvailabilitySlotActionRestController):
+ * - Listing add, update (including its approval) or delete: the listing itself and its host's
+ *   priceFrom and completeTripsFrom (approved listings only).
+ * - Destination update: its hosts, listings and their reviews, when a copied field changed.
  */
 @RequestMapping("/object/action")
 @RestController
 public class ListingActionRestController extends BaseRestController {
 
-	public ListingActionRestController(ListingRefresher listingRefresher) {
+	public ListingActionRestController(
+		HostRefresher hostRefresher, LiferayClient liferayClient, ListingRefresher listingRefresher,
+		ReviewRefresher reviewRefresher) {
+
+		_hostRefresher = hostRefresher;
+		_liferayClient = liferayClient;
 		_listingRefresher = listingRefresher;
+		_reviewRefresher = reviewRefresher;
 	}
 
-	@PostMapping("/listing")
-	public ResponseEntity<String> listing(@AuthenticationPrincipal Jwt jwt, @RequestBody String json) {
-		_listingRefresher.refresh(ActionPayload.of(json).entryId());
+	@PostMapping("/destination")
+	public ResponseEntity<String> destination(@AuthenticationPrincipal Jwt jwt, @RequestBody String json) {
+		ActionPayload payload = ActionPayload.trusted(json, _liferayClient, "destinations");
 
-		return ResponseEntity.ok("{}");
-	}
+		if (payload == null) {
+			return ResponseEntity.ok("{}");
+		}
 
-	@PostMapping("/{source:destination}")
-	public ResponseEntity<String> parent(
-		@AuthenticationPrincipal Jwt jwt, @PathVariable String source, @RequestBody String json) {
-
-		ActionPayload payload = ActionPayload.of(json);
-		List<String> copiedFields = _COPIED_FIELDS.get(source);
-
-		boolean changed = (payload.originalValues() == null) || copiedFields.stream(
+		boolean changed = (payload.originalValues() == null) || _COPIED_FIELDS.stream(
 		).anyMatch(
 			name -> !String.valueOf(payload.values().opt(name)).equals(String.valueOf(payload.originalValues().opt(name)))
 		);
 
 		if (changed) {
-			_listingRefresher.refreshAll(_RELATIONSHIP_FIELDS.get(source), payload.entryId());
+			_listingRefresher.refreshAll("r_destinationListings_c_destinationId", payload.entryId());
+
+			for (var host : _liferayClient.getAll("/o/c/hosts?filter=r_destinationHosts_c_destinationId eq '" + payload.entryId() + "'")) {
+				_hostRefresher.refresh(host.getLong("id"));
+				_reviewRefresher.refreshForHost(host.getLong("id"));
+			}
 		}
 
 		return ResponseEntity.ok("{}");
 	}
 
-	@PostMapping("/{source:review}")
-	public ResponseEntity<String> child(
-		@AuthenticationPrincipal Jwt jwt, @PathVariable String source, @RequestBody String json) {
+	@PostMapping("/listing")
+	public ResponseEntity<String> listing(@AuthenticationPrincipal Jwt jwt, @RequestBody String json) {
+		ActionPayload payload = ActionPayload.trusted(json, _liferayClient, "listings");
 
-		ActionPayload payload = ActionPayload.of(json);
-		String field = _LISTING_FIELDS.get(source);
+		if (payload == null) {
+			return ResponseEntity.ok("{}");
+		}
 
-		for (long listingId : new LinkedHashSet<>(List.of(payload.id(field), payload.originalId(field)))) {
-			_listingRefresher.refresh(listingId);
+		if (!"onAfterDelete".equals(payload.trigger())) {
+			_listingRefresher.refresh(payload.entryId());
+		}
+
+		for (long hostId : new LinkedHashSet<>(List.of(payload.id(_HOST), payload.originalId(_HOST)))) {
+			_hostRefresher.refresh(hostId);
 		}
 
 		return ResponseEntity.ok("{}");
 	}
 
-	private static final Map<String, List<String>> _COPIED_FIELDS = Map.of(
-		"destination", List.of("latitude", "longitude", "name", "region", "state"));
+	private static final List<String> _COPIED_FIELDS = List.of("latitude", "longitude", "name", "region", "state");
 
-	private static final Map<String, String> _LISTING_FIELDS = Map.of(
-		"review", "r_listingReviews_c_listingId");
+	private static final String _HOST = "r_hostListings_c_hostId";
 
-	private static final Map<String, String> _RELATIONSHIP_FIELDS = Map.of(
-		"destination", "r_destinationListings_c_destinationId");
-
+	private final HostRefresher _hostRefresher;
+	private final LiferayClient _liferayClient;
 	private final ListingRefresher _listingRefresher;
+	private final ReviewRefresher _reviewRefresher;
 
 }
