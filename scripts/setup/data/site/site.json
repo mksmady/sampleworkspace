@@ -1,44 +1,11 @@
 {
+	"note": "Pages of the Maddybaba site (docs/website.md section 2), built by site.js as widget pages (1_column) holding mb-web-elements custom elements, in this order. viewableBy: anyone, members (signed-in users) or ops (Ops Admin and Administrator).",
 	"site": "/maddybaba",
-	"webContent": [
-		{"erc": "MB_WC_how_it_works", "title": "Home: How it works", "file": "how-it-works.html"},
-		{"erc": "MB_WC_ai_picks", "title": "Home: AI recommendations", "file": "ai-picks.html"},
-		{"erc": "MB_WC_why_maddybaba", "title": "Home: Why Maddybaba (comparison)", "file": "why-maddybaba.html"},
-		{"erc": "MB_WC_become_a_host", "title": "Home: Become a host", "file": "become-a-host.html"},
-		{"erc": "MB_WC_tour_packages", "title": "Home: Custom tour packages", "file": "tour-packages.html"}
-	],
 	"pages": [
-		{
-			"friendlyUrlPath": "/home",
-			"title": "Home",
-			"elements": [
-				"mb-site-header",
-				"mb-hero-search",
-				"mb-categories",
-				{"webContent": "MB_WC_how_it_works"},
-				{"webContent": "MB_WC_ai_picks"},
-				{"webContent": "MB_WC_why_maddybaba"},
-				{"webContent": "MB_WC_become_a_host"},
-				{"webContent": "MB_WC_tour_packages"},
-				"mb-site-footer"
-			]
-		},
-		{
-			"friendlyUrlPath": "/search",
-			"title": "Explore",
-			"elements": ["mb-site-header", "mb-search-results", "mb-site-footer"]
-		},
-		{
-			"friendlyUrlPath": "/listing",
-			"title": "Trip",
-			"hiddenFromNavigation": true,
-			"elements": ["mb-site-header", "mb-listing-detail", "mb-site-footer"]
-		},
-		{
-			"friendlyUrlPath": "/host",
-			"title": "Host",
-			"hiddenFromNavigation": true,
-			"elements": ["mb-site-header", "mb-host-profile", "mb-site-footer"]
-		}
+		{"erc": "MB_PAGE_home", "name": "Home", "friendlyURL": "/home", "viewableBy": "anyone", "elements": ["mb-site-header", "mb-hero", "mb-host-carousel", "mb-destination-tiles", "mb-difference", "mb-become-host-band", "mb-testimonials", "mb-journal", "mb-closing-cta", "mb-site-footer"]},
+		{"erc": "MB_PAGE_hosts", "name": "Local Hosts", "friendlyURL": "/hosts", "viewableBy": "anyone", "elements": ["mb-site-header", "mb-host-results", "mb-site-footer"]},
+		{"erc": "MB_PAGE_trips", "name": "Complete Trips", "friendlyURL": "/trips", "viewableBy": "anyone", "elements": ["mb-site-header", "mb-trip-results", "mb-site-footer"]},
+		{"erc": "MB_PAGE_host", "name": "Host", "friendlyURL": "/host", "hidden": true, "viewableBy": "anyone", "elements": ["mb-site-header", "mb-host-profile", "mb-site-footer"]},
+		{"erc": "MB_PAGE_listing", "name": "Trip", "friendlyURL": "/listing", "hidden": true, "viewableBy": "anyone", "elements": ["mb-site-header", "mb-listing-detail", "mb-site-footer"]}
 	]
 }

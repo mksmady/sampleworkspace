@@ -14,7 +14,7 @@ From the home page design:
 
 ## 2. Pages
 
-All pages are on the Maddybaba site (`/web/maddybaba`), built by `scripts/setup/site.js` through the headless-admin-site API as widget pages (`1_column` layout) holding the elements of section 3, by ERC (`MB_PAGE_<name>`), so a rerun changes nothing.
+All pages are on the Maddybaba site (`/web/maddybaba`), built by `scripts/setup/site.js` as widget pages (`1_column` layout) holding the elements of section 3, by ERC (`MB_PAGE_<name>`), so a rerun changes nothing. This Liferay version rejects page creation through headless-delivery and headless-admin-site (UnsupportedOperationException), so pages are created through the portal's layout service (JSONWS `layout/add-layout` with an ERC and the widget column); page view permissions use headless-admin-site's page permissions. The elements hide the theme's own banner, footer and widget titles on these pages.
 
 | Page (friendly URL) | ERC | Elements, top to bottom | Visible to |
 |---|---|---|---|

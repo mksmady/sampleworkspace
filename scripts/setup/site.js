@@ -1,26 +1,34 @@
-// Sets up and verifies the Maddybaba website on the Maddybaba site (phase 10a; data/site/site.json):
-//   - creates or updates (PUT by ERC) the home page's marketing copy as Basic Web Content articles
-//     (data/site/web-content/*.html);
-//   - verifies the pages, which are built in the UI (scripts/setup/README.md): each page must show the
-//     widgets listed in site.json in that order (mb-web-elements custom elements and Web Content Display
-//     widgets showing the articles), and render them for a guest.
-// Pages are not scripted: this Liferay version rejects page creation through the headless APIs
-// (UnsupportedOperationException from headless-delivery and headless-admin-site).
+// Builds and verifies the Maddybaba website's pages (docs/website.md section 2; data/site/site.json):
+// widget pages (1_column) holding the mb-web-elements custom elements in order, created by ERC through
+// the portal's layout service (JSONWS). This Liferay version answers page creation through
+// headless-delivery and headless-admin-site with UnsupportedOperationException.
+//   - creates missing pages; sets the widgets, hidden flag and order of existing ones only where they
+//     differ;
+//   - page view permissions (headless-admin-site page permissions, by page ERC): "anyone" (Guest and Site Member View), "members" (signed-in only: no Guest
+//     View), "ops" (only Ops Admin and Administrator);
+//   - verifies each page as a guest: public pages render their elements in order; restricted pages are
+//     not shown.
 // Idempotent; never deletes. Deploy client-extensions/mb-web-elements first.
 //
 // Usage: node scripts/setup/site.js [--verify-only]
 
-const fs = require('fs');
-const path = require('path');
-
 const liferay = require('./lib/liferay');
 const site = require('./data/site/site.json');
 
-const DELIVERY = '/o/headless-delivery/v1.0';
-const JOURNAL_CONTENT = 'com_liferay_journal_content_web_portlet_JournalContentPortlet';
 
-const customElementWidget = (companyId, erc) =>
-	`com_liferay_client_extension_web_internal_portlet_ClientExtensionEntryPortlet_${companyId}_LXC_${erc.replace(/-/g, '_')}`;
+const widget = (companyId, element) =>
+	`com_liferay_client_extension_web_internal_portlet_ClientExtensionEntryPortlet_${companyId}_LXC_${element.replace(/-/g, '_')}`;
+
+const typeSettings = (companyId, page) => `layout-template-id=1_column\ncolumn-1=${page.elements.map((element) => widget(companyId, element)).join(',')}\n`;
+
+// Liferay may add its own keys to typeSettings; compare only the layout template and the column.
+
+function columns(settings) {
+	const lines = String(settings || '').split('\n');
+	const value = (key) => (lines.find((line) => line.startsWith(`${key}=`)) || '').slice(key.length + 1);
+
+	return `${value('layout-template-id')}|${value('column-1')}`;
+}
 
 async function context() {
 	const group = await liferay.get(`/o/headless-admin-user/v1.0/sites/by-friendly-url-path${site.site}`);
@@ -29,152 +37,151 @@ async function context() {
 		throw new Error(`Site ${site.site} not found`);
 	}
 
-	const {companyId} = await liferay.jsonws('group/get-group', {groupId: group.id});
-	// Basic Web Content is a structure of the Global site.
+	const {companyId, externalReferenceCode} = await liferay.jsonws('group/get-group', {groupId: group.id});
 
-	const global = await liferay.get('/o/headless-admin-user/v1.0/sites/by-friendly-url-path/global');
-	const structures = await liferay.get(`${DELIVERY}/sites/${global.id}/content-structures?pageSize=200`);
-	const basic = (structures.items || []).find((structure) => structure.name === 'Basic Web Content');
+	return {companyId, groupId: group.id, siteERC: externalReferenceCode};
+}
 
-	if (!basic) {
-		throw new Error('Basic Web Content structure not found');
+const fetchPage = async ({groupId}, page) => {
+	const layout = await liferay.jsonws('layout/fetch-layout-by-external-reference-code', {externalReferenceCode: page.erc, groupId});
+
+	return layout && layout.plid ? layout : null;
+};
+
+async function sync(ctx, page, priority) {
+	let layout = await fetchPage(ctx, page);
+	let result = 'unchanged';
+
+	if (!layout) {
+		layout = await liferay.jsonws('layout/add-layout', {
+			descriptionMap: '{}',
+			externalReferenceCode: page.erc,
+			friendlyURLMap: JSON.stringify({en_US: page.friendlyURL}),
+			groupId: ctx.groupId,
+			hidden: Boolean(page.hidden),
+			keywordsMap: '{}',
+			localeNamesMap: JSON.stringify({en_US: page.name}),
+			localeTitlesMap: JSON.stringify({en_US: page.name}),
+			parentLayoutId: 0,
+			privateLayout: false,
+			robotsMap: '{}',
+			serviceContext: JSON.stringify({addGroupPermissions: true, addGuestPermissions: true}),
+			type: 'portlet',
+			typeSettings: typeSettings(ctx.companyId, page),
+		});
+		result = 'created';
+	}
+	else if (columns(layout.typeSettings) !== columns(typeSettings(ctx.companyId, page))) {
+		await liferay.jsonws('layout/update-type-settings', {
+			groupId: ctx.groupId,
+			layoutId: layout.layoutId,
+			privateLayout: false,
+			typeSettings: typeSettings(ctx.companyId, page),
+		});
+		result = 'updated';
 	}
 
-	return {basicStructureId: basic.id, companyId, siteId: group.id};
-}
-
-function articleBody(ctx, article) {
-	return {
-		contentFields: [{contentFieldValue: {data: readArticle(article)}, name: 'content'}],
-		contentStructureId: ctx.basicStructureId,
-		externalReferenceCode: article.erc,
-		title: article.title,
-		viewableBy: 'Anyone',
-	};
-}
-
-const readArticle = (article) => fs.readFileSync(path.join(__dirname, 'data/site/web-content', article.file), 'utf8').replace(/\r\n/g, '\n').trim();
-
-const articlePath = (ctx, erc) => `${DELIVERY}/sites/${ctx.siteId}/structured-contents/by-external-reference-code/${erc}`;
-
-async function syncArticle(ctx, article) {
-	const live = await liferay.get(articlePath(ctx, article.erc));
-
-	if (live && live.title === article.title && live.contentFields[0]?.contentFieldValue?.data?.trim() === readArticle(article)) {
-		return 'unchanged';
+	if (layout.priority !== priority) {
+		await liferay.jsonws('layout/update-priority', {plid: layout.plid, priority});
+		result = result === 'unchanged' ? 'updated' : result;
 	}
 
-	await liferay.put(articlePath(ctx, article.erc), articleBody(ctx, article));
+	if (Boolean(layout.hidden) !== Boolean(page.hidden)) {
+		console.warn(`  ${page.erc}: hidden is ${layout.hidden}, spec says ${Boolean(page.hidden)}; change it in Site Builder > Pages`);
+	}
 
-	return live ? 'updated' : 'created';
+	await permissions(ctx, page);
+
+	return result;
 }
 
-const pagePath = (ctx, page) => `${DELIVERY}/sites/${ctx.siteId}/site-pages${page.friendlyUrlPath}?fields=friendlyUrlPath,pageDefinition,pageSettings,title,viewableBy`;
+// View permissions per page (docs/website.md 2): VIEW for Guest and Site Member ("anyone"), Site Member
+// only ("members"), or Ops Admin only ("ops"; Administrator can always view). Other actions are kept.
 
-// The widgets on a live page, in order, as names comparable with site.json.
+const VIEWERS = {anyone: ['Guest', 'Site Member'], members: ['Site Member'], ops: ['Ops Admin']};
 
-function liveWidgets(pageElement, out = []) {
-	for (const child of pageElement?.pageElements || []) {
-		const instance = child.definition?.widgetInstance;
+async function permissions(ctx, page) {
+	const path = `/o/headless-admin-site/v1.0/sites/${ctx.siteERC}/site-pages/${page.erc}/permissions`;
+	const items = (await liferay.get(path)).items.map(({actionIds, roleName}) => ({actionIds, roleName}));
+	const viewers = VIEWERS[page.viewableBy];
+	let changed = false;
 
-		if (instance) {
-			out.push(instance.widgetName === JOURNAL_CONTENT ? `${JOURNAL_CONTENT}:${instance.widgetConfig?.articleExternalReferenceCode}` : instance.widgetName);
+	for (const roleName of ['Guest', 'Site Member', 'Ops Admin']) {
+		let item = items.find((entry) => entry.roleName === roleName);
+		const wanted = viewers.includes(roleName);
+
+		if (!item && wanted) {
+			item = {actionIds: [], roleName};
+			items.push(item);
 		}
 
-		liveWidgets(child, out);
+		if (item && item.actionIds.includes('VIEW') !== wanted) {
+			item.actionIds = wanted ? [...item.actionIds, 'VIEW'] : item.actionIds.filter((actionId) => actionId !== 'VIEW');
+			changed = true;
+		}
 	}
 
-	return out;
+	if (changed) {
+		await liferay.put(path, items);
+	}
 }
 
-// The widget names site.json expects on a page; Web Content Display widgets carry the article's ERC.
+async function verify(ctx) {
+	let failures = 0;
+	const url = (page) => `${liferay.baseURL}/web${site.site}${page.friendlyURL}`;
 
-function expectedWidgets(ctx, page) {
-	return page.elements.map((element) => (typeof element === 'string' ? customElementWidget(ctx.companyId, element) : `${JOURNAL_CONTENT}:${element.webContent}`));
-}
+	console.log('\nVerification:');
 
-const shortName = (name) => name.replace(/^.*_LXC_/, '').replace(JOURNAL_CONTENT + ':', '');
+	for (const page of site.pages) {
+		const problems = [];
+		const layout = await fetchPage(ctx, page);
 
-// A guest's view of the page: the published HTML must contain every custom element and every article's
-// ERC-identified content.
+		if (!layout) {
+			problems.push('page missing');
+		}
+		else if (columns(layout.typeSettings) !== columns(typeSettings(ctx.companyId, page))) {
+			problems.push(`widgets are ${columns(layout.typeSettings)}`);
+		}
 
-async function guestView(ctx, page) {
-	const response = await fetch(`${liferay.baseURL}/web${site.site}${page.friendlyUrlPath}`);
-	const html = await response.text();
-	const missing = [];
+		const response = await fetch(url(page), {redirect: 'manual'});
 
-	for (const element of page.elements) {
-		if (typeof element === 'string') {
-			if (!html.includes(`<${element}`)) {
-				missing.push(element);
+		if (page.viewableBy === 'anyone') {
+			const html = response.status === 200 ? await response.text() : '';
+			const positions = page.elements.map((element) => html.indexOf(`<${element}`));
+
+			if (response.status !== 200) {
+				problems.push(`guest gets ${response.status}`);
+			}
+			else if (positions.some((position) => position < 0)) {
+				problems.push(`not rendered: ${page.elements.filter((element, i) => positions[i] < 0).join(', ')}`);
+			}
+			else if (positions.some((position, i) => i && position < positions[i - 1])) {
+				problems.push('elements out of order');
 			}
 		}
-		else {
-			const article = site.webContent.find((item) => item.erc === element.webContent);
-			const id = readArticle(article).match(/id="([^"]+)"/)[1];
-
-			if (!html.includes(`id="${id}"`)) {
-				missing.push(element.webContent);
-			}
+		else if (response.status === 200 && (await response.text()).includes(`<${page.elements[1]}`)) {
+			problems.push('a guest can see it');
 		}
+
+		console.log(`  ${problems.length ? 'FAIL' : 'OK  '} ${page.friendlyURL.padEnd(16)} ${page.viewableBy.padEnd(8)} ${page.elements.length} elements${problems.length ? `  ${problems.join('; ')}` : ''}`);
+		failures += problems.length ? 1 : 0;
 	}
 
-	return {missing, status: response.status};
+	console.log(`\n${site.pages.length - failures}/${site.pages.length} pages match the spec.`);
+
+	return failures;
 }
 
 async function main() {
 	const ctx = await context();
-	const verifyOnly = process.argv.includes('--verify-only');
 
-	console.log(`Site ${site.site} (id ${ctx.siteId}, company ${ctx.companyId})`);
-
-	if (!verifyOnly) {
-		for (const article of site.webContent) {
-			console.log(`  ${(await syncArticle(ctx, article)).padEnd(9)} web content ${article.erc}`);
+	if (!process.argv.includes('--verify-only')) {
+		for (const [priority, page] of site.pages.entries()) {
+			console.log(`  ${(await sync(ctx, page, priority)).padEnd(9)} ${page.erc} (${page.friendlyURL})`);
 		}
 	}
 
-	console.log('\nVerification (GET):');
-
-	const checks = [];
-
-	for (const article of site.webContent) {
-		const live = await liferay.get(articlePath(ctx, article.erc));
-
-		checks.push([
-			`web content ${article.erc} matches ${article.file}, viewable by anyone`,
-			Boolean(live && live.contentFields[0]?.contentFieldValue?.data?.trim() === readArticle(article) && live.title === article.title),
-			live ? `key ${live.key}` : 'not found',
-		]);
-	}
-
-	for (const page of site.pages) {
-		const live = await liferay.get(pagePath(ctx, page));
-		const widgets = live ? liveWidgets(live.pageDefinition.pageElement) : [];
-		const expected = expectedWidgets(ctx, page);
-
-		checks.push([
-			`page ${page.friendlyUrlPath} "${page.title}" has its ${expected.length} widgets in order${page.hiddenFromNavigation ? ', hidden from navigation' : ''}`,
-			Boolean(live && JSON.stringify(widgets) === JSON.stringify(expected) && Boolean(live.pageSettings?.hiddenFromNavigation) === Boolean(page.hiddenFromNavigation)),
-			live ? `${widgets.length} widgets${JSON.stringify(widgets) === JSON.stringify(expected) ? '' : ': ' + widgets.map(shortName).join(', ')}` : 'not found; build it in the UI',
-		]);
-
-		const {missing, status} = await guestView(ctx, page);
-
-		checks.push([
-			`guest GET /web${site.site}${page.friendlyUrlPath} renders every element`,
-			status === 200 && !missing.length,
-			`HTTP ${status}${missing.length ? `, missing ${missing.join(', ')}` : ''}`,
-		]);
-	}
-
-	for (const [label, ok, detail] of checks) {
-		console.log(`  ${ok ? 'OK  ' : 'FAIL'} ${label} (${detail})`);
-	}
-
-	if (checks.some(([, ok]) => !ok)) {
-		process.exitCode = 1;
-	}
+	process.exitCode = (await verify(ctx)) ? 1 : 0;
 }
 
 main().catch((error) => {
