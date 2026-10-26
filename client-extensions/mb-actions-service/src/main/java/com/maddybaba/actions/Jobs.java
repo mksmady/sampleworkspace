@@ -30,12 +30,13 @@ import org.springframework.stereotype.Component;
 public class Jobs {
 
 	public Jobs(
-		HostRefresher hostRefresher, LiferayClient liferayClient, ListingRefresher listingRefresher,
+		HostRefresher hostRefresher, LiferayClient liferayClient, ListingRefresher listingRefresher, ReviewRefresher reviewRefresher,
 		WorkflowApprover workflowApprover, @Value("${mb.jobs.run-on-startup}") boolean runOnStartup) {
 
 		_hostRefresher = hostRefresher;
 		_liferayClient = liferayClient;
 		_listingRefresher = listingRefresher;
+		_reviewRefresher = reviewRefresher;
 		_workflowApprover = workflowApprover;
 		_runOnStartup = runOnStartup;
 	}
@@ -51,6 +52,7 @@ public class Jobs {
 		_run("earnings this month", this::_earningsThisMonth);
 		_run("listings", this::_listings);
 		_run("hosts and destinations", this::_hosts);
+		_run("reviews", this::_reviews);
 	}
 
 	@EventListener(ApplicationReadyEvent.class)
@@ -176,6 +178,21 @@ public class Jobs {
 		return count;
 	}
 
+	/**
+	 * Every review's copied fields: an object action that was missed (the service was down when the
+	 * review was saved; Liferay doesn't retry) is caught up here.
+	 */
+	private int _reviews() {
+		int count = 0;
+
+		for (JSONObject review : _liferayClient.getAll("/o/c/reviews")) {
+			_reviewRefresher.refresh(review.getLong("id"));
+			count++;
+		}
+
+		return count;
+	}
+
 	private void _run(String name, Job job) {
 		try {
 			_log.info("JOB {} done: {}", name, job.run());
@@ -192,6 +209,7 @@ public class Jobs {
 	private final HostRefresher _hostRefresher;
 	private final LiferayClient _liferayClient;
 	private final ListingRefresher _listingRefresher;
+	private final ReviewRefresher _reviewRefresher;
 	private final boolean _runOnStartup;
 	private final WorkflowApprover _workflowApprover;
 

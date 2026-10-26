@@ -527,7 +527,7 @@ Jobs run inside `mb-actions-service` (Spring scheduling, IST; run a single insta
 - **Daily 01:30** (`mb.jobs.daily-cron`):
   - pending commissions become `available` when their booking is completed and `availableOn` ≤ today;
   - Host `earningsThisMonth` = sum of the host's commissions created this month (IST), reversed ones excluded; the service approves its own update of approved hosts (6.4);
-  - every Listing's and Host's derived fields and every Destination's hostCount are refreshed, so `nextAvailableDate` moves on as dates pass and nothing drifts.
+  - every Listing's, Host's and Review's derived fields and every Destination's hostCount are refreshed, so `nextAvailableDate` moves on as dates pass, and anything an action missed (Liferay doesn't retry an object action while the service is down) is caught up.
 - **Payment and payout gateways (Razorpay), refunds and notifications** stay stubbed: logged only (`PAYOUT GATEWAY`, `REFUND`, `NOTIFY`). Integrate when gateway keys and email/SMS are available.
 
 ## 8. Integrations outside Liferay Objects
