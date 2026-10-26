@@ -58,7 +58,11 @@
 			return '';
 		}
 
-		return '₹' + Number(amount).toLocaleString('en-IN', {maximumFractionDigits: 2});
+		// Whole rupees without decimals (₹8,999); otherwise paise in full (₹1,799.80).
+
+		const value = Number(amount);
+
+		return '₹' + value.toLocaleString('en-IN', Number.isInteger(value) ? {maximumFractionDigits: 0} : {maximumFractionDigits: 2, minimumFractionDigits: 2});
 	}
 
 	// Hosts write descriptions; show them as text paragraphs, never as HTML.
@@ -133,6 +137,18 @@
 		}
 
 		return json;
+	}
+
+	// Ops Admin (or Administrator): only they may add Hosts, so the Host collection offers them "create".
+	// (my-user-account's roleBriefs only lists the roles the user may view, often just User.)
+
+	async function isOps() {
+		try {
+			return Boolean((await liferayAPI('/o/c/hosts?pageSize=1&fields=id')).actions?.create);
+		}
+		catch (error) {
+			return false;
+		}
 	}
 
 	function apiError(status, json) {
@@ -396,12 +412,11 @@
 		}
 
 		const me = await liferayAPI('/o/headless-admin-user/v1.0/my-user-account');
-		const roles = (me.roleBriefs || []).map((role) => role.name);
-		const isOps = roles.includes('Ops Admin') || roles.includes('Administrator');
+		const ops = await isOps();
 		const isHost = (me.accountBriefs || []).length > 0;
 		const menu = [
 			isHost && ['Host Dashboard', page('/host-dashboard')],
-			isOps && ['Ops Dashboard', page('/ops')],
+			ops && ['Ops Dashboard', page('/ops')],
 			!isHost && ['Become a Host', page('/become-a-host')],
 			['Sign out', '/c/portal/logout'],
 		].filter(Boolean);
@@ -796,5 +811,5 @@
 			</div></section>`;
 	});
 
-	window.MB = {esc, hostCard, icon, landscape, liferayAPI, listingCard, money, page, paragraphs, portrait, searchAPI, signInURL, signedIn, PRICE_UNITS, SERVICE_ICONS, apiError, define};
+	window.MB = {esc, hostCard, icon, isOps, landscape, liferayAPI, listingCard, money, page, paragraphs, portrait, searchAPI, signInURL, signedIn, PRICE_UNITS, SERVICE_ICONS, apiError, define};
 })();

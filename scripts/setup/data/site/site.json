@@ -6,6 +6,9 @@
 		{"erc": "MB_PAGE_hosts", "name": "Local Hosts", "friendlyURL": "/hosts", "viewableBy": "anyone", "elements": ["mb-site-header", "mb-host-results", "mb-site-footer"]},
 		{"erc": "MB_PAGE_trips", "name": "Complete Trips", "friendlyURL": "/trips", "viewableBy": "anyone", "elements": ["mb-site-header", "mb-trip-results", "mb-site-footer"]},
 		{"erc": "MB_PAGE_host", "name": "Host", "friendlyURL": "/host", "hidden": true, "viewableBy": "anyone", "elements": ["mb-site-header", "mb-host-profile", "mb-site-footer"]},
-		{"erc": "MB_PAGE_listing", "name": "Trip", "friendlyURL": "/listing", "hidden": true, "viewableBy": "anyone", "elements": ["mb-site-header", "mb-listing-detail", "mb-site-footer"]}
+		{"erc": "MB_PAGE_listing", "name": "Trip", "friendlyURL": "/listing", "hidden": true, "viewableBy": "anyone", "elements": ["mb-site-header", "mb-listing-detail", "mb-site-footer"]},
+		{"erc": "MB_PAGE_become_a_host", "name": "Become a Host", "friendlyURL": "/become-a-host", "viewableBy": "anyone", "elements": ["mb-site-header", "mb-host-signup", "mb-site-footer"]},
+		{"erc": "MB_PAGE_host_dashboard", "name": "Host Dashboard", "friendlyURL": "/host-dashboard", "hidden": true, "viewableBy": "members", "elements": ["mb-site-header", "mb-host-dashboard", "mb-site-footer"]},
+		{"erc": "MB_PAGE_ops", "name": "Ops Dashboard", "friendlyURL": "/ops", "hidden": true, "viewableBy": "ops", "elements": ["mb-site-header", "mb-ops-dashboard", "mb-site-footer"]}
 	]
 }

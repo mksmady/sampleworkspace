@@ -4,8 +4,8 @@
 // headless-delivery and headless-admin-site with UnsupportedOperationException.
 //   - creates missing pages; sets the widgets, hidden flag and order of existing ones only where they
 //     differ;
-//   - page view permissions (headless-admin-site page permissions, by page ERC): "anyone" (Guest and Site Member View), "members" (signed-in only: no Guest
-//     View), "ops" (only Ops Admin and Administrator);
+//   - page view permissions (headless-admin-site page permissions, by page ERC): "anyone", "members"
+//     (signed-in users), "ops" (only Ops Admin and Administrator);
 //   - verifies each page as a guest: public pages render their elements in order; restricted pages are
 //     not shown.
 // Idempotent; never deletes. Deploy client-extensions/mb-web-elements first.
@@ -95,10 +95,11 @@ async function sync(ctx, page, priority) {
 	return result;
 }
 
-// View permissions per page (docs/website.md 2): VIEW for Guest and Site Member ("anyone"), Site Member
-// only ("members"), or Ops Admin only ("ops"; Administrator can always view). Other actions are kept.
+// View permissions per page (docs/website.md 2): VIEW for everyone ("anyone"), signed-in users only
+// ("members": User, the role of every signed-in user; hosts aren't site members), or Ops Admin only
+// ("ops"; Administrator can always view). Other actions are kept.
 
-const VIEWERS = {anyone: ['Guest', 'Site Member'], members: ['Site Member'], ops: ['Ops Admin']};
+const VIEWERS = {anyone: ['Guest', 'Site Member', 'User'], members: ['Site Member', 'User'], ops: ['Ops Admin']};
 
 async function permissions(ctx, page) {
 	const path = `/o/headless-admin-site/v1.0/sites/${ctx.siteERC}/site-pages/${page.erc}/permissions`;
@@ -106,7 +107,7 @@ async function permissions(ctx, page) {
 	const viewers = VIEWERS[page.viewableBy];
 	let changed = false;
 
-	for (const roleName of ['Guest', 'Site Member', 'Ops Admin']) {
+	for (const roleName of ['Guest', 'Site Member', 'User', 'Ops Admin']) {
 		let item = items.find((entry) => entry.roleName === roleName);
 		const wanted = viewers.includes(roleName);
 

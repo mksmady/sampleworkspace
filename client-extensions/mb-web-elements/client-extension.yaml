@@ -5,6 +5,9 @@ assemble:
     -   from: assets/mb-web.js
         hashify: mb-web.js
         into: static
+    -   from: assets/mb-portal.js
+        hashify: mb-portal.js
+        into: static
 
 # The Maddybaba website's custom elements (docs/website.md). One script defines them all and one
 # stylesheet styles them, so every element shares the same files and the browser loads them once.
@@ -177,4 +180,45 @@ mb-listing-detail:
     type: customElement
     urls:
         -   mb-web.*.js
+    useESM: false
+
+# Host sign-up and the dashboards (docs/website.md 4–6) also load mb-portal.js, after mb-web.js.
+
+mb-host-signup:
+    cssURLs:
+        -   mb-web.*.css
+    htmlElementName: mb-host-signup
+    instanceable: false
+    name: MB Host Sign-up
+    portletCategoryName: category.client-extensions
+    type: customElement
+    urls:
+        -   mb-web.*.js
+        -   mb-portal.*.js
+    useESM: false
+
+mb-host-dashboard:
+    cssURLs:
+        -   mb-web.*.css
+    htmlElementName: mb-host-dashboard
+    instanceable: false
+    name: MB Host Dashboard
+    portletCategoryName: category.client-extensions
+    type: customElement
+    urls:
+        -   mb-web.*.js
+        -   mb-portal.*.js
+    useESM: false
+
+mb-ops-dashboard:
+    cssURLs:
+        -   mb-web.*.css
+    htmlElementName: mb-ops-dashboard
+    instanceable: false
+    name: MB Ops Dashboard
+    portletCategoryName: category.client-extensions
+    type: customElement
+    urls:
+        -   mb-web.*.js
+        -   mb-portal.*.js
     useESM: false
