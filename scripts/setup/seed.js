@@ -1,5 +1,11 @@
-// LOCAL INSTANCE ONLY. Loads the seed data in data/seed/ (docs/data-model.md section 9), approves the
-// seeded Hosts and Listings as the ops test user, then verifies the result with GETs.
+// LOCAL INSTANCE ONLY. Loads the seed data in data/seed/ (docs/data-model.md section 9) through the real
+// flows, then verifies the result with GETs, also as each test user:
+// - Hosts and Listings go through MB Ops Approval, approved by the ops test user; mb-actions-service then
+//   onboards the hosts (hostStatus active, account, roles).
+// - The traveler creates their own profile, package, booking and item; a successful payment arrives and
+//   mb-actions-service must confirm the booking and create the host's commission.
+// - Derived fields (denormalized, ratings, prices from, host counts, fees, totals) are left to
+//   mb-actions-service, which must be running; verify waits for them.
 // Idempotent: entries are looked up by ERC (MB_SEED_...), created when missing and patched only where
 // they differ, so a rerun changes nothing (except adding availability slots for new days). Nothing is
 // ever deleted. Needs the test users from test-users.js.
@@ -9,15 +15,14 @@
 const crypto = require('crypto');
 
 const liferay = require('./lib/liferay');
-const picklists = require('./data/picklists.json');
 const seed = require('./data/seed/seed.json');
-const {holidays} = require('./data/seed/holidays.json');
 
 if (!/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(liferay.baseURL)) {
 	console.error(`Seed data is for the local instance only; LIFERAY_URL is ${liferay.baseURL}.`);
 	process.exit(1);
 }
 
+const ACTIONS_SERVICE = 'http://localhost:58081/ready';
 const USERS = '/o/headless-admin-user/v1.0';
 const WORKFLOW = '/o/headless-admin-workflow/v1.0';
 
@@ -27,7 +32,6 @@ const WORKFLOW = '/o/headless-admin-workflow/v1.0';
 const TRAVELER_CANNOT_REFERENCE = /^r_(hostPackages|hostBookings|listingBookingItems)_/;
 
 const counts = {};
-const label = (listTypeERC, key) => picklists.find((picklist) => picklist.erc === listTypeERC).entries[key];
 
 // ---- Users acting on the instance -------------------------------------------------------------------
 
@@ -42,7 +46,7 @@ async function userAuth(erc, email) {
 async function as(auth, method, path, body) {
 	const response = await fetch(liferay.baseURL + path, {
 		body: body && JSON.stringify(body),
-		headers: {Accept: 'application/json', Authorization: auth, 'Content-Type': 'application/json'},
+		headers: {Accept: 'application/json', ...(auth && {Authorization: auth}), 'Content-Type': 'application/json'},
 		method,
 	});
 	const text = await response.text();
@@ -72,6 +76,10 @@ function same(expected, actual) {
 	const a = normalize(actual);
 	const e = normalize(expected);
 
+	if (e === null) {
+		return a === null || a === undefined || a === '';
+	}
+
 	if (typeof e === 'number') {
 		return a !== null && a !== undefined && a !== '' && Number(a) === e;
 	}
@@ -89,6 +97,26 @@ function same(expected, actual) {
 
 const differences = (entry, actual) =>
 	Object.fromEntries(Object.entries(entry).filter(([key, value]) => key !== 'externalReferenceCode' && !same(value, actual[key])));
+
+const get = (plural, erc) => liferay.get(`/o/c/${plural}/by-external-reference-code/${erc}`);
+
+// Polls until check(entry) holds: mb-actions-service works asynchronously after each save.
+
+async function waitFor(plural, erc, check, what, seconds = 60) {
+	let entry;
+
+	for (let attempt = 0; attempt < seconds; attempt++) {
+		entry = await get(plural, erc);
+
+		if (entry && check(entry)) {
+			return entry;
+		}
+
+		await new Promise((resolve) => setTimeout(resolve, 1000));
+	}
+
+	throw new Error(`Timed out waiting for ${what} (${erc}). Is mb-actions-service running?`);
+}
 
 // ---- Upsert ------------------------------------------------------------------------------------------
 
@@ -119,7 +147,7 @@ async function upsert(plural, entry, {creator} = {}) {
 	return liferay.get(path);
 }
 
-// ---- Derived seed values -----------------------------------------------------------------------------
+// ---- Seed values -------------------------------------------------------------------------------------
 
 const isoDate = (date) => date.toISOString().slice(0, 10);
 
@@ -146,59 +174,36 @@ function slotDates(listingKey) {
 
 const slotERC = (listingKey, date) => `MB_SEED_slot_${listingKey}_${date}`;
 
-function listingEntry({entry, key}) {
-	const destination = seed.destinations.find((item) => item.externalReferenceCode === entry.destination);
-	const host = seed.hosts.find((item) => item.externalReferenceCode === entry.host);
-	const {account, destination: destinationERC, host: hostERC, partner, ...fields} = entry;
-	const today = isoDate(new Date());
+function listingEntry({entry}) {
+	const {account, destination, host, partner, ...fields} = entry;
 
 	return {
 		...fields,
-
-		// Denormalized for search (docs/search.md section 3); phase 7 actions keep these in sync.
-
-		destinationName: destination.name,
-		hostDisplayName: host.displayName,
-		latitude: destination.latitude,
-		longitude: destination.longitude,
-		nextAvailableDate: slotDates(key).find((date) => date > today),
-		region: destination.region,
-		stateName: label('MB_IndianState', destination.state),
 		r_accountListings_accountEntryERC: account,
-		r_destinationListings_c_destinationERC: destinationERC,
-		r_hostListings_c_hostERC: hostERC,
+		r_destinationListings_c_destinationERC: destination,
+		r_hostListings_c_hostERC: host,
 		...(partner && {r_partnerListings_c_partnerERC: partner}),
 	};
 }
 
-// A long weekend is the run of days off around the holiday, bridging at most two working days.
+const inclusionEntry = ({account, listing, ...entry}) => ({
+	...entry,
+	r_accountListingInclusions_accountEntryERC: account,
+	r_listingInclusions_c_listingERC: listing,
+});
 
-function longWeekend(date) {
-	const day = new Date(`${date}T00:00:00Z`);
-	const weekday = day.getUTCDay();
-	const shift = (days) => isoDate(new Date(day.getTime() + days * 86400000));
+const itemEntry = ({as: ignored, slot, ...item}) => ({
+	...item,
+	...(slot && {r_slotBookingItems_c_availabilitySlotERC: slotERC(slot.listing, slot.date)}),
+});
 
-	const plans = {
-		0: [-1, 0, 0], // Sunday: Sat-Sun
-		1: [-2, 0, 0], // Monday: Sat-Mon
-		2: [-3, 0, 1], // Tuesday: Sat-Tue, take Monday off
-		3: [0, 4, 2], // Wednesday: Wed-Sun, take Thursday and Friday off
-		4: [0, 3, 1], // Thursday: Thu-Sun, take Friday off
-		5: [0, 2, 0], // Friday: Fri-Sun
-		6: [0, 1, 0], // Saturday: Sat-Sun
-	};
-	const [start, end, leave] = plans[weekday];
-
-	return {leaveDaysNeeded: leave, longWeekendEnd: shift(end), longWeekendStart: shift(start)};
-}
-
-const slug = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const withoutAs = ({as: ignored, ...entry}) => entry;
 
 // ---- Workflow ----------------------------------------------------------------------------------------
 
 async function approvePending(opsAuth, plural, entries) {
 	for (const entry of entries) {
-		const current = await liferay.get(`/o/c/${plural}/by-external-reference-code/${entry.externalReferenceCode}`);
+		const current = await get(plural, entry.externalReferenceCode);
 
 		if (current.status?.label !== 'pending') {
 			continue;
@@ -229,10 +234,14 @@ async function approvePending(opsAuth, plural, entries) {
 // ---- Load --------------------------------------------------------------------------------------------
 
 async function load() {
-	for (const erc of ['MB_TEST_account_host1', 'MB_TEST_account_host2']) {
-		if (!(await liferay.get(`${USERS}/accounts/by-external-reference-code/${erc}`))) {
-			throw new Error(`Account ${erc} is missing: run test-users.js first.`);
+	for (const number of [1, 2, 3, 4]) {
+		if (!(await liferay.get(`${USERS}/accounts/by-external-reference-code/MB_TEST_account_host${number}`))) {
+			throw new Error(`Account MB_TEST_account_host${number} is missing: run test-users.js first.`);
 		}
+	}
+
+	if ((await fetch(ACTIONS_SERVICE).catch(() => ({ok: false}))).ok !== true) {
+		throw new Error(`mb-actions-service is not running (${ACTIONS_SERVICE}); see its README.`);
 	}
 
 	const travelerAuth = await userAuth('MB_TEST_user_traveler', 'mb.test.traveler@example.com');
@@ -252,6 +261,10 @@ async function load() {
 
 	await approvePending(opsAuth, 'hosts', seed.hosts);
 
+	for (const entry of seed.hosts) {
+		await waitFor('hosts', entry.externalReferenceCode, (host) => host.hostStatus?.key === 'active' && host.status?.label === 'approved', 'host onboarding');
+	}
+
 	for (const entry of seed.hostPartnerships) {
 		await upsert('hostpartnerships', entry);
 	}
@@ -262,8 +275,8 @@ async function load() {
 		await upsert('listings', entry);
 	}
 
-	for (const {account, listing, ...entry} of seed.listingInclusions) {
-		await upsert('listinginclusions', {...entry, r_accountListingInclusions_accountEntryERC: account, r_listingInclusions_c_listingERC: listing});
+	for (const entry of seed.listingInclusions) {
+		await upsert('listinginclusions', inclusionEntry(entry));
 	}
 
 	for (const {entry, key, slots} of seed.listings) {
@@ -284,48 +297,26 @@ async function load() {
 
 	await approvePending(opsAuth, 'listings', listings);
 
-	const {as: travelerOwned, ...traveler} = seed.traveler;
+	await upsert('travelers', withoutAs(seed.traveler), {creator: travelerAuth});
+	await upsert('trippackages', withoutAs(seed.tripPackage), {creator: travelerAuth});
+	await upsert('bookings', seed.booking.entry, {creator: travelerAuth});
 
-	await upsert('travelers', traveler, {creator: travelerOwned && travelerAuth});
-
-	const {as: packageOwner, ...tripPackage} = seed.tripPackage;
-
-	await upsert('trippackages', tripPackage, {creator: packageOwner && travelerAuth});
-
-	const booking = await upsert('bookings', seed.booking.entry, {creator: seed.booking.as && travelerAuth});
-
-	// Walk the booking through its state flow (pendingPayment -> confirmed); skip steps already taken.
-
-	const flow = seed.booking.bookingStatusFlow;
-	const at = flow.indexOf(booking.bookingStatus?.key);
-
-	for (const status of flow.slice(at + 1)) {
-		await liferay.patch(`/o/c/bookings/${booking.id}`, {bookingStatus: status});
-		console.log(`  status    ${seed.booking.entry.externalReferenceCode} -> ${status}`);
+	for (const item of seed.bookingItems) {
+		await upsert('bookingitems', itemEntry(item), {creator: travelerAuth});
 	}
 
-	for (const {as: itemOwner, slot, ...item} of seed.bookingItems) {
-		await upsert('bookingitems', {
-			...item,
-			...(slot && {r_slotBookingItems_c_availabilitySlotERC: slotERC(slot.listing, slot.date)}),
-		}, {creator: itemOwner && travelerAuth});
-	}
+	const {expected} = seed.booking;
+
+	await waitFor('bookings', seed.booking.entry.externalReferenceCode, (booking) => same(expected.total, booking.total), `booking total ${expected.total}`);
 
 	for (const entry of seed.payments) {
 		await upsert('payments', entry);
 	}
 
-	for (const entry of seed.commissions) {
-		await upsert('commissions', entry);
-	}
+	await waitFor('bookings', seed.booking.entry.externalReferenceCode, (booking) => booking.bookingStatus?.key === 'confirmed', 'booking confirmed by the payment');
 
-	for (const holiday of holidays) {
-		await upsert('publicholidays', {
-			externalReferenceCode: `MB_SEED_holiday_${holiday.date}_${slug(holiday.name)}`,
-			holidayDate: holiday.date,
-			name: holiday.name,
-			...longWeekend(holiday.date),
-		});
+	for (const entry of seed.reviews) {
+		await upsert('reviews', entry);
 	}
 
 	console.log('\nLoad:');
@@ -343,23 +334,22 @@ async function verify() {
 		results.push(ok);
 		console.log(`  ${ok ? 'OK  ' : 'FAIL'} ${text}${detail !== '' ? `  (${detail})` : ''}`);
 	};
-	const get = (plural, erc) => liferay.get(`/o/c/${plural}/by-external-reference-code/${erc}`);
 
 	console.log('\nVerification (GET by ERC):');
 
 	const expected = [
-		['destinations', seed.destinations.map((entry) => entry)],
+		['destinations', seed.destinations],
 		['partners', seed.partners],
 		['hosts', seed.hosts],
 		['hostpartnerships', seed.hostPartnerships],
 		['listings', seed.listings.map(listingEntry)],
-		['listinginclusions', seed.listingInclusions.map(({account, listing, ...entry}) => ({...entry, r_accountListingInclusions_accountEntryERC: account, r_listingInclusions_c_listingERC: listing}))],
-		['travelers', [(({as: ignored, ...entry}) => entry)(seed.traveler)]],
-		['trippackages', [(({as: ignored, ...entry}) => entry)(seed.tripPackage)]],
+		['listinginclusions', seed.listingInclusions.map(inclusionEntry)],
+		['travelers', [withoutAs(seed.traveler)]],
+		['trippackages', [withoutAs(seed.tripPackage)]],
 		['bookings', [seed.booking.entry]],
-		['bookingitems', seed.bookingItems.map(({as: ignored, slot, ...item}) => ({...item, ...(slot && {r_slotBookingItems_c_availabilitySlotERC: slotERC(slot.listing, slot.date)})}))],
+		['bookingitems', seed.bookingItems.map(itemEntry)],
 		['payments', seed.payments],
-		['commissions', seed.commissions],
+		['reviews', seed.reviews],
 	];
 
 	for (const [plural, entries] of expected) {
@@ -394,16 +384,6 @@ async function verify() {
 
 	check('availability slots for the next days exist', slotsFound === slotsExpected, `${slotsFound}/${slotsExpected}`);
 
-	let holidaysFound = 0;
-
-	for (const holiday of holidays) {
-		const actual = await get('publicholidays', `MB_SEED_holiday_${holiday.date}_${slug(holiday.name)}`);
-
-		holidaysFound += actual && same(holiday.date, actual.holidayDate) && same(longWeekend(holiday.date).longWeekendStart, actual.longWeekendStart) ? 1 : 0;
-	}
-
-	check('public holidays with long weekends', holidaysFound === holidays.length, `${holidaysFound}/${holidays.length}`);
-
 	for (const [plural, entries] of [['hosts', seed.hosts], ['listings', seed.listings.map(({entry}) => entry)]]) {
 		const statuses = [];
 
@@ -414,29 +394,91 @@ async function verify() {
 		check(`${plural} are approved`, statuses.every((status) => status === 'approved'), statuses.join(','));
 	}
 
-	const booking = await get('bookings', 'MB_SEED_booking_bir');
-	const tripPackage = await get('trippackages', 'MB_SEED_package_bir');
-	const host = await get('hosts', 'MB_SEED_host_bir');
-	const slot = await get('availabilityslots', slotERC('paragliding', '2026-10-09'));
+	console.log('\nDerived by mb-actions-service:');
 
-	check('Booking is confirmed with a booking number', booking.bookingStatus?.key === 'confirmed' && /^MB-\d+$/.test(booking.bookingNumber), `${booking.bookingStatus?.key} ${booking.bookingNumber}`);
-	check('Booking.subtotal = 25000 (sum of items)', Number(booking.subtotal) === 25000, booking.subtotal);
-	check('Booking.total = subtotal + fee + GST = 26475', Number(booking.subtotal) + Number(booking.serviceFee) + Number(booking.taxes) === Number(booking.total) && Number(booking.total) === 26475, booking.total);
-	check('TripPackage.itemCount = 3, packageTotal = 25000', Number(tripPackage.itemCount) === 3 && Number(tripPackage.packageTotal) === 25000, `${tripPackage.itemCount} / ${tripPackage.packageTotal}`);
-	check('Bir host: partnerCount 1, totalBookings 1', Number(host.partnerCount) === 1 && Number(host.totalBookings) === 1, `${host.partnerCount} / ${host.totalBookings}`);
-	check('Paragliding slot on 2026-10-09: bookedCount 2', Number(slot.bookedCount) === 2, slot.bookedCount);
+	// Derived values may still be settling after a load: each check waits up to 60 s.
+
+	const settled = async (plural, erc, wanted) => {
+		const matches = (entry) => Object.entries(wanted).every(([name, value]) => same(value, entry[name]));
+
+		try {
+			return await waitFor(plural, erc, matches, 'derived values');
+		}
+		catch {
+			const entry = await get(plural, erc);
+
+			return {mismatch: Object.keys(wanted).filter((name) => !same(wanted[name], entry?.[name])).map((name) => `${name}=${JSON.stringify(entry?.[name])}`)};
+		}
+	};
+
+	for (const [erc, wanted] of Object.entries(seed.expected.hosts)) {
+		const host = await settled('hosts', erc, {...wanted, hostStatus: 'active'});
+
+		check(`${erc}: card fields ${JSON.stringify(wanted)}`, !host.mismatch, host.mismatch?.join(', ') ?? '');
+
+		if (!host.mismatch) {
+			const account = await liferay.get(`${USERS}/accounts/${host.r_accountHosts_accountEntryId}`);
+
+			check(`${erc}: linked to its host account`, account?.externalReferenceCode === seed.hosts.find((entry) => entry.externalReferenceCode === erc).r_accountHosts_accountEntryERC, account?.externalReferenceCode);
+		}
+	}
+
+	for (const [erc, hostCount] of Object.entries(seed.expected.hostCounts)) {
+		const destination = await settled('destinations', erc, {hostCount});
+
+		check(`${erc}: hostCount ${hostCount}`, !destination.mismatch, destination.mismatch?.join(', ') ?? '');
+	}
+
+	const listing = await settled('listings', 'MB_SEED_listing_manaliTrip', {destinationName: 'Manali', hostDisplayName: 'Rahul', ratingValue: 5, reviewCount: 1, stateName: 'Himachal Pradesh'});
+
+	check('Manali trip listing: destination, host and rating copied', !listing.mismatch, listing.mismatch?.join(', ') ?? '');
+	check('Manali trip listing: nextAvailableDate set', !listing.mismatch && Boolean(listing.nextAvailableDate), listing.nextAvailableDate);
+
+	const review = await settled('reviews', 'MB_SEED_review_rahul_ankit', {destinationName: 'Manali', hostDisplayName: 'Rahul'});
+
+	check('Testimonial: hostDisplayName and destinationName copied', !review.mismatch, review.mismatch?.join(', ') ?? '');
+
+	const {expected: money} = seed.booking;
+	const booking = await get('bookings', seed.booking.entry.externalReferenceCode);
+
+	check('Booking confirmed by the payment, with a booking number', booking.bookingStatus?.key === 'confirmed' && /^MB-\d+$/.test(booking.bookingNumber), `${booking.bookingStatus?.key} ${booking.bookingNumber}`);
+	check(`Booking subtotal ${money.subtotal} + fee ${money.serviceFee} + GST ${money.taxes} = ${money.total}`, same(money.subtotal, booking.subtotal) && same(money.serviceFee, booking.serviceFee) && same(money.taxes, booking.taxes) && same(money.total, booking.total), `${booking.subtotal} + ${booking.serviceFee} + ${booking.taxes} = ${booking.total}`);
+
+	const commission = await settled('commissions', `MB_commission_${booking.id}_host`, {amount: money.commission, availableOn: money.availableOn, commissionStatus: 'pending'});
+
+	check(`Commission created: ${money.commission}, pending, available ${money.availableOn}`, !commission.mismatch, commission.mismatch?.join(', ') ?? '');
+
+	const item = await get('bookingitems', 'MB_SEED_item_manaliTrip');
+	const slot = await get('availabilityslots', slotERC('manaliTrip', '2026-11-20'));
+
+	check('Booking item lineTotal 17998; slot bookedCount 2', same(17998, item.lineTotal) && Number(slot.bookedCount) === 2, `${item.lineTotal} / ${slot.bookedCount}`);
 
 	console.log('\nAs the test users:');
 
-	const hostAuth1 = await userAuth('MB_TEST_user_host1', 'mb.test.host1@example.com');
-	const hostAuth2 = await userAuth('MB_TEST_user_host2', 'mb.test.host2@example.com');
+	const hostAuths = [];
+
+	for (const number of [1, 2]) {
+		hostAuths.push(await userAuth(`MB_TEST_user_host${number}`, `mb.test.host${number}@example.com`));
+	}
+
 	const travelerAuth = await userAuth('MB_TEST_user_traveler', 'mb.test.traveler@example.com');
 	const seeded = async (auth, plural) =>
-		(await as(auth, 'GET', `/o/c/${plural}?pageSize=200`)).items.filter((item) => item.externalReferenceCode.startsWith('MB_SEED_')).length;
+		(await as(auth, 'GET', `/o/c/${plural}?pageSize=200`)).items.filter((entry) => /^MB_(SEED_|commission_)/.test(entry.externalReferenceCode)).length;
 
-	check('host1 sees their 5 listings and 1 booking', (await seeded(hostAuth1, 'listings')) === 5 && (await seeded(hostAuth1, 'bookings')) === 1);
-	check('host2 sees their 2 listings and no booking', (await seeded(hostAuth2, 'listings')) === 2 && (await seeded(hostAuth2, 'bookings')) === 0);
-	check('traveler sees their booking, package and 3 items', (await seeded(travelerAuth, 'bookings')) === 1 && (await seeded(travelerAuth, 'trippackages')) === 1 && (await seeded(travelerAuth, 'bookingitems')) === 3);
+	const host1 = [await seeded(hostAuths[0], 'listings'), await seeded(hostAuths[0], 'bookings'), await seeded(hostAuths[0], 'commissions')];
+	const host2 = [await seeded(hostAuths[1], 'listings'), await seeded(hostAuths[1], 'bookings'), await seeded(hostAuths[1], 'commissions')];
+
+	check('Rahul (host1) sees his 3 listings, 1 booking, 1 commission', host1.join() === '3,1,1', host1.join(' / '));
+	check('Priya (host2) sees her 3 listings and no bookings or commissions', host2.join() === '3,0,0', host2.join(' / '));
+	check('Rahul (host1) sees Destinations and Reviews (Traveler role)', (await seeded(hostAuths[0], 'destinations')) === 6 && (await seeded(hostAuths[0], 'reviews')) === seed.reviews.length);
+
+	const traveler = [await seeded(travelerAuth, 'bookings'), await seeded(travelerAuth, 'trippackages'), await seeded(travelerAuth, 'bookingitems'), await seeded(travelerAuth, 'payments'), await seeded(travelerAuth, 'hosts'), await seeded(travelerAuth, 'listings')];
+
+	check('traveler sees their booking, package and item; no payments, hosts or listings', traveler.join() === '1,1,1,0,0,0', traveler.join(' / '));
+
+	const guest = [await seeded(null, 'destinations'), await seeded(null, 'reviews'), await seeded(null, 'hosts'), await seeded(null, 'listings'), await seeded(null, 'bookings')];
+
+	check('guest sees destinations and reviews; no hosts, listings or bookings', guest.join() === `6,${seed.reviews.length},0,0,0`, guest.join(' / '));
 
 	console.log(`\n${results.filter(Boolean).length}/${results.length} checks passed. Test user passwords were reset: run test-users.js to get new ones.`);
 

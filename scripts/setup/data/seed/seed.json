@@ -1,409 +1,89 @@
 {
-	"note": "LOCAL SEED DATA ONLY (docs/data-model.md section 9). Prices in INR. Accounts and users are the test users from test-users.js. Relationship fields reference ERCs. Values phase 7 will compute (lineTotal, commission amount, fees, total, denormalized listing fields) are set by hand here. Entries marked \"as\": \"traveler\" are created by the test traveler so they own them.",
+	"note": "LOCAL SEED DATA ONLY (docs/data-model.md section 9), matching docs/Homepage — desktop.pdf. Prices in INR. Accounts and users are the test users from test-users.js. Relationship fields reference ERCs. Derived values (hostStatus active, account links, denormalized and rating fields, prices from, host counts, fees, totals, commissions) are left to mb-actions-service, which must be running. Entries marked \"as\": \"traveler\" are created by the test traveler so they own them.",
 	"destinations": [
-		{
-			"externalReferenceCode": "MB_SEED_destination_bir",
-			"name": "Bir Billing",
-			"slug": "bir-billing",
-			"state": "himachalPradesh",
-			"region": "Kangra Valley, Himalayas",
-			"latitude": 32.0442,
-			"longitude": 76.7211,
-			"description": "<p>Tibetan settlement and one of the world's best paragliding sites. Take off from Billing (2,400 m) and land in Bir, with monasteries, tea gardens and treks into the Dhauladhar.</p>",
-			"bestMonths": ["march", "april", "may", "october", "november"],
-			"activities": ["paragliding", "trekking", "localGuide", "stay", "camping"],
-			"isTrending": true,
-			"searchKeywords": "bir, billing, bir billing, kangra, paragliding capital, dharamshala, chowgan"
-		},
-		{
-			"externalReferenceCode": "MB_SEED_destination_rishikesh",
-			"name": "Rishikesh",
-			"slug": "rishikesh",
-			"state": "uttarakhand",
-			"region": "Garhwal Himalayas",
-			"latitude": 30.0869,
-			"longitude": 78.2676,
-			"description": "<p>Yoga town on the Ganga with white-water rafting, riverside camps and short hikes to waterfalls and temples.</p>",
-			"bestMonths": ["february", "march", "april", "september", "october", "november"],
-			"activities": ["activity", "camping", "stay", "localGuide", "trekking"],
-			"isTrending": true,
-			"searchKeywords": "rishikesh, hrishikesh, rishikesh uttarakhand, rafting, river rafting, white water, ganga, laxman jhula"
-		},
-		{
-			"externalReferenceCode": "MB_SEED_destination_kasol",
-			"name": "Kasol",
-			"slug": "kasol",
-			"state": "himachalPradesh",
-			"region": "Parvati Valley, Himalayas",
-			"latitude": 32.0100,
-			"longitude": 77.3150,
-			"description": "<p>Riverside village in the Parvati Valley, base for Kheerganga, Tosh and Malana, with camps along the Parvati river.</p>",
-			"bestMonths": ["march", "april", "may", "june", "september", "october"],
-			"activities": ["camping", "trekking", "stay"],
-			"isTrending": false,
-			"searchKeywords": "kasol, parvati valley, tosh, malana, kheerganga, manikaran, camping"
-		},
-		{
-			"externalReferenceCode": "MB_SEED_destination_mcleodganj",
-			"name": "McLeod Ganj",
-			"slug": "mcleod-ganj",
-			"state": "himachalPradesh",
-			"region": "Dhauladhar, Himalayas",
-			"latitude": 32.2426,
-			"longitude": 76.3213,
-			"description": "<p>Hill town above Dharamshala, home of the Dalai Lama, with cafés, monasteries and the Triund ridge trek.</p>",
-			"bestMonths": ["march", "april", "may", "june", "september", "october", "november"],
-			"activities": ["trekking", "localGuide", "stay"],
-			"isTrending": false,
-			"searchKeywords": "mcleod ganj, mcleodganj, mcleod, dharamkot, dharamshala, dharamsala, triund, bhagsu"
-		}
+		{"externalReferenceCode": "MB_SEED_destination_manali", "name": "Manali", "slug": "manali", "state": "himachalPradesh", "region": "Kullu Valley", "latitude": 32.2432, "longitude": 77.1892, "description": "<p>Pine forests, snow peaks and the Beas river. Old Manali cafés, Solang Valley adventures and the drive to Rohtang and Sissu.</p>", "bestMonths": ["march", "april", "may", "june", "october", "december"], "activities": ["stay", "tours", "activities", "trekking", "paragliding", "completeTrip"], "isTrending": true, "sortOrder": 1, "searchKeywords": "manali, old manali, kullu, solang, rohtang, sissu, atal tunnel"},
+		{"externalReferenceCode": "MB_SEED_destination_udaipur", "name": "Udaipur", "slug": "udaipur", "state": "rajasthan", "region": "Mewar", "latitude": 24.5854, "longitude": 73.7125, "description": "<p>The city of lakes: palaces on Lake Pichola, havelis in the old city and Mewari food.</p>", "bestMonths": ["october", "november", "december", "january", "february", "march"], "activities": ["homestay", "food", "experiences", "photography"], "isTrending": true, "sortOrder": 2, "searchKeywords": "udaipur, city of lakes, pichola, fateh sagar, mewar"},
+		{"externalReferenceCode": "MB_SEED_destination_rishikesh", "name": "Rishikesh", "slug": "rishikesh", "state": "uttarakhand", "region": "Garhwal", "latitude": 30.0869, "longitude": 78.2676, "description": "<p>Yoga capital on the Ganga: white-water rafting from Shivpuri, riverside camps and Himalayan treks.</p>", "bestMonths": ["february", "march", "april", "may", "september", "october", "november"], "activities": ["rafting", "camping", "trekking", "completeTrip"], "isTrending": true, "sortOrder": 3, "searchKeywords": "rishikesh, shivpuri, laxman jhula, dehradun, ganga"},
+		{"externalReferenceCode": "MB_SEED_destination_goa", "name": "Goa", "slug": "goa", "state": "goa", "region": "Konkan coast", "latitude": 15.2993, "longitude": 74.124, "description": "<p>Beaches, Portuguese-era villages, seafood shacks and the Western Ghats behind them.</p>", "bestMonths": ["november", "december", "january", "february", "march"], "activities": ["stay", "food", "activities"], "isTrending": false, "sortOrder": 4, "searchKeywords": "goa, north goa, south goa, panaji, anjuna, palolem"},
+		{"externalReferenceCode": "MB_SEED_destination_kashmir", "name": "Kashmir", "slug": "kashmir", "state": "jammuAndKashmir", "region": "Kashmir Valley", "latitude": 34.0837, "longitude": 74.7973, "description": "<p>Houseboats on Dal Lake, shikara rides, Mughal gardens and drives to Gulmarg and Pahalgam.</p>", "bestMonths": ["april", "may", "june", "september", "october"], "activities": ["stay", "shikara", "tours", "completeTrip"], "isTrending": true, "sortOrder": 5, "searchKeywords": "kashmir, srinagar, dal lake, gulmarg, pahalgam, sonamarg"},
+		{"externalReferenceCode": "MB_SEED_destination_meghalaya", "name": "Meghalaya", "slug": "meghalaya", "state": "meghalaya", "region": "Khasi Hills", "latitude": 25.467, "longitude": 91.3662, "description": "<p>Living root bridges, waterfalls and the cleanest village in Asia.</p>", "bestMonths": ["october", "november", "march", "april"], "activities": ["trekking", "tours", "stay"], "isTrending": false, "sortOrder": 6, "searchKeywords": "meghalaya, shillong, cherrapunji, sohra, dawki, mawlynnong"}
 	],
 	"partners": [
-		{
-			"externalReferenceCode": "MB_SEED_partner_birMountainCamp",
-			"name": "Bir Mountain Camp",
-			"partnerType": "camp",
-			"contactName": "Tashi Negi",
-			"phone": "+919816000101",
-			"email": "stay@birmountaincamp.example",
-			"gstin": "02AABCB1234C1Z5",
-			"address": "Chowgan, Bir, Kangra, Himachal Pradesh 176077",
-			"defaultCommissionRate": 12,
-			"isVerified": true,
-			"r_destinationPartners_c_destinationERC": "MB_SEED_destination_bir"
-		}
+		{"externalReferenceCode": "MB_SEED_partner_manaliPineCottages", "name": "Manali Pine Cottages", "partnerType": "hotel", "contactName": "Sunil Thakur", "phone": "+919816000101", "email": "stay@manalipinecottages.example", "gstin": "02AABCM1234C1Z5", "address": "Log Huts Area, Manali, Himachal Pradesh 175131", "defaultCommissionRate": 12, "isVerified": true, "r_destinationPartners_c_destinationERC": "MB_SEED_destination_manali"}
 	],
 	"hosts": [
-		{
-			"externalReferenceCode": "MB_SEED_host_bir",
-			"displayName": "Karan Thakur",
-			"handle": "karan-bir",
-			"hostTypes": ["localGuide", "activities", "partnerStays"],
-			"phone": "+919816000201",
-			"hostRegion": "Bir, Himachal Pradesh",
-			"specialties": ["paragliding", "trekking", "localGuide", "stay"],
-			"bio": "Certified tandem pilot for 9 years and a local guide in Bir. I fly Billing every season and walk guests through the monasteries and villages I grew up in.",
-			"tier": "standard",
-			"hostStatus": "active",
-			"commissionRate": 10,
-			"termsAccepted": true,
-			"termsAcceptedDate": "2026-09-01T09:00:00Z",
-			"payoutUpiId": "mbseed.karan@upi",
-			"r_userHost_userERC": "MB_TEST_user_host1",
-			"r_accountHosts_accountEntryERC": "MB_TEST_account_host1"
-		},
-		{
-			"externalReferenceCode": "MB_SEED_host_rishikesh",
-			"displayName": "Meera Rawat",
-			"handle": "meera-rishikesh",
-			"hostTypes": ["partnerStays", "activities", "tourPackages"],
-			"phone": "+919897000301",
-			"hostRegion": "Rishikesh, Uttarakhand",
-			"specialties": ["activity", "camping", "stay"],
-			"bio": "I partner with rafting outfits on the Ganga and riverside camps in Rishikesh and the Parvati Valley, and plan trips around them.",
-			"tier": "standard",
-			"hostStatus": "active",
-			"commissionRate": 10,
-			"termsAccepted": true,
-			"termsAcceptedDate": "2026-09-01T09:00:00Z",
-			"payoutUpiId": "mbseed.meera@upi",
-			"r_userHost_userERC": "MB_TEST_user_host2",
-			"r_accountHosts_accountEntryERC": "MB_TEST_account_host2"
-		}
+		{"externalReferenceCode": "MB_SEED_host_rahul", "displayName": "Rahul", "handle": "rahul-manali", "hostRole": "localTripHost", "hostOffers": ["ownServices", "connectServices", "planTrips", "fullTrip"], "phone": "+919816000201", "quote": "I help travelers arrange stays, transport, food, sightseeing and local experiences.", "bio": "Born in Old Manali. I've run trips in the Kullu valley for eight years: cottages I trust, drivers who know the passes, and the cafés locals actually eat at.", "specialties": ["stay", "transport", "tours", "food", "activities"], "commissionRate": 10, "termsAccepted": true, "payoutUpiId": "mbseed.rahul@upi", "r_userHost_userERC": "MB_TEST_user_host1", "r_accountHosts_accountEntryERC": "MB_TEST_account_host1", "r_destinationHosts_c_destinationERC": "MB_SEED_destination_manali"},
+		{"externalReferenceCode": "MB_SEED_host_priya", "displayName": "Priya", "handle": "priya-udaipur", "hostRole": "experienceHost", "hostOffers": ["ownServices", "guiding"], "phone": "+919829000202", "quote": "Stay in my family haveli, eat what we cook, and see the lakes the way locals do.", "bio": "Our 150-year-old haveli is a short walk from Lake Pichola. My mother runs the kitchen; I run the photo walks.", "specialties": ["homestay", "food", "experiences", "photography"], "commissionRate": 10, "termsAccepted": true, "payoutUpiId": "mbseed.priya@upi", "r_userHost_userERC": "MB_TEST_user_host2", "r_accountHosts_accountEntryERC": "MB_TEST_account_host2", "r_destinationHosts_c_destinationERC": "MB_SEED_destination_udaipur"},
+		{"externalReferenceCode": "MB_SEED_host_amit", "displayName": "Amit", "handle": "amit-rishikesh", "hostRole": "adventureHost", "hostOffers": ["ownServices", "connectServices", "guiding", "fullTrip"], "phone": "+919837000203", "quote": "Treks, riverside camps and rafting — with the transport sorted from Dehradun.", "bio": "Certified river guide and trek leader. I run a riverside camp at Shivpuri and plan group trips end to end.", "specialties": ["trekking", "transport", "camping", "activities"], "commissionRate": 10, "termsAccepted": true, "payoutUpiId": "mbseed.amit@upi", "r_userHost_userERC": "MB_TEST_user_host3", "r_accountHosts_accountEntryERC": "MB_TEST_account_host3", "r_destinationHosts_c_destinationERC": "MB_SEED_destination_rishikesh"},
+		{"externalReferenceCode": "MB_SEED_host_irfan", "displayName": "Irfan", "handle": "irfan-kashmir", "hostRole": "localTripHost", "hostOffers": ["connectServices", "planTrips", "fullTrip"], "phone": "+919906000204", "quote": "Houseboat stays, shikara rides and drives to Gulmarg and Pahalgam, all arranged.", "bio": "Third-generation houseboat family on Dal Lake. I arrange the whole trip: houseboat, shikara, cabs and the valleys.", "specialties": ["stay", "shikara", "transport", "tours"], "commissionRate": 10, "termsAccepted": true, "payoutUpiId": "mbseed.irfan@upi", "r_userHost_userERC": "MB_TEST_user_host4", "r_accountHosts_accountEntryERC": "MB_TEST_account_host4", "r_destinationHosts_c_destinationERC": "MB_SEED_destination_kashmir"}
 	],
 	"hostPartnerships": [
-		{
-			"externalReferenceCode": "MB_SEED_partnership_bir_camp",
-			"commissionRate": 12,
-			"startDate": "2026-09-01",
-			"partnershipStatus": "active",
-			"r_hostPartnerships_c_hostERC": "MB_SEED_host_bir",
-			"r_partnerHosts_c_partnerERC": "MB_SEED_partner_birMountainCamp",
-			"r_accountHostPartnerships_accountEntryERC": "MB_TEST_account_host1"
-		}
-	],
-	"listings": [
-		{
-			"key": "paragliding",
-			"slots": {"capacity": 6, "startTime": "09:00"},
-			"entry": {
-				"externalReferenceCode": "MB_SEED_listing_paragliding",
-				"title": "Tandem paragliding, Bir Billing",
-				"slug": "tandem-paragliding-bir-billing",
-				"category": "paragliding",
-				"shortDescription": "15–25 minute tandem flight from Billing with a certified pilot",
-				"description": "<p>Take off from Billing at 2,400 m and glide over the Kangra valley with a certified tandem pilot. No experience needed; the pilot handles the flight and landing in Bir.</p>",
-				"basePrice": 2500,
-				"priceUnit": "perPerson",
-				"durationText": "15–25 minutes in the air",
-				"maxGuests": 6,
-				"seasonMonths": ["march", "april", "may", "october", "november"],
-				"isTrending": true,
-				"isFeatured": true,
-				"searchKeywords": "tandem flight, tandem paragliding, billing take-off, bir landing site",
-				"destination": "MB_SEED_destination_bir",
-				"host": "MB_SEED_host_bir",
-				"account": "MB_TEST_account_host1"
-			}
-		},
-		{
-			"key": "birCamp",
-			"slots": {"capacity": 4},
-			"entry": {
-				"externalReferenceCode": "MB_SEED_listing_birCamp",
-				"title": "Partner mountain camp, Bir",
-				"slug": "partner-mountain-camp-bir",
-				"category": "stay",
-				"shortDescription": "Swiss tents near the Bir landing site, breakfast included",
-				"description": "<p>Comfortable Swiss tents with attached bathrooms at Bir Mountain Camp, a short walk from the paragliding landing site and the monasteries. Breakfast and bonfire included.</p>",
-				"basePrice": 3500,
-				"priceUnit": "perNight",
-				"durationText": "Per night, breakfast included",
-				"maxGuests": 4,
-				"seasonMonths": ["march", "april", "may", "september", "october", "november"],
-				"isTrending": false,
-				"isFeatured": true,
-				"searchKeywords": "camp, camping, tent, glamping, stay, bir camp, swiss tent",
-				"destination": "MB_SEED_destination_bir",
-				"host": "MB_SEED_host_bir",
-				"partner": "MB_SEED_partner_birMountainCamp",
-				"account": "MB_TEST_account_host1"
-			}
-		},
-		{
-			"key": "rajgundha",
-			"slots": {"capacity": 12, "startTime": "07:30"},
-			"entry": {
-				"externalReferenceCode": "MB_SEED_listing_rajgundha",
-				"title": "Rajgundha valley day hike",
-				"slug": "rajgundha-valley-day-hike",
-				"category": "trekking",
-				"shortDescription": "Forest trail from Billing to the Rajgundha meadows and back",
-				"description": "<p>A full-day guided hike from Billing through oak and rhododendron forest to the quiet meadows of Rajgundha. Packed lunch and transport to the trailhead included.</p>",
-				"basePrice": 2000,
-				"priceUnit": "perPerson",
-				"durationText": "Full day, 6–7 hours",
-				"maxGuests": 12,
-				"seasonMonths": ["april", "may", "june", "september", "october"],
-				"isTrending": false,
-				"isFeatured": false,
-				"searchKeywords": "rajgundha, barot, hike, hiking, trek, trekking, meadow",
-				"destination": "MB_SEED_destination_bir",
-				"host": "MB_SEED_host_bir",
-				"account": "MB_TEST_account_host1"
-			}
-		},
-		{
-			"key": "monasteryWalk",
-			"slots": {"capacity": 8, "startTime": "16:00"},
-			"entry": {
-				"externalReferenceCode": "MB_SEED_listing_monasteryWalk",
-				"title": "Monastery & village walk",
-				"slug": "monastery-and-village-walk-bir",
-				"category": "localGuide",
-				"shortDescription": "Evening walk through Bir's monasteries, tea gardens and Tibetan colony",
-				"description": "<p>A relaxed walk with a local guide through Chokling and Sherab Ling monasteries, the tea gardens and the Tibetan colony, ending with butter tea at a village home.</p>",
-				"basePrice": 900,
-				"priceUnit": "perPerson",
-				"durationText": "3 hours",
-				"maxGuests": 8,
-				"seasonMonths": ["march", "april", "may", "june", "september", "october", "november"],
-				"isTrending": false,
-				"isFeatured": false,
-				"searchKeywords": "monastery, guide, local guide, walk, city tour, tibetan colony, tea garden",
-				"destination": "MB_SEED_destination_bir",
-				"host": "MB_SEED_host_bir",
-				"account": "MB_TEST_account_host1"
-			}
-		},
-		{
-			"key": "triund",
-			"slots": {"capacity": 12, "startTime": "08:00"},
-			"entry": {
-				"externalReferenceCode": "MB_SEED_listing_triund",
-				"title": "Triund trek, McLeod Ganj",
-				"slug": "triund-trek-mcleod-ganj",
-				"category": "trekking",
-				"shortDescription": "Guided day trek to the Triund ridge with Dhauladhar views",
-				"description": "<p>Climb from Dharamkot to the Triund ridge (2,850 m) for close-up views of the Dhauladhar range and the Kangra valley. Guide, snacks and permits included.</p>",
-				"basePrice": 1500,
-				"priceUnit": "perPerson",
-				"durationText": "Day trek, 6–7 hours",
-				"maxGuests": 12,
-				"seasonMonths": ["march", "april", "may", "june", "september", "october", "november"],
-				"isTrending": true,
-				"isFeatured": false,
-				"searchKeywords": "triund, trek, hike, hiking, trekking, dharamkot, dhauladhar",
-				"destination": "MB_SEED_destination_mcleodganj",
-				"host": "MB_SEED_host_bir",
-				"account": "MB_TEST_account_host1"
-			}
-		},
-		{
-			"key": "rafting",
-			"slots": {"capacity": 16, "startTime": "10:00"},
-			"entry": {
-				"externalReferenceCode": "MB_SEED_listing_rafting",
-				"title": "River rafting, Rishikesh",
-				"slug": "river-rafting-rishikesh",
-				"category": "activity",
-				"shortDescription": "16 km Shivpuri to Rishikesh run with grade II–III rapids",
-				"description": "<p>Raft 16 km of the Ganga from Shivpuri to Rishikesh with a certified river guide, through rapids like Roller Coaster and Golf Course. Safety gear and transport to the put-in included.</p>",
-				"basePrice": 800,
-				"priceUnit": "perPerson",
-				"durationText": "16 km, about 2.5 hours",
-				"maxGuests": 16,
-				"seasonMonths": ["february", "march", "april", "may", "september", "october", "november"],
-				"isTrending": true,
-				"isFeatured": true,
-				"searchKeywords": "rafting, river rafting, white water, shivpuri, ganga",
-				"destination": "MB_SEED_destination_rishikesh",
-				"host": "MB_SEED_host_rishikesh",
-				"account": "MB_TEST_account_host2"
-			}
-		},
-		{
-			"key": "kasolCamp",
-			"slots": {"capacity": 4},
-			"entry": {
-				"externalReferenceCode": "MB_SEED_listing_kasolCamp",
-				"title": "Riverside camp, Kasol",
-				"slug": "riverside-camp-kasol",
-				"category": "camping",
-				"shortDescription": "Tents on the Parvati river, dinner and breakfast included",
-				"description": "<p>Camp right on the banks of the Parvati with a bonfire, dinner and breakfast. A good base for Kheerganga, Tosh and Malana.</p>",
-				"basePrice": 1800,
-				"priceUnit": "perNight",
-				"durationText": "Per night, dinner and breakfast included",
-				"maxGuests": 4,
-				"seasonMonths": ["march", "april", "may", "june", "september", "october"],
-				"isTrending": false,
-				"isFeatured": false,
-				"searchKeywords": "camp, camping, tent, glamping, kasol, parvati river, riverside",
-				"destination": "MB_SEED_destination_kasol",
-				"host": "MB_SEED_host_rishikesh",
-				"account": "MB_TEST_account_host2"
-			}
-		}
-	],
-	"listingInclusions": [
-		{"externalReferenceCode": "MB_SEED_inclusion_paragliding_transport", "label": "Transport to the take-off point", "inclusionType": "included", "sortOrder": 1, "listing": "MB_SEED_listing_paragliding", "account": "MB_TEST_account_host1"},
-		{"externalReferenceCode": "MB_SEED_inclusion_paragliding_flight", "label": "Tandem flight with a certified pilot", "inclusionType": "included", "sortOrder": 2, "listing": "MB_SEED_listing_paragliding", "account": "MB_TEST_account_host1"},
-		{"externalReferenceCode": "MB_SEED_inclusion_paragliding_safety", "label": "Safety gear and briefing", "inclusionType": "included", "sortOrder": 3, "listing": "MB_SEED_listing_paragliding", "account": "MB_TEST_account_host1"},
-		{"externalReferenceCode": "MB_SEED_inclusion_paragliding_media", "label": "Photos & video", "inclusionType": "addOn", "addOnPrice": 1000, "sortOrder": 4, "listing": "MB_SEED_listing_paragliding", "account": "MB_TEST_account_host1"}
+		{"externalReferenceCode": "MB_SEED_partnership_rahul_pineCottages", "commissionRate": 12, "startDate": "2026-09-01", "partnershipStatus": "active", "r_hostPartnerships_c_hostERC": "MB_SEED_host_rahul", "r_partnerHosts_c_partnerERC": "MB_SEED_partner_manaliPineCottages", "r_accountHostPartnerships_accountEntryERC": "MB_TEST_account_host1"}
 	],
 	"slotDays": 14,
-	"traveler": {
-		"as": "traveler",
-		"externalReferenceCode": "MB_SEED_traveler_ananya",
-		"fullName": "Ananya Iyer",
-		"phone": "+919820000401",
-		"homeCity": "New Delhi",
-		"r_userTraveler_userERC": "MB_TEST_user_traveler"
-	},
-	"tripPackage": {
-		"as": "traveler",
-		"externalReferenceCode": "MB_SEED_package_bir",
-		"packageName": "Bir weekend: fly, stay, paraglide",
-		"startDate": "2026-10-08",
-		"endDate": "2026-10-10",
-		"adults": 2,
-		"children": 0,
-		"packageStatus": "booked",
-		"r_destinationPackages_c_destinationERC": "MB_SEED_destination_bir",
-		"r_travelerPackages_c_travelerERC": "MB_SEED_traveler_ananya",
-		"r_hostPackages_c_hostERC": "MB_SEED_host_bir"
-	},
+	"listings": [
+		{"key": "manaliTrip", "slots": {"capacity": 8}, "entry": {"externalReferenceCode": "MB_SEED_listing_manaliTrip", "title": "Manali complete trip, 5 days / 4 nights", "slug": "manali-complete-trip", "category": "completeTrip", "shortDescription": "Cottage stay, cab, Solang and Sissu sightseeing, breakfast and dinner", "description": "<p>Four nights in a pine cottage, a cab for the whole trip, Solang Valley and Sissu via the Atal Tunnel, and an Old Manali food walk. Rahul plans the days around the weather.</p>", "basePrice": 8999, "priceUnit": "perPerson", "durationText": "5 days / 4 nights", "maxGuests": 8, "seasonMonths": ["march", "april", "may", "june", "october", "december"], "isTrending": true, "isFeatured": true, "searchKeywords": "manali package, manali trip, kullu manali tour", "destination": "MB_SEED_destination_manali", "host": "MB_SEED_host_rahul", "account": "MB_TEST_account_host1", "partner": "MB_SEED_partner_manaliPineCottages"}},
+		{"key": "solangTour", "slots": {"capacity": 10, "startTime": "08:30"}, "entry": {"externalReferenceCode": "MB_SEED_listing_solangTour", "title": "Solang Valley day tour", "slug": "solang-valley-day-tour", "category": "tours", "shortDescription": "Cab, guide and stops at Solang, Anjani Mahadev and Palchan", "description": "<p>A day in Solang Valley with a local guide and cab, back by sunset.</p>", "basePrice": 1800, "priceUnit": "perPerson", "durationText": "1 day", "maxGuests": 10, "isTrending": false, "isFeatured": false, "destination": "MB_SEED_destination_manali", "host": "MB_SEED_host_rahul", "account": "MB_TEST_account_host1"}},
+		{"key": "rohtangCab", "slots": {"capacity": 2, "startTime": "06:00"}, "entry": {"externalReferenceCode": "MB_SEED_listing_rohtangCab", "title": "Manali–Rohtang cab", "slug": "manali-rohtang-cab", "category": "transport", "shortDescription": "Private SUV with a driver who knows the pass, permit arranged", "description": "<p>Full-day private cab to Rohtang Pass (permit included).</p>", "basePrice": 4500, "priceUnit": "perTrip", "durationText": "1 day", "maxGuests": 6, "isTrending": false, "isFeatured": false, "destination": "MB_SEED_destination_manali", "host": "MB_SEED_host_rahul", "account": "MB_TEST_account_host1"}},
+		{"key": "haveliRoom", "slots": {"capacity": 3}, "entry": {"externalReferenceCode": "MB_SEED_listing_haveliRoom", "title": "Haveli homestay room", "slug": "haveli-homestay-udaipur", "category": "homestay", "shortDescription": "Room in a 150-year-old family haveli near Lake Pichola, breakfast included", "description": "<p>A heritage room in our family haveli, with home-cooked breakfast on the terrace.</p>", "basePrice": 1499, "priceUnit": "perNight", "durationText": "per night", "maxGuests": 3, "isTrending": true, "isFeatured": false, "destination": "MB_SEED_destination_udaipur", "host": "MB_SEED_host_priya", "account": "MB_TEST_account_host2"}},
+		{"key": "dalBaati", "slots": {"capacity": 6, "startTime": "17:00"}, "entry": {"externalReferenceCode": "MB_SEED_listing_dalBaati", "title": "Cook dal baati with my mother", "slug": "cook-dal-baati-udaipur", "category": "experiences", "shortDescription": "An evening in our kitchen, then dinner on the terrace", "description": "<p>Learn dal baati churma from my mother and eat what you cook.</p>", "basePrice": 1500, "priceUnit": "perPerson", "durationText": "3 hours", "maxGuests": 6, "isTrending": false, "isFeatured": true, "destination": "MB_SEED_destination_udaipur", "host": "MB_SEED_host_priya", "account": "MB_TEST_account_host2"}},
+		{"key": "photoWalk", "slots": {"capacity": 8, "startTime": "06:30"}, "entry": {"externalReferenceCode": "MB_SEED_listing_photoWalk", "title": "Old city photo walk", "slug": "udaipur-old-city-photo-walk", "category": "photography", "shortDescription": "Sunrise ghats, lanes and rooftops of the old city", "description": "<p>A sunrise walk through the old city with a photographer who grew up there.</p>", "basePrice": 1600, "priceUnit": "perPerson", "durationText": "2.5 hours", "maxGuests": 8, "isTrending": false, "isFeatured": false, "destination": "MB_SEED_destination_udaipur", "host": "MB_SEED_host_priya", "account": "MB_TEST_account_host2"}},
+		{"key": "rishikeshTrip", "slots": {"capacity": 12}, "entry": {"externalReferenceCode": "MB_SEED_listing_rishikeshTrip", "title": "Rishikesh adventure trip, 3 days / 2 nights", "slug": "rishikesh-adventure-trip", "category": "completeTrip", "shortDescription": "Dehradun pickup, riverside camp, rafting and a trek to Neer Garh", "description": "<p>Pickup from Dehradun, two nights at our riverside camp, 16 km of rafting from Shivpuri and a waterfall trek.</p>", "basePrice": 6999, "priceUnit": "perPerson", "durationText": "3 days / 2 nights", "maxGuests": 12, "seasonMonths": ["february", "march", "april", "may", "september", "october", "november"], "isTrending": true, "isFeatured": true, "searchKeywords": "rishikesh package, rafting trip, camping trip", "destination": "MB_SEED_destination_rishikesh", "host": "MB_SEED_host_amit", "account": "MB_TEST_account_host3"}},
+		{"key": "riversideCamp", "slots": {"capacity": 10}, "entry": {"externalReferenceCode": "MB_SEED_listing_riversideCamp", "title": "Riverside camp", "slug": "rishikesh-riverside-camp", "category": "camping", "shortDescription": "Tents on the Ganga at Shivpuri, dinner and bonfire", "description": "<p>Swiss tents on a private beach at Shivpuri with dinner and breakfast.</p>", "basePrice": 1800, "priceUnit": "perNight", "durationText": "per night", "maxGuests": 4, "isTrending": false, "isFeatured": false, "destination": "MB_SEED_destination_rishikesh", "host": "MB_SEED_host_amit", "account": "MB_TEST_account_host3"}},
+		{"key": "rafting", "slots": {"capacity": 16, "startTime": "10:00"}, "entry": {"externalReferenceCode": "MB_SEED_listing_rafting", "title": "River rafting", "slug": "rishikesh-river-rafting", "category": "rafting", "shortDescription": "16 km from Shivpuri with a certified guide", "description": "<p>Grade III rapids from Shivpuri to Rishikesh.</p>", "basePrice": 800, "priceUnit": "perPerson", "durationText": "3 hours", "maxGuests": 8, "isTrending": true, "isFeatured": false, "destination": "MB_SEED_destination_rishikesh", "host": "MB_SEED_host_amit", "account": "MB_TEST_account_host3"}},
+		{"key": "kashmirTrip", "slots": {"capacity": 8}, "entry": {"externalReferenceCode": "MB_SEED_listing_kashmirTrip", "title": "Kashmir complete trip, 6 days / 5 nights", "slug": "kashmir-complete-trip", "category": "completeTrip", "shortDescription": "Houseboat, shikara, Gulmarg and Pahalgam with a private cab", "description": "<p>Two nights on our houseboat, Gulmarg and Pahalgam day trips, a sunrise shikara and the Mughal gardens.</p>", "basePrice": 9499, "priceUnit": "perPerson", "durationText": "6 days / 5 nights", "maxGuests": 8, "seasonMonths": ["april", "may", "june", "september", "october"], "isTrending": true, "isFeatured": true, "searchKeywords": "kashmir package, srinagar trip, gulmarg pahalgam tour", "destination": "MB_SEED_destination_kashmir", "host": "MB_SEED_host_irfan", "account": "MB_TEST_account_host4"}},
+		{"key": "houseboat", "slots": {"capacity": 2}, "entry": {"externalReferenceCode": "MB_SEED_listing_houseboat", "title": "Dal Lake houseboat", "slug": "dal-lake-houseboat", "category": "stay", "shortDescription": "Carved cedar houseboat with breakfast and dinner", "description": "<p>A room on our family houseboat, with Kashmiri breakfast and dinner.</p>", "basePrice": 3500, "priceUnit": "perNight", "durationText": "per night", "maxGuests": 3, "isTrending": false, "isFeatured": false, "destination": "MB_SEED_destination_kashmir", "host": "MB_SEED_host_irfan", "account": "MB_TEST_account_host4"}},
+		{"key": "shikara", "slots": {"capacity": 4, "startTime": "06:00"}, "entry": {"externalReferenceCode": "MB_SEED_listing_shikara", "title": "Shikara ride", "slug": "dal-lake-shikara-ride", "category": "shikara", "shortDescription": "Sunrise ride through the floating market", "description": "<p>An hour on Dal Lake at sunrise, through the floating vegetable market.</p>", "basePrice": 900, "priceUnit": "perGroup", "durationText": "1 hour", "maxGuests": 4, "isTrending": false, "isFeatured": false, "destination": "MB_SEED_destination_kashmir", "host": "MB_SEED_host_irfan", "account": "MB_TEST_account_host4"}}
+	],
+	"listingInclusions": [
+		{"externalReferenceCode": "MB_SEED_inclusion_manaliTrip_stay", "label": "4 nights in a pine cottage", "inclusionType": "included", "sortOrder": 1, "listing": "MB_SEED_listing_manaliTrip", "account": "MB_TEST_account_host1"},
+		{"externalReferenceCode": "MB_SEED_inclusion_manaliTrip_cab", "label": "Private cab for the whole trip", "inclusionType": "included", "sortOrder": 2, "listing": "MB_SEED_listing_manaliTrip", "account": "MB_TEST_account_host1"},
+		{"externalReferenceCode": "MB_SEED_inclusion_manaliTrip_meals", "label": "Breakfast and dinner", "inclusionType": "included", "sortOrder": 3, "listing": "MB_SEED_listing_manaliTrip", "account": "MB_TEST_account_host1"},
+		{"externalReferenceCode": "MB_SEED_inclusion_manaliTrip_sightseeing", "label": "Solang Valley and Sissu sightseeing", "inclusionType": "included", "sortOrder": 4, "listing": "MB_SEED_listing_manaliTrip", "account": "MB_TEST_account_host1"},
+		{"externalReferenceCode": "MB_SEED_inclusion_manaliTrip_paragliding", "label": "Paragliding at Solang", "inclusionType": "addOn", "addOnPrice": 3000, "sortOrder": 5, "listing": "MB_SEED_listing_manaliTrip", "account": "MB_TEST_account_host1"},
+		{"externalReferenceCode": "MB_SEED_inclusion_rishikeshTrip_stay", "label": "2 nights at the riverside camp", "inclusionType": "included", "sortOrder": 1, "listing": "MB_SEED_listing_rishikeshTrip", "account": "MB_TEST_account_host3"},
+		{"externalReferenceCode": "MB_SEED_inclusion_rishikeshTrip_cab", "label": "Dehradun pickup and drop", "inclusionType": "included", "sortOrder": 2, "listing": "MB_SEED_listing_rishikeshTrip", "account": "MB_TEST_account_host3"},
+		{"externalReferenceCode": "MB_SEED_inclusion_rishikeshTrip_meals", "label": "Breakfast and dinner", "inclusionType": "included", "sortOrder": 3, "listing": "MB_SEED_listing_rishikeshTrip", "account": "MB_TEST_account_host3"},
+		{"externalReferenceCode": "MB_SEED_inclusion_rishikeshTrip_rafting", "label": "16 km rafting and Neer Garh trek", "inclusionType": "included", "sortOrder": 4, "listing": "MB_SEED_listing_rishikeshTrip", "account": "MB_TEST_account_host3"},
+		{"externalReferenceCode": "MB_SEED_inclusion_rishikeshTrip_bungee", "label": "Bungee jump", "inclusionType": "addOn", "addOnPrice": 3700, "sortOrder": 5, "listing": "MB_SEED_listing_rishikeshTrip", "account": "MB_TEST_account_host3"},
+		{"externalReferenceCode": "MB_SEED_inclusion_kashmirTrip_stay", "label": "2 nights houseboat, 3 nights hotel", "inclusionType": "included", "sortOrder": 1, "listing": "MB_SEED_listing_kashmirTrip", "account": "MB_TEST_account_host4"},
+		{"externalReferenceCode": "MB_SEED_inclusion_kashmirTrip_cab", "label": "Private cab, airport pickup and drop", "inclusionType": "included", "sortOrder": 2, "listing": "MB_SEED_listing_kashmirTrip", "account": "MB_TEST_account_host4"},
+		{"externalReferenceCode": "MB_SEED_inclusion_kashmirTrip_meals", "label": "Breakfast and dinner", "inclusionType": "included", "sortOrder": 3, "listing": "MB_SEED_listing_kashmirTrip", "account": "MB_TEST_account_host4"},
+		{"externalReferenceCode": "MB_SEED_inclusion_kashmirTrip_sightseeing", "label": "Gulmarg, Pahalgam and a sunrise shikara", "inclusionType": "included", "sortOrder": 4, "listing": "MB_SEED_listing_kashmirTrip", "account": "MB_TEST_account_host4"},
+		{"externalReferenceCode": "MB_SEED_inclusion_kashmirTrip_gondola", "label": "Gulmarg gondola, phase 1 and 2", "inclusionType": "addOn", "addOnPrice": 1800, "sortOrder": 5, "listing": "MB_SEED_listing_kashmirTrip", "account": "MB_TEST_account_host4"}
+	],
+	"traveler": {"as": "traveler", "externalReferenceCode": "MB_SEED_traveler_ankit", "fullName": "Ankit Sharma", "phone": "+919810000401", "homeCity": "Delhi", "r_userTraveler_userERC": "MB_TEST_user_traveler"},
+	"tripPackage": {"as": "traveler", "externalReferenceCode": "MB_SEED_package_manali", "packageName": "Manali with Rahul", "startDate": "2026-11-20", "endDate": "2026-11-24", "adults": 2, "children": 0, "packageStatus": "booked", "r_destinationPackages_c_destinationERC": "MB_SEED_destination_manali", "r_travelerPackages_c_travelerERC": "MB_SEED_traveler_ankit", "r_hostPackages_c_hostERC": "MB_SEED_host_rahul"},
 	"booking": {
 		"as": "traveler",
-		"bookingStatusFlow": ["pendingPayment", "confirmed"],
-		"entry": {
-			"externalReferenceCode": "MB_SEED_booking_bir",
-			"leadName": "Ananya Iyer",
-			"phone": "+919820000401",
-			"email": "ananya.iyer@example.com",
-			"travelDate": "2026-10-08",
-			"travelerCount": 2,
-			"serviceFee": 1250,
-			"taxes": 225,
-			"total": 26475,
-			"source": "web",
-			"r_accountBookings_accountEntryERC": "MB_TEST_account_host1",
-			"r_hostBookings_c_hostERC": "MB_SEED_host_bir",
-			"r_travelerBookings_c_travelerERC": "MB_SEED_traveler_ananya",
-			"r_packageBookings_c_tripPackageERC": "MB_SEED_package_bir"
-		},
-		"pricing": "subtotal 25000 (sum of items) + 5% platform fee 1250 + 18% GST on the fee 225 = 26475. Seed-only rates; phase 7 sets the real rules."
+		"entry": {"externalReferenceCode": "MB_SEED_booking_manali", "leadName": "Ankit Sharma", "phone": "+919810000401", "email": "ankit.sharma@example.com", "travelDate": "2026-11-20", "travelerCount": 2, "source": "web", "r_accountBookings_accountEntryERC": "MB_TEST_account_host1", "r_hostBookings_c_hostERC": "MB_SEED_host_rahul", "r_travelerBookings_c_travelerERC": "MB_SEED_traveler_ankit", "r_packageBookings_c_tripPackageERC": "MB_SEED_package_manali"},
+		"expected": {"subtotal": 17998, "serviceFee": 899.9, "taxes": 161.98, "total": 19059.88, "commission": 1799.8, "availableOn": "2026-12-01"}
 	},
 	"bookingItems": [
-		{
-			"as": "traveler",
-			"externalReferenceCode": "MB_SEED_item_flight",
-			"category": "flight",
-			"itemTitle": "Delhi → Dharamshala (Gaggal) flight",
-			"itemDetail": "DEL → DHM, 8 Oct 2026, 2 adults",
-			"quantity": 2,
-			"unitPrice": 6500,
-			"lineTotal": 13000,
-			"supplierReference": "PNR MBSEED",
-			"isSelected": true,
-			"r_packageItems_c_tripPackageERC": "MB_SEED_package_bir",
-			"r_bookingItems_c_bookingERC": "MB_SEED_booking_bir"
-		},
-		{
-			"as": "traveler",
-			"externalReferenceCode": "MB_SEED_item_stay",
-			"category": "stay",
-			"itemTitle": "Partner mountain camp, Bir",
-			"itemDetail": "8–10 Oct 2026, 2 nights, 1 tent for 2",
-			"quantity": 2,
-			"unitPrice": 3500,
-			"lineTotal": 7000,
-			"isSelected": true,
-			"r_packageItems_c_tripPackageERC": "MB_SEED_package_bir",
-			"r_bookingItems_c_bookingERC": "MB_SEED_booking_bir",
-			"r_listingBookingItems_c_listingERC": "MB_SEED_listing_birCamp"
-		},
-		{
-			"as": "traveler",
-			"externalReferenceCode": "MB_SEED_item_paragliding",
-			"category": "paragliding",
-			"itemTitle": "Tandem paragliding, Bir Billing",
-			"itemDetail": "9 Oct 2026, 09:00 slot",
-			"quantity": 2,
-			"unitPrice": 2500,
-			"lineTotal": 5000,
-			"isSelected": true,
-			"r_packageItems_c_tripPackageERC": "MB_SEED_package_bir",
-			"r_bookingItems_c_bookingERC": "MB_SEED_booking_bir",
-			"r_listingBookingItems_c_listingERC": "MB_SEED_listing_paragliding",
-			"slot": {"listing": "paragliding", "date": "2026-10-09"}
-		}
+		{"as": "traveler", "externalReferenceCode": "MB_SEED_item_manaliTrip", "category": "completeTrip", "itemTitle": "Manali complete trip, 5 days / 4 nights", "itemDetail": "Manali, 20–24 Nov 2026, 2 adults", "quantity": 2, "unitPrice": 8999, "isSelected": true, "r_packageItems_c_tripPackageERC": "MB_SEED_package_manali", "r_bookingItems_c_bookingERC": "MB_SEED_booking_manali", "r_listingBookingItems_c_listingERC": "MB_SEED_listing_manaliTrip", "slot": {"listing": "manaliTrip", "date": "2026-11-20"}}
 	],
 	"payments": [
-		{
-			"externalReferenceCode": "MB_SEED_payment_bir",
-			"method": "upi",
-			"amount": 26475,
-			"gateway": "razorpay",
-			"gatewayOrderId": "order_MBSEED0001",
-			"gatewayTxnId": "pay_MBSEED0001",
-			"paymentStatus": "success",
-			"paidAt": "2026-09-26T10:15:00Z",
-			"r_bookingPayments_c_bookingERC": "MB_SEED_booking_bir"
-		}
+		{"externalReferenceCode": "MB_SEED_payment_manali", "method": "upi", "amount": 19059.88, "gateway": "razorpay", "gatewayOrderId": "order_MBSEED0001", "gatewayTxnId": "pay_MBSEED0001", "paymentStatus": "success", "paidAt": "2026-10-25T10:15:00Z", "r_bookingPayments_c_bookingERC": "MB_SEED_booking_manali"}
 	],
-	"commissions": [
-		{
-			"externalReferenceCode": "MB_SEED_commission_bir",
-			"rate": 10,
-			"baseAmount": 12000,
-			"amount": 1200,
-			"commissionStatus": "pending",
-			"availableOn": "2026-10-17",
-			"r_bookingCommissions_c_bookingERC": "MB_SEED_booking_bir",
-			"r_hostCommissions_c_hostERC": "MB_SEED_host_bir",
-			"r_accountCommissions_accountEntryERC": "MB_TEST_account_host1"
-		}
-	]
+	"reviews": [
+		{"externalReferenceCode": "MB_SEED_review_rahul_ankit", "rating": 5, "comment": "We didn't have to worry about anything. Rahul arranged our stay, cab, sightseeing and food. We just enjoyed Manali.", "isPublished": true, "isFeatured": true, "reviewerName": "Ankit & Neha", "reviewerCity": "Delhi", "r_hostReviews_c_hostERC": "MB_SEED_host_rahul", "r_listingReviews_c_listingERC": "MB_SEED_listing_manaliTrip", "r_travelerReviews_c_travelerERC": "MB_SEED_traveler_ankit"},
+		{"externalReferenceCode": "MB_SEED_review_rahul_meera", "rating": 5, "comment": "The Sissu day was the highlight. Rahul moved it a day when the pass closed.", "isPublished": true, "isFeatured": false, "reviewerName": "Meera K.", "reviewerCity": "Mumbai", "r_hostReviews_c_hostERC": "MB_SEED_host_rahul"},
+		{"externalReferenceCode": "MB_SEED_review_rahul_arjun", "rating": 4, "comment": "Good cottage and a great driver. Book the Solang tour early in season.", "isPublished": true, "isFeatured": false, "reviewerName": "Arjun S.", "reviewerCity": "Jaipur", "r_hostReviews_c_hostERC": "MB_SEED_host_rahul", "r_listingReviews_c_listingERC": "MB_SEED_listing_solangTour"},
+		{"externalReferenceCode": "MB_SEED_review_priya_sneha", "rating": 5, "comment": "Priya's mother taught us dal baati in her kitchen. That evening is the part of Udaipur we still talk about.", "isPublished": true, "isFeatured": true, "reviewerName": "Sneha R.", "reviewerCity": "Pune", "r_hostReviews_c_hostERC": "MB_SEED_host_priya", "r_listingReviews_c_listingERC": "MB_SEED_listing_dalBaati"},
+		{"externalReferenceCode": "MB_SEED_review_priya_rohit", "rating": 5, "comment": "The haveli terrace at sunset is worth the trip alone.", "isPublished": true, "isFeatured": false, "reviewerName": "Rohit & Kavya", "reviewerCity": "Hyderabad", "r_hostReviews_c_hostERC": "MB_SEED_host_priya", "r_listingReviews_c_listingERC": "MB_SEED_listing_haveliRoom"},
+		{"externalReferenceCode": "MB_SEED_review_amit_karthik", "rating": 5, "comment": "One WhatsApp chat with Amit and our whole group's trek, camp and cabs were sorted.", "isPublished": true, "isFeatured": true, "reviewerName": "Karthik & friends", "reviewerCity": "Bengaluru", "r_hostReviews_c_hostERC": "MB_SEED_host_amit", "r_listingReviews_c_listingERC": "MB_SEED_listing_rishikeshTrip"},
+		{"externalReferenceCode": "MB_SEED_review_amit_neel", "rating": 4, "comment": "Rafting was brilliant; the camp gets cold in November, bring layers.", "isPublished": true, "isFeatured": false, "reviewerName": "Neel P.", "reviewerCity": "Ahmedabad", "r_hostReviews_c_hostERC": "MB_SEED_host_amit", "r_listingReviews_c_listingERC": "MB_SEED_listing_rafting"},
+		{"externalReferenceCode": "MB_SEED_review_irfan_fatima", "rating": 5, "comment": "Irfan's family made the houseboat feel like home, and every drive ran on time.", "isPublished": true, "isFeatured": false, "reviewerName": "Fatima & Sameer", "reviewerCity": "Lucknow", "r_hostReviews_c_hostERC": "MB_SEED_host_irfan", "r_listingReviews_c_listingERC": "MB_SEED_listing_kashmirTrip"},
+		{"externalReferenceCode": "MB_SEED_review_irfan_ishaan", "rating": 5, "comment": "Sunrise shikara through the floating market. Do it.", "isPublished": true, "isFeatured": false, "reviewerName": "Ishaan T.", "reviewerCity": "Kolkata", "r_hostReviews_c_hostERC": "MB_SEED_host_irfan", "r_listingReviews_c_listingERC": "MB_SEED_listing_shikara"},
+		{"externalReferenceCode": "MB_SEED_review_irfan_unpublished", "rating": 2, "comment": "Awaiting moderation.", "isPublished": false, "isFeatured": false, "reviewerName": "Test Reviewer", "reviewerCity": "Chennai", "r_hostReviews_c_hostERC": "MB_SEED_host_irfan"}
+	],
+	"expected": {
+		"hosts": {
+			"MB_SEED_host_rahul": {"destinationName": "Manali", "stateName": "Himachal Pradesh", "ratingValue": 4.7, "reviewCount": 3, "completeTripsFrom": 8999, "priceFrom": 1800},
+			"MB_SEED_host_priya": {"destinationName": "Udaipur", "stateName": "Rajasthan", "ratingValue": 5, "reviewCount": 2, "completeTripsFrom": 0, "priceFrom": 1499},
+			"MB_SEED_host_amit": {"destinationName": "Rishikesh", "stateName": "Uttarakhand", "ratingValue": 4.5, "reviewCount": 2, "completeTripsFrom": 6999, "priceFrom": 800},
+			"MB_SEED_host_irfan": {"destinationName": "Kashmir", "stateName": "Jammu and Kashmir", "ratingValue": 5, "reviewCount": 2, "completeTripsFrom": 9499, "priceFrom": 900}
+		},
+		"hostCounts": {"MB_SEED_destination_manali": 1, "MB_SEED_destination_udaipur": 1, "MB_SEED_destination_rishikesh": 1, "MB_SEED_destination_goa": 0, "MB_SEED_destination_kashmir": 1, "MB_SEED_destination_meghalaya": 0}
+	}
 }
