@@ -11,8 +11,7 @@ import org.springframework.stereotype.Component;
  * A Host's derived fields (docs/data-model.md 3.3, docs/search.md section 3): destinationName and
  * stateName from its Destination, ratingValue and reviewCount from its published reviews, priceFrom and
  * completeTripsFrom from its approved listings (0 when there are none: Liferay stores an empty
- * PrecisionDecimal as 0, so 0 is "none"). Also each Destination's hostCount (approved, active
- * hosts). Only differing fields are written; if the host was approved, the service approves its own
+ * PrecisionDecimal as 0, so 0 is "none"). Also each Destination's hostCount (active hosts). Only differing fields are written; if the host was approved, the service approves its own
  * update (WorkflowApprover).
  */
 @Component
@@ -79,7 +78,9 @@ public class HostRefresher {
 	}
 
 	/**
-	 * hostCount = the destination's approved hosts with hostStatus active ("128 Hosts" on its tile).
+	 * hostCount = the destination's hosts with hostStatus active ("128 Hosts" on its tile). Only KYC
+	 * approval sets active, so this counts approved hosts; it ignores the workflow status, which is
+	 * pending for a moment whenever an approved host is updated (even by this service).
 	 */
 	public void refreshDestination(long destinationId) {
 		if (destinationId <= 0) {
@@ -96,7 +97,7 @@ public class HostRefresher {
 			"/o/c/hosts?filter=r_destinationHosts_c_destinationId eq '" + destinationId + "'"
 		).stream(
 		).filter(
-			host -> Values.isApproved(host) && "active".equals(Values.key(host.opt("hostStatus")))
+			host -> "active".equals(Values.key(host.opt("hostStatus")))
 		).count();
 
 		JSONObject patch = Values.diff(new JSONObject().put("hostCount", hostCount), destination);

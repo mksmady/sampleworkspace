@@ -90,7 +90,7 @@ Plural label: Destinations. Title field: `name`. Shown as the "Where Do You Want
 | isTrending | Boolean | | Default false |
 | sortOrder | Integer | | Order of the home page tiles (lowest first) |
 | searchKeywords | LongText | S | Alternate spellings, nearby towns ("Srinagar, Gulmarg, Pahalgam") |
-| hostCount | Integer | | Derived: number of approved, active hosts ("128 Hosts"). An aggregation can't filter on workflow status, so an action stores it |
+| hostCount | Integer | | Derived: number of hosts with hostStatus active ("128 Hosts"); only KYC approval sets active. Stored by an action rather than an aggregation, so it can follow the rule exactly |
 
 ### 3.2 Partner — `MB_Partner`
 Plural label: Partners. Title field: `name`. A local business a host works with ("connecting guests with local services").
@@ -476,7 +476,7 @@ These must be set the same way on the clean instance in phase 9 (and decided for
 | On update | Destination | name, state, region or coordinates changed | Update the derived fields on its Hosts and Listings |
 | On update | Host | displayName changed | Update hostDisplayName on its Listings and Reviews |
 | On add / update / delete, workflow change | Listing | | Recompute the Host's priceFrom and completeTripsFrom (approved listings only) |
-| On update, workflow change | Host | hostStatus or approval changed | Recompute the Destination's hostCount (approved, active hosts) |
+| On add / update | Host | hostStatus or destination changed | Recompute the Destination's hostCount (active hosts) |
 | On add / update | AvailabilitySlot | | Recalculate Listing.nextAvailableDate; set slotStatus = full when bookedCount ≥ capacity |
 | On add | Review | | Fill reviewerName and reviewerCity from the Traveler when empty; copy hostDisplayName and destinationName |
 | On add / update / delete | Review | | Recalculate ratingValue and reviewCount on the Listing and the Host from their published reviews |
