@@ -11,6 +11,35 @@
 	},
 	"items": [
 		{
+			"externalReferenceCode": "MB_ApplicationStatus",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_ApplicationStatus_submitted",
+					"key": "submitted",
+					"name_i18n": {
+						"en-US": "Submitted"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_ApplicationStatus_applied",
+					"key": "applied",
+					"name_i18n": {
+						"en-US": "Applied"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_ApplicationStatus_rejected",
+					"key": "rejected",
+					"name_i18n": {
+						"en-US": "Rejected"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Application Status"
+			}
+		},
+		{
 			"externalReferenceCode": "MB_BookingSource",
 			"listTypeEntries": [
 				{
@@ -116,6 +145,28 @@
 			],
 			"name_i18n": {
 				"en-US": "Commission Status"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_HostApplicationType",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_HostApplicationType_signUp",
+					"key": "signUp",
+					"name_i18n": {
+						"en-US": "Sign-up"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_HostApplicationType_profileEdit",
+					"key": "profileEdit",
+					"name_i18n": {
+						"en-US": "Profile Edit"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Host Application Type"
 			}
 		},
 		{

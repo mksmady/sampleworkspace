@@ -1,6 +1,6 @@
 # mb-objects-batch
 
-Batch client extension that installs Maddybaba's data model on any Liferay instance: the 19 `MB_` picklists and 20 `MB_` object definitions with their fields (including aggregation and auto-increment fields), relationships (including those from the User and Account system objects), account restriction, validation rules and object actions. It contains no entries: seed data stays local (`scripts/setup/seed.js`).
+Batch client extension that installs Maddybaba's data model on any Liferay instance: the 21 `MB_` picklists and 21 `MB_` object definitions with their fields (including aggregation and auto-increment fields), relationships (including those from the User and Account system objects), account restriction, validation rules and object actions. It contains no entries: seed data stays local (`scripts/setup/seed.js`).
 
 ## Files (`batch/`, imported in name order)
 

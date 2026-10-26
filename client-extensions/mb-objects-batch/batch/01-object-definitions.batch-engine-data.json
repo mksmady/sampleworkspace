@@ -1290,6 +1290,58 @@
 					"reverse": false,
 					"system": false,
 					"type": "oneToMany"
+				},
+				{
+					"deletionType": "disassociate",
+					"externalReferenceCode": "MB_destinationHostApplications",
+					"label": {
+						"en_US": "Destination Host Applications"
+					},
+					"name": "destinationHostApplications",
+					"objectDefinitionExternalReferenceCode1": "MB_Destination",
+					"objectDefinitionExternalReferenceCode2": "MB_HostApplication",
+					"objectDefinitionModifiable2": true,
+					"objectDefinitionName2": "HostApplication",
+					"objectDefinitionScope2": "company",
+					"objectDefinitionSystem2": false,
+					"objectField": {
+						"DBType": "Long",
+						"businessType": "Relationship",
+						"defaultValue": "null",
+						"externalReferenceCode": "404ff35d-be9f-86f6-eb1f-6b81c8b7fcd2",
+						"indexed": true,
+						"indexedAsKeyword": false,
+						"indexedLanguageId": "",
+						"label": {
+							"en_US": "Destination Host Applications"
+						},
+						"localized": false,
+						"name": "r_destinationHostApplications_c_destinationId",
+						"objectDefinitionExternalReferenceCode1": "MB_Destination",
+						"objectFieldSettings": [
+							{
+								"name": "objectDefinition1ShortName",
+								"value": "Destination"
+							},
+							{
+								"name": "objectRelationshipERCObjectFieldName",
+								"value": "r_destinationHostApplications_c_destinationERC"
+							}
+						],
+						"objectRelationshipExternalReferenceCode": "MB_destinationHostApplications",
+						"readOnly": "false",
+						"readOnlyConditionExpression": "",
+						"relationshipType": "oneToMany",
+						"required": false,
+						"state": false,
+						"system": false,
+						"type": "Long",
+						"unique": false
+					},
+					"parameterObjectFieldName": "",
+					"reverse": false,
+					"system": false,
+					"type": "oneToMany"
 				}
 			],
 			"objectValidationRules": [],
@@ -3153,6 +3205,58 @@
 							}
 						],
 						"objectRelationshipExternalReferenceCode": "MB_hostConversations",
+						"readOnly": "false",
+						"readOnlyConditionExpression": "",
+						"relationshipType": "oneToMany",
+						"required": false,
+						"state": false,
+						"system": false,
+						"type": "Long",
+						"unique": false
+					},
+					"parameterObjectFieldName": "",
+					"reverse": false,
+					"system": false,
+					"type": "oneToMany"
+				},
+				{
+					"deletionType": "disassociate",
+					"externalReferenceCode": "MB_hostApplications",
+					"label": {
+						"en_US": "Host Applications"
+					},
+					"name": "hostApplications",
+					"objectDefinitionExternalReferenceCode1": "MB_Host",
+					"objectDefinitionExternalReferenceCode2": "MB_HostApplication",
+					"objectDefinitionModifiable2": true,
+					"objectDefinitionName2": "HostApplication",
+					"objectDefinitionScope2": "company",
+					"objectDefinitionSystem2": false,
+					"objectField": {
+						"DBType": "Long",
+						"businessType": "Relationship",
+						"defaultValue": "null",
+						"externalReferenceCode": "f0c7f8fc-40c0-1fd8-4bee-e8907935a126",
+						"indexed": true,
+						"indexedAsKeyword": false,
+						"indexedLanguageId": "",
+						"label": {
+							"en_US": "Host Applications"
+						},
+						"localized": false,
+						"name": "r_hostApplications_c_hostId",
+						"objectDefinitionExternalReferenceCode1": "MB_Host",
+						"objectFieldSettings": [
+							{
+								"name": "objectDefinition1ShortName",
+								"value": "Host"
+							},
+							{
+								"name": "objectRelationshipERCObjectFieldName",
+								"value": "r_hostApplications_c_hostERC"
+							}
+						],
+						"objectRelationshipExternalReferenceCode": "MB_hostApplications",
 						"readOnly": "false",
 						"readOnlyConditionExpression": "",
 						"relationshipType": "oneToMany",
@@ -8718,9 +8822,9 @@
 					"objectActionTriggerKey": "onAfterAdd",
 					"parameters": {},
 					"status": {
-						"code": 1,
-						"label": "success",
-						"label_i18n": "Success"
+						"code": 0,
+						"label": "never-ran",
+						"label_i18n": "Never Ran"
 					},
 					"system": false
 				},
@@ -9762,6 +9866,482 @@
 			"parameterRequired": false,
 			"pluralLabel": {
 				"en_US": "Messages"
+			},
+			"scope": "company",
+			"status": {
+				"code": 0,
+				"label": "approved",
+				"label_i18n": "Approved"
+			},
+			"system": false,
+			"titleObjectFieldName": "externalReferenceCode"
+		},
+		{
+			"accountEntryRestricted": false,
+			"accountEntryRestrictedObjectFieldName": "",
+			"active": true,
+			"defaultLanguageId": "en_US",
+			"enableCategorization": false,
+			"enableComments": false,
+			"enableFriendlyURLCustomization": false,
+			"enableIndexSearch": true,
+			"enableLocalization": true,
+			"enableObjectEntryDraft": false,
+			"enableObjectEntryHistory": false,
+			"externalReferenceCode": "MB_HostApplication",
+			"friendlyURLSeparator": "c_hostapplication",
+			"label": {
+				"en_US": "Host Application"
+			},
+			"modifiable": true,
+			"name": "HostApplication",
+			"objectActions": [
+				{
+					"active": true,
+					"conditionExpression": "",
+					"description": "",
+					"errorMessage": {},
+					"externalReferenceCode": "MB_HostApplication_onAfterAdd",
+					"label": {
+						"en_US": "HostApplication onAfterAdd"
+					},
+					"name": "hostApplicationOnAfterAdd",
+					"objectActionExecutorKey": "function#mb-actions-service-host-application",
+					"objectActionTriggerKey": "onAfterAdd",
+					"parameters": {},
+					"status": {
+						"code": 1,
+						"label": "success",
+						"label_i18n": "Success"
+					},
+					"system": false
+				}
+			],
+			"objectDefinitionSettings": [],
+			"objectFields": [
+				{
+					"DBType": "String",
+					"businessType": "Picklist",
+					"defaultValue": "null",
+					"externalReferenceCode": "MB_HostApplication_applicationType",
+					"indexed": true,
+					"indexedAsKeyword": true,
+					"indexedLanguageId": "",
+					"label": {
+						"en_US": "Application Type"
+					},
+					"listTypeDefinitionExternalReferenceCode": "MB_HostApplicationType",
+					"localized": false,
+					"name": "applicationType",
+					"objectFieldSettings": [],
+					"readOnly": "false",
+					"readOnlyConditionExpression": "",
+					"required": true,
+					"state": false,
+					"system": false,
+					"type": "String",
+					"unique": false
+				},
+				{
+					"DBType": "String",
+					"businessType": "Text",
+					"defaultValue": "null",
+					"externalReferenceCode": "MB_HostApplication_displayName",
+					"indexed": true,
+					"indexedAsKeyword": true,
+					"indexedLanguageId": "",
+					"label": {
+						"en_US": "Display Name"
+					},
+					"localized": false,
+					"name": "displayName",
+					"objectFieldSettings": [],
+					"readOnly": "false",
+					"readOnlyConditionExpression": "",
+					"required": false,
+					"state": false,
+					"system": false,
+					"type": "String",
+					"unique": false
+				},
+				{
+					"DBType": "String",
+					"businessType": "Text",
+					"defaultValue": "null",
+					"externalReferenceCode": "MB_HostApplication_handle",
+					"indexed": true,
+					"indexedAsKeyword": true,
+					"indexedLanguageId": "",
+					"label": {
+						"en_US": "Handle"
+					},
+					"localized": false,
+					"name": "handle",
+					"objectFieldSettings": [],
+					"readOnly": "false",
+					"readOnlyConditionExpression": "",
+					"required": false,
+					"state": false,
+					"system": false,
+					"type": "String",
+					"unique": false
+				},
+				{
+					"DBType": "Clob",
+					"businessType": "MultiselectPicklist",
+					"defaultValue": "null",
+					"externalReferenceCode": "MB_HostApplication_hostOffers",
+					"indexed": true,
+					"indexedAsKeyword": true,
+					"indexedLanguageId": "",
+					"label": {
+						"en_US": "Host Offers"
+					},
+					"listTypeDefinitionExternalReferenceCode": "MB_HostOffer",
+					"localized": false,
+					"name": "hostOffers",
+					"objectFieldSettings": [],
+					"readOnly": "false",
+					"readOnlyConditionExpression": "",
+					"required": false,
+					"state": false,
+					"system": false,
+					"type": "Clob",
+					"unique": false
+				},
+				{
+					"DBType": "String",
+					"businessType": "Picklist",
+					"defaultValue": "null",
+					"externalReferenceCode": "MB_HostApplication_hostRole",
+					"indexed": true,
+					"indexedAsKeyword": true,
+					"indexedLanguageId": "",
+					"label": {
+						"en_US": "Host Role"
+					},
+					"listTypeDefinitionExternalReferenceCode": "MB_HostRole",
+					"localized": false,
+					"name": "hostRole",
+					"objectFieldSettings": [],
+					"readOnly": "false",
+					"readOnlyConditionExpression": "",
+					"required": false,
+					"state": false,
+					"system": false,
+					"type": "String",
+					"unique": false
+				},
+				{
+					"DBType": "String",
+					"businessType": "Text",
+					"defaultValue": "null",
+					"externalReferenceCode": "MB_HostApplication_phone",
+					"indexed": true,
+					"indexedAsKeyword": true,
+					"indexedLanguageId": "",
+					"label": {
+						"en_US": "Phone"
+					},
+					"localized": false,
+					"name": "phone",
+					"objectFieldSettings": [],
+					"readOnly": "false",
+					"readOnlyConditionExpression": "",
+					"required": false,
+					"state": false,
+					"system": false,
+					"type": "String",
+					"unique": false
+				},
+				{
+					"DBType": "String",
+					"businessType": "Text",
+					"defaultValue": "null",
+					"externalReferenceCode": "MB_HostApplication_quote",
+					"indexed": true,
+					"indexedAsKeyword": true,
+					"indexedLanguageId": "",
+					"label": {
+						"en_US": "Quote"
+					},
+					"localized": false,
+					"name": "quote",
+					"objectFieldSettings": [],
+					"readOnly": "false",
+					"readOnlyConditionExpression": "",
+					"required": false,
+					"state": false,
+					"system": false,
+					"type": "String",
+					"unique": false
+				},
+				{
+					"DBType": "Clob",
+					"businessType": "LongText",
+					"defaultValue": "null",
+					"externalReferenceCode": "MB_HostApplication_bio",
+					"indexed": true,
+					"indexedAsKeyword": true,
+					"indexedLanguageId": "",
+					"label": {
+						"en_US": "Bio"
+					},
+					"localized": false,
+					"name": "bio",
+					"objectFieldSettings": [],
+					"readOnly": "false",
+					"readOnlyConditionExpression": "",
+					"required": false,
+					"state": false,
+					"system": false,
+					"type": "Clob",
+					"unique": false
+				},
+				{
+					"DBType": "String",
+					"businessType": "Picklist",
+					"defaultValue": "submitted",
+					"externalReferenceCode": "MB_HostApplication_applicationStatus",
+					"indexed": true,
+					"indexedAsKeyword": true,
+					"indexedLanguageId": "",
+					"label": {
+						"en_US": "Application Status"
+					},
+					"listTypeDefinitionExternalReferenceCode": "MB_ApplicationStatus",
+					"localized": false,
+					"name": "applicationStatus",
+					"objectFieldSettings": [
+						{
+							"name": "defaultValueType",
+							"value": "inputAsValue"
+						},
+						{
+							"name": "defaultValue",
+							"value": "submitted"
+						}
+					],
+					"readOnly": "false",
+					"readOnlyConditionExpression": "",
+					"required": true,
+					"state": false,
+					"system": false,
+					"type": "String",
+					"unique": false
+				},
+				{
+					"DBType": "String",
+					"businessType": "Text",
+					"defaultValue": "null",
+					"externalReferenceCode": "MB_HostApplication_resultMessage",
+					"indexed": true,
+					"indexedAsKeyword": true,
+					"indexedLanguageId": "",
+					"label": {
+						"en_US": "Result Message"
+					},
+					"localized": false,
+					"name": "resultMessage",
+					"objectFieldSettings": [],
+					"readOnly": "false",
+					"readOnlyConditionExpression": "",
+					"required": false,
+					"state": false,
+					"system": false,
+					"type": "String",
+					"unique": false
+				},
+				{
+					"DBType": "Clob",
+					"businessType": "MultiselectPicklist",
+					"defaultValue": "null",
+					"externalReferenceCode": "MB_HostApplication_specialties",
+					"indexed": true,
+					"indexedAsKeyword": true,
+					"indexedLanguageId": "",
+					"label": {
+						"en_US": "Specialties"
+					},
+					"listTypeDefinitionExternalReferenceCode": "MB_ServiceCategory",
+					"localized": false,
+					"name": "specialties",
+					"objectFieldSettings": [],
+					"readOnly": "false",
+					"readOnlyConditionExpression": "",
+					"required": false,
+					"state": false,
+					"system": false,
+					"type": "Clob",
+					"unique": false
+				},
+				{
+					"DBType": "Boolean",
+					"businessType": "Boolean",
+					"defaultValue": "null",
+					"externalReferenceCode": "MB_HostApplication_termsAccepted",
+					"indexed": true,
+					"indexedAsKeyword": false,
+					"indexedLanguageId": "",
+					"label": {
+						"en_US": "Terms Accepted"
+					},
+					"localized": false,
+					"name": "termsAccepted",
+					"objectFieldSettings": [],
+					"readOnly": "false",
+					"readOnlyConditionExpression": "",
+					"required": false,
+					"state": false,
+					"system": false,
+					"type": "Boolean",
+					"unique": false
+				},
+				{
+					"DBType": "Long",
+					"businessType": "Relationship",
+					"defaultValue": "null",
+					"externalReferenceCode": "404ff35d-be9f-86f6-eb1f-6b81c8b7fcd2",
+					"indexed": true,
+					"indexedAsKeyword": false,
+					"indexedLanguageId": "",
+					"label": {
+						"en_US": "Destination Host Applications"
+					},
+					"localized": false,
+					"name": "r_destinationHostApplications_c_destinationId",
+					"objectDefinitionExternalReferenceCode1": "MB_Destination",
+					"objectFieldSettings": [
+						{
+							"name": "objectDefinition1ShortName",
+							"value": "Destination"
+						},
+						{
+							"name": "objectRelationshipERCObjectFieldName",
+							"value": "r_destinationHostApplications_c_destinationERC"
+						}
+					],
+					"objectRelationshipExternalReferenceCode": "MB_destinationHostApplications",
+					"readOnly": "false",
+					"readOnlyConditionExpression": "",
+					"relationshipType": "oneToMany",
+					"required": false,
+					"state": false,
+					"system": false,
+					"type": "Long",
+					"unique": false
+				},
+				{
+					"DBType": "Long",
+					"businessType": "Relationship",
+					"defaultValue": "null",
+					"externalReferenceCode": "f0c7f8fc-40c0-1fd8-4bee-e8907935a126",
+					"indexed": true,
+					"indexedAsKeyword": false,
+					"indexedLanguageId": "",
+					"label": {
+						"en_US": "Host Applications"
+					},
+					"localized": false,
+					"name": "r_hostApplications_c_hostId",
+					"objectDefinitionExternalReferenceCode1": "MB_Host",
+					"objectFieldSettings": [
+						{
+							"name": "objectDefinition1ShortName",
+							"value": "Host"
+						},
+						{
+							"name": "objectRelationshipERCObjectFieldName",
+							"value": "r_hostApplications_c_hostERC"
+						}
+					],
+					"objectRelationshipExternalReferenceCode": "MB_hostApplications",
+					"readOnly": "false",
+					"readOnlyConditionExpression": "",
+					"relationshipType": "oneToMany",
+					"required": false,
+					"state": false,
+					"system": false,
+					"type": "Long",
+					"unique": false
+				}
+			],
+			"objectFolderExternalReferenceCode": "default",
+			"objectLayouts": [],
+			"objectRelationships": [],
+			"objectValidationRules": [
+				{
+					"active": true,
+					"engine": "ddm",
+					"engineLabel": "Expression Builder",
+					"errorLabel": {
+						"en_US": "Enter a valid Indian mobile number (+91…)"
+					},
+					"externalReferenceCode": "MB_HostApplication_phoneFormat",
+					"name": {
+						"en_US": "Phone Format"
+					},
+					"objectDefinitionExternalReferenceCode": "MB_HostApplication",
+					"objectValidationRuleSettings": [
+						{
+							"name": "outputObjectFieldExternalReferenceCode",
+							"value": "MB_HostApplication_phone"
+						}
+					],
+					"outputType": "partialValidation",
+					"script": "isEmpty(phone) OR match(phone, \"^\\+91[6-9]\\d{9}$\")",
+					"system": false
+				},
+				{
+					"active": true,
+					"engine": "ddm",
+					"engineLabel": "Expression Builder",
+					"errorLabel": {
+						"en_US": "Use 3–30 lowercase letters, numbers or hyphens"
+					},
+					"externalReferenceCode": "MB_HostApplication_handleFormat",
+					"name": {
+						"en_US": "Handle Format"
+					},
+					"objectDefinitionExternalReferenceCode": "MB_HostApplication",
+					"objectValidationRuleSettings": [
+						{
+							"name": "outputObjectFieldExternalReferenceCode",
+							"value": "MB_HostApplication_handle"
+						}
+					],
+					"outputType": "partialValidation",
+					"script": "isEmpty(handle) OR match(handle, \"^[a-z0-9-]{3,30}$\")",
+					"system": false
+				},
+				{
+					"active": true,
+					"engine": "ddm",
+					"engineLabel": "Expression Builder",
+					"errorLabel": {
+						"en_US": "Keep your quote under 160 characters"
+					},
+					"externalReferenceCode": "MB_HostApplication_quoteLength",
+					"name": {
+						"en_US": "Quote Length"
+					},
+					"objectDefinitionExternalReferenceCode": "MB_HostApplication",
+					"objectValidationRuleSettings": [
+						{
+							"name": "outputObjectFieldExternalReferenceCode",
+							"value": "MB_HostApplication_quote"
+						}
+					],
+					"outputType": "partialValidation",
+					"script": "isEmpty(quote) OR match(quote, \"^[\\s\\S]{0,160}$\")",
+					"system": false
+				}
+			],
+			"objectViews": [],
+			"panelCategoryKey": "control_panel.object",
+			"parameterRequired": false,
+			"pluralLabel": {
+				"en_US": "Host Applications"
 			},
 			"scope": "company",
 			"status": {
