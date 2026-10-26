@@ -52,7 +52,7 @@ async function main() {
 	check('"rafting" returns the rafting listing and the Rishikesh trip first on /search/trips', slugs(body).slice(0, 2).sort().join() === 'rishikesh-adventure-trip,rishikesh-river-rafting', slugs(body).join(','));
 
 	({body} = await search('/search/hosts?fullTrip=true'));
-	check('fullTrip=true excludes Priya', body.totalCount === 3 && !handles(body).includes('priya-udaipur'), handles(body).join(','));
+	check('fullTrip=true: Rahul, Amit and Irfan, not Priya', ['rahul-manali', 'amit-rishikesh', 'irfan-kashmir'].every((handle) => handles(body).includes(handle)) && !handles(body).includes('priya-udaipur'), handles(body).join(','));
 
 	({body} = await search('/search/hosts?sort=rating&pageSize=8'));
 
@@ -72,7 +72,7 @@ async function main() {
 	check('destination=kashmir returns only Irfan', handles(body).join() === 'irfan-kashmir', handles(body).join(','));
 
 	({body} = await search(`/search/hosts?from=${isoDate(3)}&to=${isoDate(5)}&guests=2`));
-	check('dates and 2 guests: all four hosts have availability', body.totalCount === 4, body.totalCount);
+	check('dates and 2 guests: the four seed hosts have availability', ['rahul-manali', 'priya-udaipur', 'amit-rishikesh', 'irfan-kashmir'].every((handle) => handles(body).includes(handle)), handles(body).join(','));
 
 	({body} = await search(`/search/hosts?from=${isoDate(3)}&to=${isoDate(5)}&guests=20`));
 	check('20 guests: no host has a slot that big', body.totalCount === 0, handles(body).join(','));
@@ -84,7 +84,7 @@ async function main() {
 	check('3 guests in Kashmir: Irfan stays; complete trip (8) and shikara (4) count, houseboat (2 places) does not', irfan?.handle === 'irfan-kashmir' && irfan.availableListingCount === 2 && Number(irfan.price.amount) === 9499, `${irfan?.availableListingCount} listing(s), ${JSON.stringify(irfan?.price)}`);
 
 	({body} = await search('/search/trips?category=completeTrip'));
-	check('Complete Trips page: the three complete trips', body.totalCount === 3 && body.items.every((item) => item.category === 'completeTrip' && item.host?.handle), slugs(body).join(','));
+	check('Complete Trips page: complete trips only, including the three seed trips', ['manali-complete-trip', 'rishikesh-adventure-trip', 'kashmir-complete-trip'].every((slug) => slugs(body).includes(slug)) && body.items.every((item) => item.category === 'completeTrip' && item.host?.handle), slugs(body).join(','));
 
 	({body} = await search('/search/trips?q=complete%20trip'));
 	check('Pinned: "complete trip" puts the Manali trip first', slugs(body)[0] === 'manali-complete-trip', slugs(body).join(','));

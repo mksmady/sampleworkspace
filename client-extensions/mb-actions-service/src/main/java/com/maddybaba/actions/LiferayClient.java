@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 
 /**
@@ -92,20 +93,47 @@ public class LiferayClient {
 		}
 	}
 
+	/**
+	 * Two handlers can update the same entry at once (a booking item and its booking both refresh the
+	 * booking's pricing); Liferay then fails one with a server error. The values written are computed
+	 * from stored data, so the update is retried twice before giving up.
+	 */
 	public void patch(String path, JSONObject body) {
 		_log.info("PATCH {} {}", path, body);
 
-		_restClient.patch(
-		).uri(
-			path
-		).header(
-			HttpHeaders.AUTHORIZATION, _authorization()
-		).contentType(
-			MediaType.APPLICATION_JSON
-		).body(
-			body.toString()
-		).retrieve(
-		).toBodilessEntity();
+		for (int attempt = 1;; attempt++) {
+			try {
+				_restClient.patch(
+				).uri(
+					path
+				).header(
+					HttpHeaders.AUTHORIZATION, _authorization()
+				).contentType(
+					MediaType.APPLICATION_JSON
+				).body(
+					body.toString()
+				).retrieve(
+				).toBodilessEntity();
+
+				return;
+			}
+			catch (HttpServerErrorException httpServerErrorException) {
+				if (attempt == 3) {
+					throw httpServerErrorException;
+				}
+
+				_log.warn("PATCH {} failed ({}), retrying", path, httpServerErrorException.getStatusCode());
+
+				try {
+					Thread.sleep(300L * attempt);
+				}
+				catch (InterruptedException interruptedException) {
+					Thread.currentThread().interrupt();
+
+					throw httpServerErrorException;
+				}
+			}
+		}
 	}
 
 	/**
