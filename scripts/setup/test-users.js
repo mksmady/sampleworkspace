@@ -40,6 +40,10 @@ const USERS = [
 	hostUser(3, 'Host Amit'),
 	hostUser(4, 'Host Irfan'),
 	{email: 'mb.test.ops@example.com', erc: 'MB_TEST_user_ops', familyName: 'Ops', roles: ['MB_OpsAdmin']},
+
+	// A signed-in user with no MB role yet, to test host sign-up (docs/website.md 4).
+
+	{email: 'mb.test.newhost@example.com', erc: 'MB_TEST_user_newhost', familyName: 'New Host', roles: []},
 ];
 
 const password = () => `Mb-${crypto.randomBytes(9).toString('base64url')}7!`;

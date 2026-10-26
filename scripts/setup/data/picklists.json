@@ -41,6 +41,23 @@
 		}
 	},
 	{
+		"erc": "MB_HostApplicationType",
+		"name": "Host Application Type",
+		"entries": {
+			"signUp": "Sign-up",
+			"profileEdit": "Profile Edit"
+		}
+	},
+	{
+		"erc": "MB_ApplicationStatus",
+		"name": "Application Status",
+		"entries": {
+			"submitted": "Submitted",
+			"applied": "Applied",
+			"rejected": "Rejected"
+		}
+	},
+	{
 		"erc": "MB_HostStatus",
 		"name": "Host Status",
 		"entries": {

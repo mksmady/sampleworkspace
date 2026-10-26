@@ -221,7 +221,9 @@ function summary(roleERC, role) {
 async function main() {
 	await loadContext();
 
-	const all = [...roles.map((role) => [role.erc, role]), ['L_GUEST']];
+	// Built-in roles (L_GUEST, L_USER) are not created; only the permissions listed for them are managed.
+
+	const all = [...roles.map((role) => [role.erc, role]), ...Object.keys(permissions).filter((erc) => erc.startsWith('L_')).map((erc) => [erc])];
 
 	if (!process.argv.includes('--verify-only')) {
 		for (const [roleERC, definition] of all) {

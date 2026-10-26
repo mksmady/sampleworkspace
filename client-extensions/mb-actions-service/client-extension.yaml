@@ -28,6 +28,7 @@ mb-actions-service-oahs:
         -   c_commission.everything
         -   c_destination.everything
         -   c_host.everything
+        -   c_hostapplication.everything
         -   c_listing.everything
         -   c_payment.everything.read
         -   c_payout.everything
@@ -84,6 +85,14 @@ mb-actions-service-host:
     name: MB Host actions
     oAuth2ApplicationExternalReferenceCode: mb-actions-service-oaua
     resourcePath: /object/action/host
+    type: objectAction
+
+mb-actions-service-host-application:
+    allowedObjectDefinitionNames:
+        -   C_HostApplication
+    name: MB HostApplication actions
+    oAuth2ApplicationExternalReferenceCode: mb-actions-service-oaua
+    resourcePath: /object/action/host-application
     type: objectAction
 
 mb-actions-service-listing:

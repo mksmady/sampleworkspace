@@ -908,6 +908,68 @@
 		]
 	},
 	{
+		"name": "HostApplication",
+		"pluralLabel": "Host Applications",
+		"fields": [
+			{
+				"name": "applicationType",
+				"type": "Picklist",
+				"picklist": "MB_HostApplicationType",
+				"flags": "R"
+			},
+			{
+				"name": "displayName",
+				"type": "Text"
+			},
+			{
+				"name": "handle",
+				"type": "Text"
+			},
+			{
+				"name": "hostRole",
+				"type": "Picklist",
+				"picklist": "MB_HostRole"
+			},
+			{
+				"name": "hostOffers",
+				"type": "MultiselectPicklist",
+				"picklist": "MB_HostOffer"
+			},
+			{
+				"name": "phone",
+				"type": "Text"
+			},
+			{
+				"name": "quote",
+				"type": "Text"
+			},
+			{
+				"name": "bio",
+				"type": "LongText"
+			},
+			{
+				"name": "specialties",
+				"type": "MultiselectPicklist",
+				"picklist": "MB_ServiceCategory"
+			},
+			{
+				"name": "termsAccepted",
+				"type": "Boolean"
+			},
+			{
+				"name": "applicationStatus",
+				"type": "Picklist",
+				"picklist": "MB_ApplicationStatus",
+				"flags": "R",
+				"default": "submitted"
+			},
+			{
+				"name": "resultMessage",
+				"type": "Text"
+			}
+		]
+	},
+	{
 		"name": "SearchQueryLog",
 		"pluralLabel": "Search Query Logs",
 		"fields": [

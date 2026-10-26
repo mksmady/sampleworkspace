@@ -38,6 +38,8 @@
 	{"name": "hostConversations", "parent": "Host", "child": "Conversation", "deletionType": "cascade"},
 	{"name": "listingConversations", "parent": "Listing", "child": "Conversation", "deletionType": "disassociate"},
 	{"name": "conversationMessages", "parent": "Conversation", "child": "Message", "deletionType": "cascade"},
+	{"name": "destinationHostApplications", "parent": "Destination", "child": "HostApplication", "deletionType": "disassociate"},
+	{"name": "hostApplications", "parent": "Host", "child": "HostApplication", "deletionType": "disassociate"},
 	{"name": "accountListings", "parent": "Account", "child": "Listing", "deletionType": "prevent"},
 	{"name": "accountBookings", "parent": "Account", "child": "Booking", "deletionType": "prevent"},
 	{"name": "accountCommissions", "parent": "Account", "child": "Commission", "deletionType": "prevent"},

@@ -31,7 +31,7 @@ The header's links: Destinations (`/home#destinations`), Local Hosts (`/hosts`),
 
 ## 3. Custom elements (`client-extensions/mb-web-elements`)
 
-One script and one stylesheet define every element (no build step); each element is its own customElement client extension so it can be placed as a widget. Data comes from mb-search-service (`window.MBConfig.searchURL`, default `http://localhost:58082`), from Liferay's headless APIs with `Liferay.Util.fetch` (session and CSRF token), or from mb-actions-service's user endpoints with `Liferay.OAuth2Client.FromUserAgentApplication('mb-host-portal-oaua')` (section 4).
+One script and one stylesheet define every element (no build step); each element is its own customElement client extension so it can be placed as a widget. Data comes from mb-search-service (`window.MBConfig.searchURL`, default `http://localhost:58082`) or from Liferay's headless APIs with `Liferay.Util.fetch` (session and CSRF token).
 
 | Element | Content and data |
 |---|---|
@@ -56,11 +56,13 @@ One script and one stylesheet define every element (no build step); each element
 
 ## 4. Host sign-up and profile edit (phase 10b)
 
-Hosts have only View on Host (data-model.md 6.2), so sign-up and profile changes go through **mb-actions-service** endpoints for signed-in users, on their own OAuth2 user-agent app **`mb-host-portal-oaua`** (separate from the object-action app, data-model.md 7.1). Each endpoint acts only on the user the token belongs to (JWT subject = Liferay user ID); nothing in the request can name another user or host.
+Hosts have only View on Host (data-model.md 6.2), so a signed-in user submits a **HostApplication** (data-model.md 3.19) with their normal Liferay session: `applicationType` signUp or profileEdit with the profile fields. They own it and can read it back. mb-actions-service applies it (data-model.md 7.1) to the Host of the application's creator and sets `applicationStatus` to applied, or rejected with `resultMessage` (Liferay's Host validation messages). The elements post the application, then poll it until it's no longer submitted.
 
-- `GET /host-portal/me` → `{signedIn, host: <the user's Host, public and own fields> | null}`.
-- `POST /host-portal/signup` → creates the user's Host (ERC `MB_host_user_<userId>`) with `r_userHost_userId` = the token's user, `hostStatus` pendingVerification, the submitted fields (displayName, handle, hostRole, hostOffers, phone, quote, bio, specialties, destination, commissionRate left empty for Ops, termsAccepted). 409 if the user already has a Host. Liferay's validation rules apply; their messages are returned as `{errors: [{field, message}]}` (400). The Host then goes to Ops review (MB Ops Approval); approval onboards it (data-model.md 7.1).
-- `PATCH /host-portal/me` → changes only displayName, hostRole, hostOffers, phone, quote, bio, specialties and destination of the user's own Host. Never hostStatus, commissionRate, payout fields or links. The change goes back to Ops review (6.4).
+- Sign-up creates the user's Host, pending Ops review; approval onboards it (account, roles, active).
+- A profile edit changes only displayName, hostRole, hostOffers, phone, quote, bio, specialties and destination, and goes back to Ops review (6.4). The booking link (handle) can't be changed.
+- The user's state comes from their own applications (latest sign-up applied → in review) and, once approved, their host account (`my-user-account` account briefs) and Host (account role View).
+
+(Browser OAuth2 tokens for a user-agent app were the first design; on this instance their token exchange fails with invalid_grant, so they aren't used.)
 
 **mb-host-signup** (Become a Host page): the home page's "Become a MaddyBaba Host" copy, then a three-step form in a white card: 1. About you (display name, handle with the `maddybaba.com/h/{handle}` preview, phone, destination from `/o/c/destinations`); 2. What you offer (role, the five ways to earn as checkboxes, specialty tags, quote with a 160-character counter, bio); 3. Terms (accept host terms and commission policy) and Submit. Guests see "Sign in to become a host" (Liferay sign-in, back to this page). A user who already has a Host sees its status (pending review / active → Host Dashboard).
 

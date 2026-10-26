@@ -49,6 +49,8 @@ Some field types and features (AutoIncrement, Formula, aggregation filters, acco
 | `MB_ServiceCategory` | stay → Stay, homestay → Homestay, transport → Transport, food → Local Food, tours → Tours, activities → Activities, experiences → Experiences, trekking → Trekking, camping → Camping, rafting → Rafting, paragliding → Paragliding, shikara → Shikara, photography → Photography, localGuide → Local Guide, completeTrip → Complete Trip |
 | `MB_HostRole` | localTripHost → Local Trip Host, experienceHost → Local Experience Host, adventureHost → Adventure Host |
 | `MB_HostOffer` | ownServices → Offering Own Services, connectServices → Connecting Guests with Local Services, guiding → Guiding Travelers, planTrips → Planning Complete Trips, fullTrip → Managing Everything for a Guest |
+| `MB_HostApplicationType` | signUp → Sign-up, profileEdit → Profile Edit |
+| `MB_ApplicationStatus` | submitted → Submitted, applied → Applied, rejected → Rejected |
 | `MB_HostStatus` | pendingVerification → Pending Verification, active → Active, suspended → Suspended |
 | `MB_PartnerType` | hotel → Hotel, resort → Resort, homestay → Homestay, camp → Camp, houseboat → Houseboat, activityOperator → Activity Operator, transport → Transport, restaurant → Restaurant |
 | `MB_PartnershipStatus` | active → Active, paused → Paused, ended → Ended |
@@ -328,7 +330,25 @@ Conversation fields: `subject` (Text).
 
 Message fields: `body` (LongText, R), `senderType` (Picklist `MB_SenderType`, R), `readAt` (DateTime).
 
-### 3.19 SearchQueryLog — `MB_SearchQueryLog`
+### 3.19 HostApplication — `MB_HostApplication`
+Plural label: Host Applications. A signed-in user's host sign-up or profile edit (docs/website.md 4). Users can't write Host (6.2), so they submit an application, which they own; `mb-actions-service` applies it to their Host (section 7.1) and records the outcome. The user is the entry's creator, set by Liferay, never a field of the request.
+
+| Field | Type | Flags | Notes |
+|---|---|---|---|
+| applicationType | Picklist `MB_HostApplicationType` | R | |
+| displayName | Text | | |
+| handle | Text | | Sign-up only; can't be changed later |
+| hostRole | Picklist `MB_HostRole` | | |
+| hostOffers | MultiselectPicklist `MB_HostOffer` | | |
+| phone | Text | | |
+| quote | Text | | |
+| bio | LongText | | |
+| specialties | MultiselectPicklist `MB_ServiceCategory` | | |
+| termsAccepted | Boolean | | Must be true for a sign-up (checked when the Host is created) |
+| applicationStatus | Picklist `MB_ApplicationStatus` | R | Default submitted. Derived: applied or rejected |
+| resultMessage | Text | | Derived: why it was rejected (Host validation messages) |
+
+### 3.20 SearchQueryLog — `MB_SearchQueryLog`
 Plural label: Search Query Logs. Written by `mb-search-service` for every search (search.md section 9). No relationships; only Ops Admin can read it.
 
 | Field | Type | Flags | Notes |
@@ -385,6 +405,8 @@ All are one-to-many unless noted. Relationship ERC = `MB_` + name.
 | Host | Conversation | hostConversations | cascade |
 | Listing | Conversation | listingConversations | disassociate |
 | Conversation | Message | conversationMessages | cascade |
+| Destination | HostApplication | destinationHostApplications | disassociate |
+| Host | HostApplication | hostApplications | disassociate |
 
 A BookingItem belongs either to a TripPackage (while the cart is being built) or to a Booking (after checkout). At checkout, set the `bookingItems` relationship on each item; keep the package link for history.
 
@@ -406,6 +428,9 @@ Expression rules on a single field show their error on that field (partial valid
 | Review | rating between 1 and 5 | Expression | Rating must be 1–5 |
 | Review | has a Host (`r_hostReviews_c_hostId > 0`) | Expression (form-level) | Choose the host you're reviewing |
 | Favorite | has a Host or a Listing | Expression (form-level) | Choose a host or listing to save |
+| HostApplication | phone empty or matches `^\+91[6-9]\d{9}$` | Expression | Enter a valid Indian mobile number (+91…) |
+| HostApplication | handle empty or matches `^[a-z0-9-]{3,30}$` | Expression | Use 3–30 lowercase letters, numbers or hyphens |
+| HostApplication | quote empty or at most 160 characters | Expression | Keep your quote under 160 characters |
 | ListingInclusion | addOnPrice required (above 0) when inclusionType = addOn | Microservice (`mb-actions-service-add-on-price`). Expressions can't read picklists and Groovy is disabled on this instance | Add-ons need a price |
 | BookingItem | quantity ≥ 1 | Expression | Quantity must be at least 1 |
 | Booking | travelerCount ≥ 1 | Expression | Traveler count must be at least 1 |
@@ -435,6 +460,7 @@ These objects have a one-to-many relationship `account<Object>s` from Account (`
 | Role (ERC) | Type | Permissions |
 |---|---|---|
 | Guest (`L_GUEST`, built-in; only these permissions are managed) | regular | View Destination, ListingInclusion, AvailabilitySlot, Review |
+| User (`L_USER`, built-in, every signed-in user; only these permissions are managed) | regular | ADD HostApplication (their own, through the Owner role). View Destination, ListingInclusion, AvailabilitySlot, Review: the public reads, since Guest permissions don't apply once a user signs in (a new user has no MB role until they book or become a host) |
 | Traveler (`MB_Traveler`) | regular | View Destination, ListingInclusion, AvailabilitySlot, Review, Account Entry. ADD Traveler, TripPackage, BookingItem, Booking, Review, Favorite, Conversation, Message. Own entries through the Owner role |
 | Host (`MB_Host`) | account | View, ADD, Update, Delete Listing, ListingInclusion, AvailabilitySlot, HostPartnership. View Host, Booking, Commission, ReferralClick, Conversation. ADD and View Payout, Message. Every host user also has the regular Traveler role: account roles don't reach company-wide objects such as Destination and Review, which the host dashboard reads (and a host can travel too) |
 | Ops Admin (`MB_OpsAdmin`) | regular | ADD, View, Update, Delete, Permissions on every MB object. View Account Entry. Reviews Host and Listing approvals; picks featured reviews |
@@ -470,7 +496,7 @@ These must be set the same way on the clean instance in phase 9 (and decided for
 |---|---|---|---|
 | On add | Host | | Set termsAcceptedDate; start KYC workflow |
 | Workflow approved | Host | | Create Account, link the Host record to it (`r_accountHosts_accountEntryId`), assign the Host account role, set hostStatus = active |
-| Host sign-up / profile edit | Host | | Service endpoint that creates the Host entry and applies allowed profile changes (hosts only have View on Host) |
+| On add | HostApplication | | Sign-up: create the creator's Host (pending review). Profile edit: apply the allowed fields to the creator's Host (back to review). Record applied or rejected with the reason (hosts only have View on Host) |
 | On add / update | Host | | Copy destinationName and stateName from the Host's Destination |
 | On add / update | Listing | | Copy destinationName, stateName, region, latitude, longitude from Destination and hostDisplayName from Host (see search.md) |
 | On update | Destination | name, state, region or coordinates changed | Update the derived fields on its Hosts and Listings |
@@ -498,7 +524,7 @@ Implement logic heavier than a notification as **microservice client extensions*
 
 Spring Boot / Java 21 microservice client extension (phase 7). Object actions (ERC `MB_<Object>_<trigger>`, executor `function#mb-actions-service-<object>`) are registered by `scripts/setup/actions.js`; the service calls Liferay back as its headless-server OAuth2 app (instance administrator). Custom object OAuth2 scopes are named `c_<object name in lower case>.everything[.read]`.
 
-**Trust rule (security).** An object action webhook carries a JWT from the client extension's user-agent OAuth2 app, and any signed-in user can obtain a token for that app. So the payload is never trusted: every handler takes only the entry ID from the request, **re-reads the entry from Liferay** with the service's own identity, and acts on the stored values. In particular, a Payment confirms a booking only if the stored Payment (re-read) has `paymentStatus = success`, a gateway transaction ID, and an amount equal to the booking's stored total. Endpoints for users (host sign-up and profile edit) use a **separate** user-agent OAuth2 app and act only on the token's own user.
+**Trust rule (security).** An object action webhook carries a JWT from the client extension's user-agent OAuth2 app, and any signed-in user can obtain a token for that app. So the payload is never trusted: every handler takes only the entry ID from the request, **re-reads the entry from Liferay** with the service's own identity, and acts on the stored values. In particular, a Payment confirms a booking only if the stored Payment (re-read) has `paymentStatus = success`, a gateway transaction ID, and an amount equal to the booking's stored total. Host sign-up and profile edit don't use user tokens at all: they arrive as HostApplication entries whose creator Liferay records.
 
 - **BookingItem** add/update/delete: `lineTotal = quantity × unitPrice`; refresh the pricing of its booking(s) and the status of its slot(s).
 - **Booking** add/update: `serviceFee = 5% of subtotal`, `taxes = 18% GST on the fee`, `total = subtotal + serviceFee + taxes`, rounded half up to the paisa (rates in `application-default.properties`: `mb.pricing.*`). On add, the Owner keeps View only (6.3).
@@ -518,7 +544,7 @@ Spring Boot / Java 21 microservice client extension (phase 7). Object actions (E
 - **Booking** becomes cancelled or refunded: pending and available commissions become `reversed`; paid-out ones are logged for Ops. Gateway refund: logged.
 - **Payout** add (requested): links the host's free available commissions (not linked to another payout), oldest `availableOn` first, while their total fits the amount. The payout-balance rule (section 5) checks against those free commissions, so the same money can't be requested twice. Gateway call: logged.
 - **Payout** becomes paid: linked commissions → `paidOut`, `processedAt` set. Becomes failed: linked commissions are released (still available).
-- **Host sign-up and profile edit** (phase 10b): endpoints called with the signed-in user's token from the website or app.
+- **HostApplication** add (docs/website.md 4): the user is the stored entry's creator (Liferay sets it; the request can't). Sign-up: unless the user already has a Host, create it (ERC `MB_host_user_<user ID>`, `r_userHost_userId` = the creator, hostStatus pendingVerification, the application's fields and destination); profile edit: patch only displayName, hostRole, hostOffers, phone, quote, bio, specialties and destination of the creator's Host. Liferay's Host validation rules apply; the outcome goes back to the application (applicationStatus applied, or rejected with resultMessage), and the application is linked to the Host. Browser OAuth2 tokens (user-agent apps) are not used: on this instance their token exchange fails with invalid_grant.
 
 ### 7.2 Scheduled jobs
 

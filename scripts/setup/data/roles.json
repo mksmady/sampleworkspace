@@ -11,6 +11,13 @@
 			"AvailabilitySlot": ["VIEW"],
 			"Review": ["VIEW"]
 		},
+		"L_USER": {
+			"HostApplication": ["ADD"],
+			"Destination": ["VIEW"],
+			"ListingInclusion": ["VIEW"],
+			"AvailabilitySlot": ["VIEW"],
+			"Review": ["VIEW"]
+		},
 		"MB_Traveler": {
 			"AccountEntry": ["VIEW"],
 			"Destination": ["VIEW"],
