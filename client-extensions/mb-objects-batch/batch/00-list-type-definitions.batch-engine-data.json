@@ -119,6 +119,78 @@
 			}
 		},
 		{
+			"externalReferenceCode": "MB_HostOffer",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_HostOffer_ownServices",
+					"key": "ownServices",
+					"name_i18n": {
+						"en-US": "Offering Own Services"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_HostOffer_connectServices",
+					"key": "connectServices",
+					"name_i18n": {
+						"en-US": "Connecting Guests with Local Services"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_HostOffer_guiding",
+					"key": "guiding",
+					"name_i18n": {
+						"en-US": "Guiding Travelers"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_HostOffer_planTrips",
+					"key": "planTrips",
+					"name_i18n": {
+						"en-US": "Planning Complete Trips"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_HostOffer_fullTrip",
+					"key": "fullTrip",
+					"name_i18n": {
+						"en-US": "Managing Everything for a Guest"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Host Offer"
+			}
+		},
+		{
+			"externalReferenceCode": "MB_HostRole",
+			"listTypeEntries": [
+				{
+					"externalReferenceCode": "MB_HostRole_localTripHost",
+					"key": "localTripHost",
+					"name_i18n": {
+						"en-US": "Local Trip Host"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_HostRole_experienceHost",
+					"key": "experienceHost",
+					"name_i18n": {
+						"en-US": "Local Experience Host"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_HostRole_adventureHost",
+					"key": "adventureHost",
+					"name_i18n": {
+						"en-US": "Adventure Host"
+					}
+				}
+			],
+			"name_i18n": {
+				"en-US": "Host Role"
+			}
+		},
+		{
 			"externalReferenceCode": "MB_HostStatus",
 			"listTypeEntries": [
 				{
@@ -145,64 +217,6 @@
 			],
 			"name_i18n": {
 				"en-US": "Host Status"
-			}
-		},
-		{
-			"externalReferenceCode": "MB_HostTier",
-			"listTypeEntries": [
-				{
-					"externalReferenceCode": "MB_HostTier_standard",
-					"key": "standard",
-					"name_i18n": {
-						"en-US": "Standard"
-					}
-				},
-				{
-					"externalReferenceCode": "MB_HostTier_superHost",
-					"key": "superHost",
-					"name_i18n": {
-						"en-US": "Super Host"
-					}
-				}
-			],
-			"name_i18n": {
-				"en-US": "Host Tier"
-			}
-		},
-		{
-			"externalReferenceCode": "MB_HostType",
-			"listTypeEntries": [
-				{
-					"externalReferenceCode": "MB_HostType_partnerStays",
-					"key": "partnerStays",
-					"name_i18n": {
-						"en-US": "Partner Stays"
-					}
-				},
-				{
-					"externalReferenceCode": "MB_HostType_localGuide",
-					"key": "localGuide",
-					"name_i18n": {
-						"en-US": "Local Guide"
-					}
-				},
-				{
-					"externalReferenceCode": "MB_HostType_activities",
-					"key": "activities",
-					"name_i18n": {
-						"en-US": "Activities"
-					}
-				},
-				{
-					"externalReferenceCode": "MB_HostType_tourPackages",
-					"key": "tourPackages",
-					"name_i18n": {
-						"en-US": "Tour Packages"
-					}
-				}
-			],
-			"name_i18n": {
-				"en-US": "Host Type"
 			}
 		},
 		{
@@ -676,6 +690,13 @@
 					}
 				},
 				{
+					"externalReferenceCode": "MB_PartnerType_houseboat",
+					"key": "houseboat",
+					"name_i18n": {
+						"en-US": "Houseboat"
+					}
+				},
+				{
 					"externalReferenceCode": "MB_PartnerType_activityOperator",
 					"key": "activityOperator",
 					"name_i18n": {
@@ -687,6 +708,13 @@
 					"key": "transport",
 					"name_i18n": {
 						"en-US": "Transport"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_PartnerType_restaurant",
+					"key": "restaurant",
+					"name_i18n": {
+						"en-US": "Restaurant"
 					}
 				}
 			],
@@ -839,85 +867,6 @@
 			}
 		},
 		{
-			"externalReferenceCode": "MB_RecoFactor",
-			"listTypeEntries": [
-				{
-					"externalReferenceCode": "MB_RecoFactor_pastTravel",
-					"key": "pastTravel",
-					"name_i18n": {
-						"en-US": "Past Travel"
-					}
-				},
-				{
-					"externalReferenceCode": "MB_RecoFactor_currentLocation",
-					"key": "currentLocation",
-					"name_i18n": {
-						"en-US": "Current Location"
-					}
-				},
-				{
-					"externalReferenceCode": "MB_RecoFactor_weather",
-					"key": "weather",
-					"name_i18n": {
-						"en-US": "Weather"
-					}
-				},
-				{
-					"externalReferenceCode": "MB_RecoFactor_monthSeason",
-					"key": "monthSeason",
-					"name_i18n": {
-						"en-US": "Month & Season"
-					}
-				},
-				{
-					"externalReferenceCode": "MB_RecoFactor_publicHolidays",
-					"key": "publicHolidays",
-					"name_i18n": {
-						"en-US": "Public Holidays"
-					}
-				}
-			],
-			"name_i18n": {
-				"en-US": "Reco Factor"
-			}
-		},
-		{
-			"externalReferenceCode": "MB_RecoSection",
-			"listTypeEntries": [
-				{
-					"externalReferenceCode": "MB_RecoSection_placesNow",
-					"key": "placesNow",
-					"name_i18n": {
-						"en-US": "Places at Their Best Now"
-					}
-				},
-				{
-					"externalReferenceCode": "MB_RecoSection_hostsForYou",
-					"key": "hostsForYou",
-					"name_i18n": {
-						"en-US": "Hosts You'll Get Along With"
-					}
-				},
-				{
-					"externalReferenceCode": "MB_RecoSection_nearYou",
-					"key": "nearYou",
-					"name_i18n": {
-						"en-US": "Near You This Weekend"
-					}
-				},
-				{
-					"externalReferenceCode": "MB_RecoSection_longWeekend",
-					"key": "longWeekend",
-					"name_i18n": {
-						"en-US": "Long Weekend"
-					}
-				}
-			],
-			"name_i18n": {
-				"en-US": "Reco Section"
-			}
-		},
-		{
 			"externalReferenceCode": "MB_SenderType",
 			"listTypeEntries": [
 				{
@@ -943,13 +892,6 @@
 			"externalReferenceCode": "MB_ServiceCategory",
 			"listTypeEntries": [
 				{
-					"externalReferenceCode": "MB_ServiceCategory_flight",
-					"key": "flight",
-					"name_i18n": {
-						"en-US": "Flight"
-					}
-				},
-				{
 					"externalReferenceCode": "MB_ServiceCategory_stay",
 					"key": "stay",
 					"name_i18n": {
@@ -957,10 +899,45 @@
 					}
 				},
 				{
-					"externalReferenceCode": "MB_ServiceCategory_camping",
-					"key": "camping",
+					"externalReferenceCode": "MB_ServiceCategory_homestay",
+					"key": "homestay",
 					"name_i18n": {
-						"en-US": "Camping"
+						"en-US": "Homestay"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_ServiceCategory_transport",
+					"key": "transport",
+					"name_i18n": {
+						"en-US": "Transport"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_ServiceCategory_food",
+					"key": "food",
+					"name_i18n": {
+						"en-US": "Local Food"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_ServiceCategory_tours",
+					"key": "tours",
+					"name_i18n": {
+						"en-US": "Tours"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_ServiceCategory_activities",
+					"key": "activities",
+					"name_i18n": {
+						"en-US": "Activities"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_ServiceCategory_experiences",
+					"key": "experiences",
+					"name_i18n": {
+						"en-US": "Experiences"
 					}
 				},
 				{
@@ -971,10 +948,38 @@
 					}
 				},
 				{
+					"externalReferenceCode": "MB_ServiceCategory_camping",
+					"key": "camping",
+					"name_i18n": {
+						"en-US": "Camping"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_ServiceCategory_rafting",
+					"key": "rafting",
+					"name_i18n": {
+						"en-US": "Rafting"
+					}
+				},
+				{
 					"externalReferenceCode": "MB_ServiceCategory_paragliding",
 					"key": "paragliding",
 					"name_i18n": {
 						"en-US": "Paragliding"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_ServiceCategory_shikara",
+					"key": "shikara",
+					"name_i18n": {
+						"en-US": "Shikara"
+					}
+				},
+				{
+					"externalReferenceCode": "MB_ServiceCategory_photography",
+					"key": "photography",
+					"name_i18n": {
+						"en-US": "Photography"
 					}
 				},
 				{
@@ -985,17 +990,10 @@
 					}
 				},
 				{
-					"externalReferenceCode": "MB_ServiceCategory_activity",
-					"key": "activity",
+					"externalReferenceCode": "MB_ServiceCategory_completeTrip",
+					"key": "completeTrip",
 					"name_i18n": {
-						"en-US": "Activity"
-					}
-				},
-				{
-					"externalReferenceCode": "MB_ServiceCategory_tourPackage",
-					"key": "tourPackage",
-					"name_i18n": {
-						"en-US": "Tour Package"
+						"en-US": "Complete Trip"
 					}
 				}
 			],
@@ -1030,35 +1028,6 @@
 			],
 			"name_i18n": {
 				"en-US": "Slot Status"
-			}
-		},
-		{
-			"externalReferenceCode": "MB_SubscriptionStatus",
-			"listTypeEntries": [
-				{
-					"externalReferenceCode": "MB_SubscriptionStatus_active",
-					"key": "active",
-					"name_i18n": {
-						"en-US": "Active"
-					}
-				},
-				{
-					"externalReferenceCode": "MB_SubscriptionStatus_expired",
-					"key": "expired",
-					"name_i18n": {
-						"en-US": "Expired"
-					}
-				},
-				{
-					"externalReferenceCode": "MB_SubscriptionStatus_cancelled",
-					"key": "cancelled",
-					"name_i18n": {
-						"en-US": "Cancelled"
-					}
-				}
-			],
-			"name_i18n": {
-				"en-US": "Subscription Status"
 			}
 		}
 	]
