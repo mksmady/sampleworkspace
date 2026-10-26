@@ -25,7 +25,7 @@ public class QueryLogger {
 		_liferayClient = liferayClient;
 	}
 
-	public void log(Map<String, String> params, int resultCount) {
+	public void log(String endpoint, Map<String, String> params, int resultCount) {
 		String source = params.getOrDefault("source", "web");
 		JSONObject filters = new JSONObject();
 
@@ -37,6 +37,8 @@ public class QueryLogger {
 			});
 
 		JSONObject entry = new JSONObject(
+		).put(
+			"endpoint", endpoint
 		).put(
 			"filtersUsed", filters.toString()
 		).put(

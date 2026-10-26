@@ -45,7 +45,7 @@ Liferay indexes relationships as IDs, so a search for "Manali" would not match a
 | Host destinationName, stateName | Destination | Host on add/update; Destination on update |
 | Host ratingValue, reviewCount | the host's published reviews | Review on add/update/delete |
 | Host priceFrom, completeTripsFrom | the host's approved listings | Listing on add/update/delete and workflow change |
-| Destination hostCount | approved, active hosts | Host on update and workflow change |
+| Destination hostCount | hosts with hostStatus active | Host on add and update |
 
 Aggregation and formula fields are calculated on read rather than stored, so they can't be relied on for filtering, sorting or facets. Anything used that way must be a stored field.
 
@@ -193,7 +193,7 @@ GET /search/hosts?q=manali&from=2026-11-10&to=2026-11-14&guests=2&category=&full
 }
 ```
 
-`verified` is `hostStatus = active` (always true in public results). `canArrangeEntireTrip` is `hostOffers` contains `fullTrip`. `price.label` is `completeTripsFrom` ("Complete trips from") when the host has a complete trip, else `priceFrom` ("From"); `price` is null when the host has no approved listing. `destinations` lists matching destinations (with hostCount) when `q` names one.
+`verified` is `hostStatus = active` (always true in public results). `canArrangeEntireTrip` is `hostOffers` contains `fullTrip`. `price.label` is `completeTripsFrom` ("Complete trips from") when the host has a complete trip, else `priceFrom` ("From"); `price` is null when the host has no approved listing (both stored prices are 0). `destinations` lists matching destinations (with hostCount) when `q` names one.
 
 ### `GET /search/trips`
 
@@ -260,14 +260,14 @@ Review weekly:
 
 ## 10. Website and app
 
-- **Website hero** ("Find Local Hosts"): a custom element that routes to a `/hosts` page with `q`, `from`, `to`, `guests`.
-- **`/hosts` page:** host cards from `/search/hosts`. The home page's "Meet Your Local Hosts" carousel and "Explore All Hosts" use the same endpoint (no query, `sort=rating`); each destination tile links to `/hosts?destination=<slug>`.
-- **Destination tiles and testimonials:** read directly from `/o/c/destinations` (sorted by sortOrder, showing hostCount) and `/o/c/reviews` (isFeatured and isPublished).
-- **Host and listing pages:** plain `/host?handle=` and `/listing?slug=` content pages (hidden from navigation) whose custom elements call `/search/hosts/{handle}` and `/search/listings/{slug}`. Not display page templates: guests can't read Host or Listing entries directly (data-model.md 6.2), so a display page couldn't render them.
+Pages and elements: `docs/website.md`. In short:
+
+- **Website hero** ("Find Local Hosts") routes to `/hosts` with `q`, `from`, `to`, `guests`; the `/hosts` page, the home page's host carousel and "Explore All Hosts" use `/search/hosts`; each destination tile links to `/hosts?destination=<slug>`.
+- **Destination tiles and testimonials** read `/o/c/destinations` and `/o/c/reviews` directly (Guest View).
+- **Host and listing pages:** plain `/host?handle=` and `/listing?slug=` pages whose elements call `/search/hosts/{handle}` and `/search/listings/{slug}`. Not display page templates: guests can't read Host or Listing entries directly (data-model.md 6.2).
 - **Complete Trips page:** `/search/trips?category=completeTrip`.
-- **Website elements:** `client-extensions/mb-web-elements`. Page layout lives in `scripts/setup/data/site/site.json`.
-- **App:** the search box calls `/search/hosts`; category chips and "See all" call `/search/trips` (guests and travelers can't read listings directly, data-model.md 6.2). Host and listing pages use `/search/hosts/{handle}` and `/search/listings/{slug}`.
-- **Autocomplete:** destination names and keywords plus top queries from the log, served by `GET /search/suggest?q=`.
+- **App:** the search box calls `/search/hosts`; category chips and "See all" call `/search/trips`; host and listing pages use the same endpoints as the website.
+- **Autocomplete:** `GET /search/suggest?q=`.
 
 ## 11. Testing checklist
 

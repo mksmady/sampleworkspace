@@ -37,8 +37,14 @@ public class QueryMatcher {
 	public static final List<Field> DESTINATION_FIELDS = List.of(
 		new Field("name", 4, true), new Field("searchKeywords", 3, true), new Field("region", 2, false), new Field("state", 2, false));
 
+	/**
+	 * destinationKeywords is the host's destination's searchKeywords (Catalog), so "srinagar" finds a
+	 * Kashmir host with the destinationName boost.
+	 */
 	public static final List<Field> HOST_FIELDS = List.of(
-		new Field("displayName", 4, true), new Field("hostRegion", 2, false), new Field("specialties", 2, false), new Field("bio", 1, false));
+		new Field("destinationName", 5, true), new Field("destinationKeywords", 5, true), new Field("displayName", 4, true),
+		new Field("specialties", 2, false), new Field("hostRole", 2, false), new Field("stateName", 2, false),
+		new Field("quote", 1.5, false), new Field("bio", 1, false));
 
 	public static final List<Field> LISTING_FIELDS = List.of(
 		new Field("title", 5, true), new Field("destinationName", 4, true), new Field("searchKeywords", 3, true),
@@ -67,7 +73,9 @@ public class QueryMatcher {
 		JSONArray pins = config.getJSONArray("pins");
 
 		for (int i = 0; i < pins.length(); i++) {
-			_pins.put(Text.normalize(pins.getJSONObject(i).getString("query")), pins.getJSONObject(i).getString("listing"));
+			JSONObject pin = pins.getJSONObject(i);
+
+			_pins.put(pin.getString("endpoint") + ":" + Text.normalize(pin.getString("query")), pin.getString("externalReferenceCode"));
 		}
 
 		for (Object stopWord : config.getJSONArray("stopWords")) {
@@ -116,10 +124,10 @@ public class QueryMatcher {
 	}
 
 	/**
-	 * The listing ERC pinned for this query, or null.
+	 * The ERC of the listing ("trips") or host ("hosts") pinned for this query, or null.
 	 */
-	public String pinnedListing(String query) {
-		return _pins.get(Text.normalize(query));
+	public String pinned(String endpoint, String query) {
+		return _pins.get(endpoint + ":" + Text.normalize(query));
 	}
 
 	/**

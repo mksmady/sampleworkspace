@@ -35,19 +35,44 @@ public class TripSearch {
 		_queryMatcher = queryMatcher;
 	}
 
+	/**
+	 * GET /search/hosts/{handle}: the public host fields, their approved listings (complete trips
+	 * first, then by price) and their published reviews (newest first).
+	 */
 	public JSONObject host(String handle) {
-		for (Catalog.Doc host : _catalog.get().hosts()) {
-			if (host.json().optString("handle").equals(handle)) {
-				JSONArray listings = new JSONArray();
+		Catalog.Snapshot snapshot = _catalog.get();
 
-				for (Catalog.Doc listing : _catalog.get().listings()) {
-					if (listing.json().optLong("r_hostListings_c_hostId") == host.json().getLong("id")) {
-						listings.put(PublicViews.listing(listing.json()));
-					}
-				}
-
-				return PublicViews.host(host.json()).put("listings", listings);
+		for (Catalog.Doc host : snapshot.hosts()) {
+			if (!host.json().optString("handle").equals(handle)) {
+				continue;
 			}
+
+			long hostId = host.json().getLong("id");
+			JSONArray listings = new JSONArray();
+
+			snapshot.listings(
+			).stream(
+			).map(
+				Catalog.Doc::json
+			).filter(
+				listing -> listing.optLong("r_hostListings_c_hostId") == hostId
+			).sorted(
+				Comparator.comparing(
+					(JSONObject listing) -> !"completeTrip".equals(Catalog.key(listing.opt("category")))
+				).thenComparing(
+					listing -> _decimalValue(listing.opt("basePrice"))
+				)
+			).forEach(
+				listing -> listings.put(_withHost(PublicViews.listing(listing), snapshot))
+			);
+
+			JSONArray reviews = new JSONArray();
+
+			for (JSONObject review : snapshot.publishedReviews().getOrDefault(hostId, List.of())) {
+				reviews.put(PublicViews.review(review));
+			}
+
+			return PublicViews.host(host.json()).put("listings", listings).put("reviews", reviews);
 		}
 
 		return null;
@@ -88,14 +113,14 @@ public class TripSearch {
 						).put(
 							"placesLeft", _placesLeft(slot)
 						).put(
-							"price", _slotPrice(slot, listing.json())
+							"price", slotPrice(slot, listing.json())
 						).put(
 							"startTime", slot.optString("startTime")
 						));
 				}
 			}
 
-			JSONObject view = PublicViews.listing(listing.json()).put("description", listing.json().optString("description")).put("inclusions", inclusions).put("slots", slots);
+			JSONObject view = _withHost(PublicViews.listing(listing.json()), snapshot).put("description", listing.json().optString("description")).put("inclusions", inclusions).put("slots", slots);
 
 			for (Catalog.Doc host : snapshot.hosts()) {
 				if (host.json().getLong("id") == listing.json().optLong("r_hostListings_c_hostId")) {
@@ -113,10 +138,11 @@ public class TripSearch {
 		Catalog.Snapshot snapshot = _catalog.get();
 		String q = params.getOrDefault("q", "").trim();
 		String category = params.getOrDefault("category", "");
-		boolean travelersGiven = !params.getOrDefault("travelers", "").isEmpty();
-		int travelers = Math.max(1, _int(params.get("travelers"), 1));
-		LocalDate from = _dateParam(params.get("from"));
-		LocalDate to = (from == null) ? null : ((_dateParam(params.get("to")) == null) ? from : _dateParam(params.get("to")));
+		String guestsParam = guests(params);
+		boolean travelersGiven = !guestsParam.isEmpty();
+		int travelers = Math.max(1, _int(guestsParam, 1));
+		LocalDate from = dateParam(params.get("from"));
+		LocalDate to = (from == null) ? null : ((dateParam(params.get("to")) == null) ? from : dateParam(params.get("to")));
 		Double lat = _double(params.get("lat"));
 		Double lng = _double(params.get("lng"));
 		Double radiusKm = _double(params.get("radiusKm"));
@@ -128,10 +154,6 @@ public class TripSearch {
 
 		if ((to != null) && to.isBefore(from)) {
 			throw new IllegalArgumentException("to is before from");
-		}
-
-		if ("flight".equals(category)) {
-			return _response(params, q, List.of(), List.of(), page, pageSize, snapshot, List.of());
 		}
 
 		List<QueryMatcher.Concept> concepts = _queryMatcher.concepts(q);
@@ -171,7 +193,7 @@ public class TripSearch {
 			BigDecimal price = _decimalValue(json.opt("basePrice"));
 
 			if (from != null) {
-				List<JSONObject> slots = _availableSlots(snapshot, json, from, to, travelers);
+				List<JSONObject> slots = availableSlots(snapshot, json, from, to, travelers);
 
 				if (slots.isEmpty()) {
 					continue;
@@ -183,7 +205,7 @@ public class TripSearch {
 				for (JSONObject slot : slots) {
 					availableDates.add(_date(slot));
 
-					BigDecimal slotPrice = _slotPrice(slot, json);
+					BigDecimal slotPrice = slotPrice(slot, json);
 
 					price = ((price == null) || (slotPrice.compareTo(price) < 0)) ? slotPrice : price;
 				}
@@ -206,7 +228,7 @@ public class TripSearch {
 
 		hits.sort(_comparator(sort));
 
-		String pinned = "relevance".equals(sort) ? _queryMatcher.pinnedListing(q) : null;
+		String pinned = "relevance".equals(sort) ? _queryMatcher.pinned("trips", q) : null;
 
 		if (pinned != null) {
 			for (int i = 0; i < hits.size(); i++) {
@@ -261,15 +283,12 @@ public class TripSearch {
 		return new JSONObject().put("items", suggestions);
 	}
 
-	private record Hit(Catalog.Doc doc, double score, List<String> availableDates, BigDecimal price, Double distanceKm) {
-	}
-
 	/**
-	 * Open slots in the date range with places for the travelers. Stays and camps need one for every
-	 * night (from up to the day before to; a single night when from equals to); anything else needs at
-	 * least one day in the range.
+	 * Open slots in the date range with places for the travelers. Stays, homestays and camps need one for
+	 * every night (from up to the day before to; a single night when from equals to); anything else,
+	 * including a complete trip (a slot per start date), needs at least one day in the range.
 	 */
-	private List<JSONObject> _availableSlots(Catalog.Snapshot snapshot, JSONObject listing, LocalDate from, LocalDate to, int travelers) {
+	static List<JSONObject> availableSlots(Catalog.Snapshot snapshot, JSONObject listing, LocalDate from, LocalDate to, int travelers) {
 		boolean nightly = _NIGHTLY.contains(Catalog.key(listing.opt("category")));
 		LocalDate last = (nightly && to.isAfter(from)) ? to.minusDays(1) : to;
 		Map<String, JSONObject> byDate = new LinkedHashMap<>();
@@ -293,6 +312,29 @@ public class TripSearch {
 		return new ArrayList<>(byDate.values());
 	}
 
+	/**
+	 * The guest count: "guests" (the website's hero) or its older name "travelers"; "" when neither.
+	 */
+	static String guests(Map<String, String> params) {
+		String guests = params.getOrDefault("guests", "");
+
+		return guests.isBlank() ? params.getOrDefault("travelers", "") : guests;
+	}
+
+	static LocalDate dateParam(String value) {
+		return ((value == null) || value.isBlank()) ? null : LocalDate.parse(value.trim());
+	}
+
+	static BigDecimal slotPrice(JSONObject slot, JSONObject listing) {
+		Object override = slot.opt("priceOverride");
+
+		return ((override == null) || (override == JSONObject.NULL) || "".equals(override.toString()) || (Double.parseDouble(override.toString()) <= 0))
+			? _decimalValue(listing.opt("basePrice")) : new BigDecimal(override.toString());
+	}
+
+	private record Hit(Catalog.Doc doc, double score, List<String> availableDates, BigDecimal price, Double distanceKm) {
+	}
+
 	private static Comparator<Hit> _comparator(String sort) {
 		Comparator<Hit> byRating = Comparator.comparingDouble(hit -> -_number(hit.doc().json().opt("ratingValue")));
 
@@ -310,10 +352,6 @@ public class TripSearch {
 		String date = slot.optString("slotDate");
 
 		return (date.length() >= 10) ? date.substring(0, 10) : date;
-	}
-
-	private static LocalDate _dateParam(String value) {
-		return ((value == null) || value.isBlank()) ? null : LocalDate.parse(value.trim());
 	}
 
 	private static BigDecimal _decimal(String value) {
@@ -437,7 +475,7 @@ public class TripSearch {
 		JSONArray items = new JSONArray();
 
 		for (Hit hit : hits.subList(Math.min(hits.size(), (page - 1) * pageSize), Math.min(hits.size(), page * pageSize))) {
-			JSONObject item = PublicViews.listing(hit.doc().json());
+			JSONObject item = _withHost(PublicViews.listing(hit.doc().json()), snapshot);
 
 			item.getJSONObject("price").put("amount", hit.price());
 
@@ -454,7 +492,7 @@ public class TripSearch {
 
 		JSONObject query = new JSONObject();
 
-		for (String name : List.of("q", "category", "from", "to", "travelers", "lat", "lng", "radiusKm", "minPrice", "maxPrice", "sort")) {
+		for (String name : List.of("q", "category", "from", "to", "guests", "travelers", "lat", "lng", "radiusKm", "minPrice", "maxPrice", "sort")) {
 			if (!params.getOrDefault(name, "").isEmpty()) {
 				query.put(name, params.get(name));
 			}
@@ -465,8 +503,6 @@ public class TripSearch {
 			"destinations", _matches(snapshot.destinations(), QueryMatcher.DESTINATION_FIELDS, concepts, false)
 		).put(
 			"facets", new JSONObject().put("category", _facet(categoryLabels, categoryCounts)).put("state", _facet(stateLabels, stateCounts))
-		).put(
-			"flights", new JSONArray()
 		).put(
 			"hosts", _matches(snapshot.hosts(), QueryMatcher.HOST_FIELDS, concepts, true)
 		).put(
@@ -482,12 +518,6 @@ public class TripSearch {
 		);
 	}
 
-	private static BigDecimal _slotPrice(JSONObject slot, JSONObject listing) {
-		Object override = slot.opt("priceOverride");
-
-		return ((override == null) || (override == JSONObject.NULL) || "".equals(override.toString())) ? _decimalValue(listing.opt("basePrice")) : new BigDecimal(override.toString());
-	}
-
 	private static List<JSONObject> _sortedSlots(Catalog.Snapshot snapshot, long listingId) {
 		List<JSONObject> slots = new ArrayList<>(snapshot.openSlots().getOrDefault(listingId, List.of()));
 
@@ -500,7 +530,28 @@ public class TripSearch {
 		return LocalDate.now(ZoneId.of("Asia/Kolkata"));
 	}
 
-	private static final Set<String> _NIGHTLY = Set.of("camping", "stay");
+	/**
+	 * Adds the listing's host link: {handle, displayName}, or null when the host isn't public.
+	 */
+	private static JSONObject _withHost(JSONObject view, Catalog.Snapshot snapshot) {
+		long hostId = -1;
+
+		for (Catalog.Doc listing : snapshot.listings()) {
+			if (listing.json().getLong("id") == view.getLong("id")) {
+				hostId = listing.json().optLong("r_hostListings_c_hostId");
+			}
+		}
+
+		for (Catalog.Doc host : snapshot.hosts()) {
+			if (host.json().getLong("id") == hostId) {
+				return view.put("host", new JSONObject().put("displayName", host.json().optString("displayName")).put("handle", host.json().optString("handle")));
+			}
+		}
+
+		return view.put("host", JSONObject.NULL);
+	}
+
+	private static final Set<String> _NIGHTLY = Set.of("camping", "homestay", "stay");
 
 	private final Catalog _catalog;
 	private final LiferayClient _liferayClient;

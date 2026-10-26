@@ -23,7 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SearchRestController {
 
-	public SearchRestController(QueryLogger queryLogger, TripSearch tripSearch) {
+	public SearchRestController(HostSearch hostSearch, QueryLogger queryLogger, TripSearch tripSearch) {
+		_hostSearch = hostSearch;
 		_queryLogger = queryLogger;
 		_tripSearch = tripSearch;
 	}
@@ -31,6 +32,15 @@ public class SearchRestController {
 	@ExceptionHandler({DateTimeParseException.class, IllegalArgumentException.class})
 	public ResponseEntity<String> badRequest(Exception exception) {
 		return ResponseEntity.badRequest().body(new JSONObject().put("error", exception.getMessage()).toString());
+	}
+
+	@GetMapping("/hosts")
+	public String hosts(@RequestParam Map<String, String> params) {
+		JSONObject response = _hostSearch.search(params);
+
+		_queryLogger.log("hosts", params, response.getInt("totalCount"));
+
+		return response.toString();
 	}
 
 	@GetMapping("/hosts/{handle}")
@@ -52,7 +62,7 @@ public class SearchRestController {
 	public String trips(@RequestParam Map<String, String> params) {
 		JSONObject response = _tripSearch.search(params);
 
-		_queryLogger.log(params, response.getInt("totalCount"));
+		_queryLogger.log("trips", params, response.getInt("totalCount"));
 
 		return response.toString();
 	}
@@ -65,6 +75,7 @@ public class SearchRestController {
 		return ResponseEntity.ok(jsonObject.toString());
 	}
 
+	private final HostSearch _hostSearch;
 	private final QueryLogger _queryLogger;
 	private final TripSearch _tripSearch;
 

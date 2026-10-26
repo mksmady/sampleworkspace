@@ -15,5 +15,6 @@ mb-search-service-oahs:
         -   c_host.everything.read
         -   c_listing.everything.read
         -   c_listinginclusion.everything.read
+        -   c_review.everything.read
         -   c_searchquerylog.everything
     type: oAuthApplicationHeadlessServer

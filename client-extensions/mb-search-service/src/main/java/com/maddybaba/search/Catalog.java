@@ -20,8 +20,9 @@ import org.springframework.stereotype.Component;
 
 /**
  * In-memory copy of what the public may search, refreshed on a fixed delay: approved listings,
- * destinations, approved and active hosts, open slots from today, and query counts from the search log
- * (for suggestions). Listings awaiting approval and inactive hosts never enter it.
+ * destinations, approved and active hosts (with their destination's searchKeywords), open slots from
+ * today, published reviews by host, and query counts from the search log (for suggestions). Listings
+ * awaiting approval and inactive hosts never enter it.
  */
 @Component
 public class Catalog {
@@ -34,7 +35,7 @@ public class Catalog {
 
 	public record Snapshot(
 		List<Doc> listings, List<Doc> destinations, List<Doc> hosts, Map<Long, List<JSONObject>> openSlots,
-		Map<String, Integer> queryCounts, Instant loadedAt) {
+		Map<Long, List<JSONObject>> publishedReviews, Map<String, Integer> queryCounts, Instant loadedAt) {
 	}
 
 	public Catalog(LiferayClient liferayClient, @Value("${mb.search.slot-days}") int slotDays) {
@@ -58,16 +59,27 @@ public class Catalog {
 			}
 
 			List<Doc> destinations = new ArrayList<>();
+			Map<Long, String> destinationKeywords = new HashMap<>();
 
 			for (JSONObject destination : _liferayClient.getAll("/o/c/destinations")) {
 				destinations.add(_doc(destination, QueryMatcher.DESTINATION_FIELDS));
+				destinationKeywords.put(destination.getLong("id"), destination.optString("searchKeywords"));
 			}
 
 			List<Doc> hosts = new ArrayList<>();
 
 			for (JSONObject host : _liferayClient.getAll("/o/c/hosts")) {
 				if (_approved(host) && "active".equals(key(host.opt("hostStatus")))) {
+					host.put("destinationKeywords", destinationKeywords.getOrDefault(host.optLong("r_destinationHosts_c_destinationId"), ""));
 					hosts.add(_doc(host, QueryMatcher.HOST_FIELDS));
+				}
+			}
+
+			Map<Long, List<JSONObject>> publishedReviews = new HashMap<>();
+
+			for (JSONObject review : _liferayClient.getAll("/o/c/reviews?sort=dateCreated:desc")) {
+				if (review.optBoolean("isPublished")) {
+					publishedReviews.computeIfAbsent(review.optLong("r_hostReviews_c_hostId"), id -> new ArrayList<>()).add(review);
 				}
 			}
 
@@ -95,7 +107,7 @@ public class Catalog {
 				}
 			}
 
-			_snapshot = new Snapshot(listings, destinations, hosts, openSlots, queryCounts, Instant.now());
+			_snapshot = new Snapshot(listings, destinations, hosts, openSlots, publishedReviews, queryCounts, Instant.now());
 
 			_log.info("Catalog: {} listings, {} destinations, {} hosts, {} listings with open slots", listings.size(), destinations.size(), hosts.size(), openSlots.size());
 		}
@@ -157,6 +169,6 @@ public class Catalog {
 
 	private final LiferayClient _liferayClient;
 	private final int _slotDays;
-	private volatile Snapshot _snapshot = new Snapshot(List.of(), List.of(), List.of(), Map.of(), Map.of(), Instant.EPOCH);
+	private volatile Snapshot _snapshot = new Snapshot(List.of(), List.of(), List.of(), Map.of(), Map.of(), Map.of(), Instant.EPOCH);
 
 }
