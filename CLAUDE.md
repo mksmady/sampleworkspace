@@ -10,6 +10,7 @@ The website and a mobile app both run on this Liferay instance. The app uses the
 
 * `docs/Homepage — desktop.pdf` — website home page design (other screens follow)
 * `docs/data-model.md` — picklists, objects, fields, relationships, validations, permissions, actions. **Source of truth.**
+* `docs/website.md` — pages, custom elements, host sign-up, host and Ops dashboards (phase 10)
 * `docs/search.md` — search design, relevance and synonyms (in mb-search-service), `/search/hosts` and `/search/trips` APIs
 
 Follow the specs exactly. If something in a spec is wrong, unsupported on this Liferay version, or ambiguous, stop and ask. Don't improvise. When a spec changes, update the doc in the same commit.
